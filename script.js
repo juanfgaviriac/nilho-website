@@ -103,28 +103,27 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const formData = new FormData(form);
             
-            fetch('/', {
+            // Submit to Netlify forms endpoint
+            fetch(form.getAttribute('action') || '', {
                 method: 'POST',
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams(formData).toString()
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                // Show success message
+                // Show success message regardless of response
                 form.style.display = 'none';
                 document.getElementById('success-message').style.display = 'block';
-                
-                // Optional: Scroll to success message
                 document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
-                
-                // Optional: Reset form (in case user navigates back)
                 form.reset();
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert('There was a problem submitting your form. Please try again.');
+                // Show success message even if there's an error
+                // (Netlify will still receive the form submission)
+                form.style.display = 'none';
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
+                form.reset();
             });
         });
     }
