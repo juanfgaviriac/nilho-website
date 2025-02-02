@@ -99,32 +99,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contact-form');
     if (form) {
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(form);
-            
-            // Submit to Netlify forms endpoint
-            fetch(form.getAttribute('action') || '', {
-                method: 'POST',
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams(formData).toString()
-            })
-            .then(response => {
-                // Show success message regardless of response
+            // Don't prevent default - let the form submit normally
+            // Just show the success message after a brief delay
+            setTimeout(() => {
                 form.style.display = 'none';
                 document.getElementById('success-message').style.display = 'block';
                 document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
-                form.reset();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                // Show success message even if there's an error
-                // (Netlify will still receive the form submission)
-                form.style.display = 'none';
-                document.getElementById('success-message').style.display = 'block';
-                document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
-                form.reset();
-            });
+            }, 1000);
         });
     }
 }); 
