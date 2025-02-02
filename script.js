@@ -92,4 +92,35 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.fade-in').forEach(element => {
     observer.observe(element);
+});
+
+// Add this to the end of script.js
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            
+            fetch('/', {
+                method: 'POST',
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams(formData).toString()
+            })
+            .then(() => {
+                try {
+                    window.location.href = '/success.html';
+                } catch (e) {
+                    // If redirect fails, show inline message
+                    form.style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('There was a problem submitting your form. Please try again.');
+            });
+        });
+    }
 }); 

@@ -102,8 +102,23 @@
             <div class="container" style="max-width: 600px;">
                 <h2 class="section-title">Get in Touch</h2>
                 <p class="section-intro">Ready to grow your business? Let's talk about how we can work together.</p>
-                <form name="contact" method="POST" data-netlify="true" action="/success.html">
+                
+                <!-- Add these hidden fields for Netlify form detection -->
+                <form 
+                    name="contact" 
+                    method="POST" 
+                    data-netlify="true" 
+                    action="/success.html" 
+                    netlify-honeypot="bot-field"
+                    id="contact-form"
+                >
+                    <!-- Hidden input for Netlify -->
                     <input type="hidden" name="form-name" value="contact" />
+                    <!-- Honeypot field to prevent spam -->
+                    <div hidden>
+                        <input name="bot-field" />
+                    </div>
+
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" id="name" name="name" required>
@@ -148,5 +163,10 @@
             once: true
         });
     </script>
+
+    <div id="success-message" style="display: none; text-align: center; padding: 2rem; background: #f0f7f0; border-radius: 8px; margin-top: 2rem;">
+        <h3 style="color: #2c5282; margin-bottom: 1rem;">Thank You!</h3>
+        <p>Your message has been received. We'll get back to you shortly.</p>
+    </div>
 </body>
 </html> 
