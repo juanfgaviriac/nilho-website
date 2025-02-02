@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Coupon Solutions</title>
+    <meta name="description" content="Your trusted global partner for local savings - connecting customers with the best deals worldwide.">
+    
+    <!-- Leaflet CSS for the map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>Nilho</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#coverage">Coverage</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-content fade-in">
+                <h2>Smart Shopping, Better Savings</h2>
+                <p class="hero-subtitle">Your trusted partner for verified discount codes across the globe</p>
+                <a href="#about" class="cta-button">Learn More</a>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title fade-in">About Us</h2>
+                <p class="section-intro fade-in">At Nilho, we're more than just a coupon platform - we're your digital savings ally. Having collaborated with hundreds of leading brands across Europe and Latin America, we understand what both merchants and shoppers need.</p>
+                <div class="features">
+                    <div class="feature fade-in" data-aos="fade-up" data-aos-delay="100">
+                        <h3>24/7 Availability</h3>
+                        <p>Always here when you need savings</p>
+                    </div>
+                    <div class="feature fade-in" data-aos="fade-up" data-aos-delay="200">
+                        <h3>Verified Codes</h3>
+                        <p>All discounts tested daily</p>
+                    </div>
+                    <div class="feature fade-in" data-aos="fade-up" data-aos-delay="300">
+                        <h3>Global Reach</h3>
+                        <p>Savings across multiple markets</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="coverage" class="coverage-section">
+            <div class="container">
+                <h2 class="section-title fade-in">Our Global Coverage</h2>
+                <p class="coverage-intro fade-in">Serving millions of shoppers across two continents</p>
+                <div id="map" class="map-container">
+                    <!-- SVG map will be loaded here -->
+                    <div class="map-loading">Loading map...</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="work-with-us" class="work-with-us-section">
+            <div class="container">
+                <h2 class="section-title fade-in" style="color: var(--white);">Work With Us</h2>
+                <p class="section-intro fade-in" style="color: var(--white);">Join hundreds of successful merchants who have grown their business with Nilho. We'll connect you with the right affiliate network partner and guide you through the entire process.</p>
+                
+                <div class="merchant-benefits">
+                    <div class="benefit-card fade-in" data-aos="fade-up" data-aos-delay="100">
+                        <h3>Simple Integration</h3>
+                        <p>We'll guide you step by step through our partner network integration</p>
+                    </div>
+                    <div class="benefit-card fade-in" data-aos="fade-up" data-aos-delay="200">
+                        <h3>Dedicated Support</h3>
+                        <p>Get personalized assistance in setting up your affiliate program</p>
+                    </div>
+                    <div class="benefit-card fade-in" data-aos="fade-up" data-aos-delay="300">
+                        <h3>Start Growing</h3>
+                        <p>Begin reaching millions of shoppers across our network</p>
+                    </div>
+                </div>
+                <div class="cta-container" style="text-align: center; margin-top: 3rem;">
+                    <a href="#contact" class="cta-button" style="background: var(--white); color: var(--primary-color);">Become a Partner</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <div class="container" style="max-width: 600px;">
+                <h2 class="section-title">Get in Touch</h2>
+                <p class="section-intro">Ready to grow your business? Let's talk about how we can work together.</p>
+                <form name="contact" method="POST" data-netlify="true">
+                    <input type="hidden" name="form-name" value="contact" />
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">How can we help?</label>
+                        <textarea id="message" name="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Nilho. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#coverage">Coverage</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+</body>
+</html> 
