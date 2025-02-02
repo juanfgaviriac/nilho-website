@@ -392,4 +392,143 @@ html {
 
 .benefit-card:hover {
     transform: translateY(-5px);
+}
+
+/* Mobile-first media queries */
+@media (max-width: 768px) {
+    /* Header/Navigation */
+    .nav-container {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .nav-links a {
+        margin-left: 0;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 60vh;
+        padding: 4rem 1rem;
+    }
+
+    .hero-content h2 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    /* Features */
+    .features {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    /* Coverage Map */
+    .map-container {
+        height: 300px;
+        margin: 1rem 0;
+    }
+
+    /* Work With Us */
+    .merchant-benefits {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+
+    .benefit-card {
+        padding: 1.5rem;
+    }
+
+    /* Contact Form */
+    .contact-section .container {
+        padding: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* General Spacing */
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-intro {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Container */
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* Tablet and up */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: 0 2rem;
+    }
+
+    .features, .merchant-benefits {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Additional touch-friendly adjustments */
+@media (hover: none) {
+    /* Make buttons more touch-friendly */
+    .cta-button,
+    button[type="submit"] {
+        padding: 1rem 2rem;
+        min-height: 44px; /* Minimum touch target size */
+    }
+
+    /* Increase spacing for touch targets */
+    .nav-links a {
+        padding: 0.5rem;
+    }
+
+    /* Adjust form inputs for touch */
+    input,
+    textarea,
+    select {
+        min-height: 44px;
+        padding: 0.8rem;
+    }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+    .hero-section {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Ensure text remains readable on small screens */
+@media (max-width: 320px) {
+    html {
+        font-size: 14px;
+    }
+
+    .hero-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+    }
 } 
