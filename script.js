@@ -97,15 +97,14 @@ document.querySelectorAll('.fade-in').forEach(element => {
 // Form handling
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contact-form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Don't prevent default - let the form submit normally
-            // Just show the success message after a brief delay
-            setTimeout(() => {
-                form.style.display = 'none';
-                document.getElementById('success-message').style.display = 'block';
-                document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
-            }, 1000);
-        });
+    const successMessage = document.getElementById('success-message');
+    
+    if (form && successMessage) {
+        // Check if we're returning from a form submission
+        if (window.location.search.includes('success=true')) {
+            form.style.display = 'none';
+            successMessage.style.display = 'block';
+            successMessage.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 }); 
