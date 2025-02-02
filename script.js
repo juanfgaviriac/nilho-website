@@ -92,19 +92,4 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.fade-in').forEach(element => {
     observer.observe(element);
-});
-
-// Form handling
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form');
-    const successMessage = document.getElementById('success-message');
-    
-    if (form && successMessage) {
-        // Check if we're returning from a form submission
-        if (window.location.search.includes('success=true')) {
-            form.style.display = 'none';
-            successMessage.style.display = 'block';
-            successMessage.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
 }); 
