@@ -94,7 +94,7 @@ document.querySelectorAll('.fade-in').forEach(element => {
     observer.observe(element);
 });
 
-// Add this to the end of script.js
+// Form handling
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contact-form');
     if (form) {
@@ -108,14 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams(formData).toString()
             })
-            .then(() => {
-                try {
-                    window.location.href = '/success.html';
-                } catch (e) {
-                    // If redirect fails, show inline message
-                    form.style.display = 'none';
-                    document.getElementById('success-message').style.display = 'block';
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                // Show success message
+                form.style.display = 'none';
+                document.getElementById('success-message').style.display = 'block';
+                
+                // Optional: Scroll to success message
+                document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
+                
+                // Optional: Reset form (in case user navigates back)
+                form.reset();
             })
             .catch((error) => {
                 console.error('Error:', error);

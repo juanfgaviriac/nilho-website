@@ -103,12 +103,10 @@
                 <h2 class="section-title">Get in Touch</h2>
                 <p class="section-intro">Ready to grow your business? Let's talk about how we can work together.</p>
                 
-                <!-- Add these hidden fields for Netlify form detection -->
                 <form 
                     name="contact" 
                     method="POST" 
-                    data-netlify="true" 
-                    action="/success.html" 
+                    data-netlify="true"
                     netlify-honeypot="bot-field"
                     id="contact-form"
                 >
@@ -137,6 +135,12 @@
                     </div>
                     <button type="submit">Send Message</button>
                 </form>
+
+                <!-- Success message (hidden by default) -->
+                <div id="success-message" style="display: none; text-align: center; padding: 2rem; background: #f0f7f0; border-radius: 8px; margin-top: 2rem;">
+                    <h3 style="color: #2c5282; margin-bottom: 1rem;">Thank You!</h3>
+                    <p>Your message has been received. We'll get back to you shortly.</p>
+                </div>
             </div>
         </section>
     </main>
@@ -163,10 +167,5 @@
             once: true
         });
     </script>
-
-    <div id="success-message" style="display: none; text-align: center; padding: 2rem; background: #f0f7f0; border-radius: 8px; margin-top: 2rem;">
-        <h3 style="color: #2c5282; margin-bottom: 1rem;">Thank You!</h3>
-        <p>Your message has been received. We'll get back to you shortly.</p>
-    </div>
 </body>
 </html> 
