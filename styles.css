@@ -35,7 +35,7 @@ body {
     width: 100%;
     top: 0;
     z-index: 1000;
-    height: 60px; /* Fixed height */
+    height: 60px;
 }
 
 .nav-container {
@@ -73,9 +73,13 @@ body {
 /* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-    padding: 10rem 1.5rem 6rem;
+    padding: 120px 1.5rem 6rem;
     text-align: center;
     color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero-content h2 {
@@ -250,7 +254,7 @@ button:hover {
 /* Responsive Design */
 @media (max-width: 768px) {
     .header {
-        height: 50px; /* Smaller height on mobile */
+        height: 50px;
     }
 
     .nav-container {
@@ -271,12 +275,13 @@ button:hover {
     }
 
     .hero-section {
-        padding: 6rem 1rem 4rem;
-        min-height: auto;
+        padding: 80px 1rem 4rem;
+        min-height: 100vh;
     }
 
     .hero-content {
-        padding: 0 1rem;
+        padding: 0;
+        width: 100%;
     }
 
     .hero-content h2 {
@@ -288,6 +293,7 @@ button:hover {
     .hero-subtitle {
         font-size: 1rem;
         margin-bottom: 1.5rem;
+        padding: 0 1rem;
     }
 
     .coverage-grid {
@@ -578,9 +584,9 @@ html {
     }
 }
 
-/* Ensure proper spacing for the first section after header */
+/* Remove the main padding-top since we'll handle spacing in hero section */
 main {
-    padding-top: 60px; /* Height of the header */
+    padding-top: 0;
 }
 
 @media (max-width: 768px) {
