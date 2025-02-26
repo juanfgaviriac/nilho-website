@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'MX': { url: 'https://cuponhub.com.mx' },  // Mexico
                 'CO': { url: 'https://cuponhub.com.co' },  // Colombia
                 'AR-2': { url: 'https://cuponhub.com.ar' }, // Argentina
-                'AE': { url: 'https://cuponhub.ae' }       // UAE (added)
+                'AE': { url: 'https://couponhub.ae' }       // UAE
             };
 
             // Add styles to the SVG
