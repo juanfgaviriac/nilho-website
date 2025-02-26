@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'PT': { url: 'https://cupaohub.pt' },      // Portugal
                 'MX': { url: 'https://cuponhub.com.mx' },  // Mexico
                 'CO': { url: 'https://cuponhub.com.co' },  // Colombia
-                'AR-2': { url: 'https://cuponhub.com.ar' }   // Argentina
+                'AR-2': { url: 'https://cuponhub.com.ar' }, // Argentina
+                'AE': { url: 'https://cuponhub.ae' }       // UAE (added)
             };
 
             // Add styles to the SVG
@@ -37,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 path[id="PT"],
                 path[id="MX"],
                 path[id="CO"],
-                path[id="AR-2"] {   
+                path[id="AR-2"],
+                path[id="AE"] {   
                     fill: #37447E !important;
                     cursor: pointer;
                 }
@@ -45,7 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 path[id="PT"]:hover,
                 path[id="MX"]:hover,
                 path[id="CO"]:hover,
-                path[id="AR-2"]:hover {
+                path[id="AR-2"]:hover,
+                path[id="AE"]:hover {
                     fill: #4B61DC !important;
                 }
             `;

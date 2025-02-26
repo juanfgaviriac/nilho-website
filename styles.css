@@ -275,13 +275,14 @@ button:hover {
     }
 
     .hero-section {
-        padding: 80px 1rem 4rem;
-        min-height: 100vh;
+        padding-top: 70px;
+        min-height: calc(100vh - 50px);
+        padding-bottom: 2rem;
     }
 
     .hero-content {
-        padding: 0;
         width: 100%;
+        padding: 0 1rem;
     }
 
     .hero-content h2 {
@@ -302,6 +303,10 @@ button:hover {
     
     .map-container {
         height: 300px;
+    }
+
+    main {
+        padding-top: 0;
     }
 }
 
