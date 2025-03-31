@@ -1,72 +1,126 @@
-// Remove all previous map code and replace with this:
+// Modern interactive map implementation
 document.addEventListener('DOMContentLoaded', function() {
     const mapContainer = document.getElementById('map');
+    let tooltip = null; // Variable to hold the tooltip element
+
+    // Function to create/update tooltip with improved styling
+    const createTooltip = () => {
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.className = 'map-tooltip';
+            tooltip.style.position = 'absolute';
+            tooltip.style.zIndex = '1010';
+            tooltip.style.transition = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translateY(10px)';
+            tooltip.style.pointerEvents = 'none';
+            document.body.appendChild(tooltip);
+        }
+    };
+
+    // Function to show tooltip with enhanced animation
+    const showTooltip = (event, text) => {
+        createTooltip();
+        tooltip.textContent = text;
+        tooltip.style.left = `${event.pageX + 15}px`;
+        tooltip.style.top = `${event.pageY + 15}px`;
+        // Use setTimeout to trigger the animation
+        setTimeout(() => {
+            tooltip.style.opacity = '1';
+            tooltip.style.transform = 'translateY(0)';
+        }, 10);
+    };
+
+    // Function to hide tooltip
+    const hideTooltip = () => {
+        if (tooltip) {
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translateY(10px)';
+        }
+    };
     
     // Use the provided SVG map
     fetch('world (1).svg')
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(svgContent => {
             mapContainer.innerHTML = svgContent;
             
             const svg = mapContainer.querySelector('svg');
             svg.setAttribute('width', '100%');
             svg.setAttribute('height', '100%');
-            svg.style.backgroundColor = '#ffffff';
             
-            // Define our service countries with their paths using country codes
+            // Define our service countries with their paths AND names
             const serviceCountries = {
-                'ES': { url: 'https://cuponhub.es' },      // Spain
-                'PT': { url: 'https://cupaohub.pt' },      // Portugal
-                'MX': { url: 'https://cuponhub.com.mx' },  // Mexico
-                'CO': { url: 'https://cuponhub.com.co' },  // Colombia
-                'AR-2': { url: 'https://cuponhub.com.ar' }, // Argentina
-                'AE': { url: 'https://couponhub.ae' }       // UAE
+                'ES': { name: 'Spain', url: 'https://cuponhub.es' },      
+                'PT': { name: 'Portugal', url: 'https://cupaohub.pt' },      
+                'MX': { name: 'Mexico', url: 'https://cuponhub.com.mx' },  
+                'CO': { name: 'Colombia', url: 'https://cuponhub.com.co' },  
+                'AR-2': { name: 'Argentina', url: 'https://cuponhub.com.ar' }, 
+                'AE': { name: 'United Arab Emirates', url: 'https://couponhub.ae' }       
             };
 
-            // Add styles to the SVG
-            const style = document.createElement('style');
-            style.textContent = `
-                svg {
-                    stroke-width: 0.2;
-                }
-                path {
-                    fill: #f0f0f0;
-                    stroke: #ffffff;
-                    transition: fill 0.3s ease;
-                }
-                path[id="ES"],
-                path[id="PT"],
-                path[id="MX"],
-                path[id="CO"],
-                path[id="AR-2"],
-                path[id="AE"] {   
-                    fill: #37447E !important;
-                    cursor: pointer;
-                }
-                path[id="ES"]:hover,
-                path[id="PT"]:hover,
-                path[id="MX"]:hover,
-                path[id="CO"]:hover,
-                path[id="AR-2"]:hover,
-                path[id="AE"]:hover {
-                    fill: #4B61DC !important;
-                }
-            `;
-            document.head.appendChild(style);
-
-            // Add click handlers for service countries
-            const addClickHandler = (element, url) => {
+            // Add click and hover handlers for service countries
+            const setupCountryInteractions = (element, countryData) => {
                 if (element) {
-                    element.addEventListener('click', () => {
-                        window.open(url, '_blank');
+                    // Click handler with ripple effect animation
+                    element.addEventListener('click', (event) => {
+                        // Create ripple effect
+                        const ripple = document.createElement('div');
+                        ripple.style.position = 'absolute';
+                        ripple.style.width = '20px';
+                        ripple.style.height = '20px';
+                        ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                        ripple.style.borderRadius = '50%';
+                        ripple.style.transform = 'scale(0)';
+                        ripple.style.transformOrigin = 'center';
+                        ripple.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+                        ripple.style.zIndex = '1000';
+                        ripple.style.left = `${event.pageX}px`;
+                        ripple.style.top = `${event.pageY}px`;
+                        ripple.style.marginLeft = '-10px';
+                        ripple.style.marginTop = '-10px';
+                        document.body.appendChild(ripple);
+                        
+                        requestAnimationFrame(() => {
+                            ripple.style.transform = 'scale(30)';
+                            ripple.style.opacity = '0';
+                        });
+                        
+                        setTimeout(() => {
+                            ripple.remove();
+                            window.open(countryData.url, '_blank');
+                        }, 400);
+                    });
+                    
+                    // Mouseover handler (show tooltip)
+                    element.addEventListener('mouseover', (event) => {
+                        showTooltip(event, countryData.name);
+                    });
+
+                    // Mousemove handler (update tooltip position)
+                    element.addEventListener('mousemove', (event) => {
+                        if (tooltip && tooltip.style.opacity === '1') {
+                             tooltip.style.left = `${event.pageX + 15}px`; 
+                             tooltip.style.top = `${event.pageY + 15}px`;
+                        }
+                    });
+
+                    // Mouseout handler (hide tooltip)
+                    element.addEventListener('mouseout', () => {
+                        hideTooltip();
                     });
                 }
             };
 
-            // Add click handlers for each country using ID selectors
+            // Add interactions for each country using ID selectors
             Object.entries(serviceCountries).forEach(([countryCode, data]) => {
                 const countryPath = svg.querySelector(`path[id="${countryCode}"]`);
-                addClickHandler(countryPath, data.url);
+                setupCountryInteractions(countryPath, data);
             });
 
             // Remove any default fill colors that might interfere
@@ -78,21 +132,31 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error loading map:', error);
             mapContainer.innerHTML = '<p>Error loading map. Please try again later.</p>';
         });
-});
 
-// Add scroll animations
-const observerOptions = {
-    threshold: 0.1
-};
+    // Enhanced scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px' // Trigger slightly before elements come into view
+    };
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                
+                // Get any child elements with data-delay attributes and animate them sequentially
+                const delayedElements = entry.target.querySelectorAll('[data-delay]');
+                delayedElements.forEach(el => {
+                    const delay = parseInt(el.getAttribute('data-delay'));
+                    setTimeout(() => {
+                        el.classList.add('visible');
+                    }, delay);
+                });
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(element => {
+        observer.observe(element);
     });
-}, observerOptions);
-
-document.querySelectorAll('.fade-in').forEach(element => {
-    observer.observe(element);
 }); 
