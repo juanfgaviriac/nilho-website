@@ -537,6 +537,8 @@ body {
 #map svg path[id="MX"]:hover,
 #map svg path[id="CO"]:hover,
 #map svg path[id="AR-2"]:hover,
+#map svg path[id="CL"]:hover,
+#map svg path[id="CL-1"]:hover,
 #map svg path[id="AE"]:hover {
     fill: var(--primary-color-light) !important;
     stroke: var(--white);
@@ -1565,6 +1567,8 @@ html {
 #map svg path[id="MX"],
 #map svg path[id="CO"],
 #map svg path[id="AR-2"],
+#map svg path[id="CL"],
+#map svg path[id="CL-1"],
 #map svg path[id="AE"] {
     fill: var(--primary-color) !important; /* Use CSS variable */
     cursor: pointer;
@@ -1576,6 +1580,8 @@ html {
 #map svg path[id="MX"]:hover,
 #map svg path[id="CO"]:hover,
 #map svg path[id="AR-2"]:hover,
+#map svg path[id="CL"]:hover,
+#map svg path[id="CL-1"]:hover,
 #map svg path[id="AE"]:hover {
     fill: var(--primary-color-light) !important; /* Use CSS variable */
 }
