@@ -120,8 +120,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Add interactions for each country using ID selectors
             Object.entries(serviceCountries).forEach(([countryCode, data]) => {
-                const countryPath = svg.querySelector(`path[id="${countryCode}"]`);
-                setupCountryInteractions(countryPath, data);
+                let countryPath;
+                
+                // Special handling for Chile which has multiple paths
+                if (countryCode === 'CL') {
+                    countryPath = svg.querySelector(`path[id="CL"]`);
+                    if (countryPath) {
+                        setupCountryInteractions(countryPath, data);
+                    }
+                    // Also handle the second Chile path
+                    const chilePath2 = svg.querySelector(`path[id="CL-1"]`);
+                    if (chilePath2) {
+                        setupCountryInteractions(chilePath2, data);
+                    }
+                } else {
+                    countryPath = svg.querySelector(`path[id="${countryCode}"]`);
+                    setupCountryInteractions(countryPath, data);
+                }
             });
 
             // Remove any default fill colors that might interfere
