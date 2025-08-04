@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'MX': { name: 'Mexico', url: 'https://cuponhub.com.mx' },  
                 'CO': { name: 'Colombia', url: 'https://cuponhub.com.co' },  
                 'AR-2': { name: 'Argentina', url: 'https://cuponhub.com.ar' }, 
+                'CL': { name: 'Chile', url: 'https://www.cuponhub.cl' },
                 'AE': { name: 'United Arab Emirates', url: 'https://couponhub.ae' }       
             };
 
