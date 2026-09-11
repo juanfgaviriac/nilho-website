@@ -26,7 +26,7 @@
         <p class="eyebrow">Tu atención se queda contigo</p>
         <h1>Política de privacidad</h1>
         <p class="lede">Foco está diseñado para devolverte tiempo sin convertir tu atención en un producto. La selección de apps y sitios permanece en tu iPhone.</p>
-        <p class="updated">Última actualización: 4 de septiembre de 2026</p>
+        <p class="updated">Última actualización: 11 de septiembre de 2026</p>
 
         <div class="content">
             <section>
@@ -36,18 +36,21 @@
 
             <section>
                 <h2>2. Información que permanece en el dispositivo</h2>
-                <p>Foco guarda localmente los modos, rutinas, historial de sesiones, la comprobación guiada de tu primera sesión y la configuración necesaria para aplicar los bloqueos de Tiempo en Pantalla.</p>
+                <p>Foco guarda localmente los modos, rutinas, historial de sesiones, rachas, preferencias de recordatorios, la comprobación guiada de tu primera sesión y la configuración necesaria para aplicar los bloqueos de Tiempo en Pantalla. Los eventos limitados de uso descritos en la sección 2.1 también se envían al servidor cuando la medición está activada.</p>
                 <p>Apple entrega a Foco selecciones opacas para las apps, categorías y sitios que eliges. Foco no conoce ni envía a nuestros servidores los nombres de esas apps o sitios, ni tu actividad dentro de ellos.</p>
-                <p>El llavero de este iPhone guarda un comprobante de validación vinculado a tu tarjeta y cuenta para permitir inicios sin conexión durante siete días desde la última validación. También guarda el saldo de emergencias y los usos pendientes de sincronizar. Estos datos no se incluyen en el reporte del piloto.</p>
+                <p>El llavero de este iPhone guarda un comprobante de validación vinculado a tu tarjeta y cuenta para permitir inicios sin conexión durante siete días desde la última validación. También guarda el saldo de emergencias y los usos pendientes de sincronizar. Estos datos no se incluyen en los eventos de analítica.</p>
             </section>
 
-            <section id="piloto-voluntario">
-                <h2>2.1. Piloto voluntario</h2>
-                <p>Participar en el piloto es opcional y está desactivado por defecto. Puedes activarlo durante la configuración o en <strong>Ajustes → Piloto Foco</strong>. Tu decisión no cambia las funciones disponibles de la app.</p>
-                <p>Solo después de aceptar, Foco registra localmente la finalización de la configuración, las sesiones iniciadas y terminadas, tus confirmaciones de que una app quedó bloqueada y volvió a abrir, y los problemas que reportas durante la primera prueba. No incorpora sesiones iniciadas antes de tu consentimiento y conserva hasta 1.000 eventos.</p>
-                <p>El reporte muestra un código aleatorio del piloto, la fecha de inicio de la medición y cantidades por día y tipo de evento, con fechas en UTC. No incluye nombres ni selecciones de apps o sitios, nombres de modos, correo, identificadores de tu cuenta, identificadores individuales de sesiones ni datos de la tarjeta. El código permite distinguir reportes: si lo compartes por un canal que te identifica, como el correo, podemos asociarlo contigo.</p>
-                <p><strong>Nada se envía automáticamente.</strong> Puedes revisar el contenido exacto antes de compartirlo mediante la hoja de compartir de iOS. Tú eliges el destinatario y el servicio; ese servicio aplica sus propias condiciones. Si decides enviarnos una copia, la usamos para evaluar la configuración, entender el uso de Foco y mejorar la experiencia. Las confirmaciones son respuestas tuyas; el reporte no mide actividad dentro de otras apps ni tiempo de pantalla reducido.</p>
-                <p>Al desactivar el piloto se elimina el reporte guardado en este iPhone. Cerrar la sesión de tu cuenta o eliminarla también desactiva el piloto y elimina ese reporte local. Esto no elimina el historial que forma parte del funcionamiento normal de Foco ni copias ya compartidas. Para pedir que eliminemos una copia recibida por nuestro equipo, escribe a <a href="mailto:team@nilho.co?subject=Eliminar%20reporte%20del%20piloto%20Foco">team@nilho.co</a> e indica el código del reporte, sin enviar contraseñas ni tokens de la tarjeta.</p>
+            <section id="datos-de-uso">
+                <h2>2.1. Datos de uso para mejorar Foco</h2>
+                <p>A partir de la versión 1.0.3, Foco mide si las personas vuelven a enfocarse y si los recordatorios las ayudan a empezar. Esta medición está activada inicialmente y puedes desactivarla en <strong>Ajustes → Datos de uso</strong> sin perder funciones de la app.</p>
+                <p>Los eventos incluyen aperturas de Foco, finalización de la configuración, inicios y duración de sesiones manuales o de rutina, permisos y activación de recordatorios, programación, cancelación, entregas que iOS permite observar y aperturas de recordatorios. También incluyen tus respuestas a la comprobación de bloqueo y desbloqueo de la primera sesión. Cada evento contiene fecha, identificadores técnicos de evento, sesión o recordatorio y versión de la app.</p>
+                <p>Estos datos se vinculan al identificador de tu cuenta para medir retornos entre días y evitar contar varias veces una misma persona. Son datos <strong>seudonimizados, no anónimos</strong>. El panel administrativo muestra cantidades y cohortes agrupadas; no muestra nombres, correos ni eventos individuales.</p>
+                <p>No enviamos en estos eventos nombres o selecciones de apps y sitios, nombres de modos, tokens de tarjeta, correos, ubicación ni identificadores publicitarios. No medimos tu actividad dentro de otras apps ni afirmamos medir tiempo de pantalla reducido.</p>
+                <p>La app envía los eventos automáticamente mediante nuestra API y los guarda en Supabase. Sin conexión, conserva una cola local limitada a 2.000 eventos durante un máximo de 14 días y reintenta cuando vuelves a abrir Foco. La medición comienza con la nueva versión: no sube el historial anterior ni reportes del piloto.</p>
+                <p>Al desactivar <strong>Datos de uso</strong>, dejamos de registrar y enviar nuevos eventos y borramos los eventos pendientes en ese iPhone. La preferencia se aplica a ese dispositivo. Los eventos ya recibidos se eliminan después de 180 días. Conservamos las fechas de primera observación y primera sesión para calcular cohortes mientras haya actividad reciente; si no quedan eventos conservados, también eliminamos ese registro. Al eliminar tu cuenta se borran los eventos y el registro de cohorte asociado.</p>
+                <p>Los recordatorios siguen siendo opcionales y requieren el permiso de notificaciones de iOS. Su horario y la racha se calculan en el iPhone. iOS no permite verificar todas las entregas; distinguimos las programaciones, las entregas observadas y los toques en la notificación.</p>
+                <p>En versiones anteriores, el piloto era voluntario y sus reportes permanecían en el iPhone hasta que eligieras compartirlos. La nueva versión retira ese piloto y elimina sus datos locales. Para pedir que eliminemos una copia que antes enviaste al equipo, escribe a <a href="mailto:team@nilho.co">team@nilho.co</a>.</p>
             </section>
 
             <section>
@@ -64,7 +67,7 @@
 
             <section>
                 <h2>4. Para qué usamos la información</h2>
-                <p>La usamos únicamente para autenticar tu cuenta, validar tarjetas, mantener el límite de emergencias, ejecutar rutinas y Live Activities, proteger el servicio y responder solicitudes de soporte. Si eliges compartir con nosotros un reporte del piloto, también lo usamos para los fines descritos en la sección 2.1.</p>
+                <p>La usamos para autenticar tu cuenta, validar tarjetas, mantener el límite de emergencias, ejecutar rutinas y Live Activities, proteger el servicio y responder solicitudes de soporte. Los datos de uso descritos en la sección 2.1 nos permiten medir retención, detectar problemas de configuración y evaluar los recordatorios para mejorar el producto.</p>
                 <p>No vendemos datos personales ni los usamos para publicidad o seguimiento entre apps y sitios.</p>
             </section>
 
