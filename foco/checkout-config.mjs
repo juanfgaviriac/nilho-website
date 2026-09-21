@@ -10,9 +10,9 @@ export const FOCO_CHECKOUT = Object.freeze({
     shippingReturnsUrl: '', // TODO: published shipping, returns and warranty policy.
     currency: 'COP',
     offers: Object.freeze({
-        1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '', wompiUrl: '' }),
-        2: Object.freeze({ quantity: 2, subtotal: 200000, discount: 0, shipping: 0, sku: 'FOCO-02', badge: 'Más elegido', wompiUrl: '' }),
-        3: Object.freeze({ quantity: 3, subtotal: 300000, discount: 50000, shipping: 0, sku: 'FOCO-03', badge: 'Mejor valor', wompiUrl: '' }),
+        1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '', wompiUrl: '', sandboxUrl: 'https://checkout.wompi.co/l/test_sTaCFM' }),
+        2: Object.freeze({ quantity: 2, subtotal: 200000, discount: 0, shipping: 0, sku: 'FOCO-02', badge: 'Más elegido', wompiUrl: '', sandboxUrl: 'https://checkout.wompi.co/l/test_tgJotM' }),
+        3: Object.freeze({ quantity: 3, subtotal: 300000, discount: 50000, shipping: 0, sku: 'FOCO-03', badge: 'Mejor valor', wompiUrl: '', sandboxUrl: 'https://checkout.wompi.co/l/test_ql8j7i' }),
     }),
 });
 
@@ -36,7 +36,7 @@ export function paymentURL(quantity, config = FOCO_CHECKOUT) {
     try {
         const url = new URL(offer.wompiUrl);
         if (offer.wompiUrl !== url.href || url.origin !== 'https://checkout.wompi.co' || url.username || url.password ||
-            !/^\/l\/[A-Za-z0-9_-]+$/.test(url.pathname) || url.search || url.hash) return null;
+            !/^\/l\/[A-Za-z0-9_-]+$/.test(url.pathname) || /^\/l\/test_/i.test(url.pathname) || url.search || url.hash) return null;
         // Accidentally assigning one link to multiple quantities must fail closed.
         if (Object.values(config.offers).filter(item => item.wompiUrl === offer.wompiUrl).length !== 1) return null;
         return url.href;

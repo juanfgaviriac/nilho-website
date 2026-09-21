@@ -54,6 +54,15 @@ test('missing one offer link never falls back to another quantity', () => {
     assert.equal(paymentURL(2, config), config.offers[2].wompiUrl);
 });
 
+test('sandbox links cannot become production payment targets', () => {
+    for (const quantity of [1, 2, 3]) {
+        const config = configuredLinks();
+        config.offers[quantity].wompiUrl = FOCO_CHECKOUT.offers[quantity].sandboxUrl;
+        assert.equal(paymentURL(quantity, config), null);
+        assert.equal(paymentURL(quantity), null);
+    }
+});
+
 test('reusing one payment link across quantities fails closed', () => {
     const config = configuredLinks();
     config.offers[3].wompiUrl = config.offers[2].wompiUrl;

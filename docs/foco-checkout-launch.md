@@ -38,6 +38,18 @@ Required before deployment or enabling payments:
 
 ### Creating and verifying the Wompi links
 
+Sandbox offers were created through the Wompi merchant dashboard on 2026-09-21:
+
+- FOCO-01: <https://checkout.wompi.co/l/test_sTaCFM>
+- FOCO-02: <https://checkout.wompi.co/l/test_tgJotM>
+- FOCO-03: <https://checkout.wompi.co/l/test_ql8j7i>
+
+The dashboard confirmed all three exact totals, reusable links, shipping collection, matching SKUs and the configured return URL. No expiry or tax breakdown was supplied. Their public checkouts displayed test mode and the shipping form. No test transaction has been completed, and the return page has not been deployed. The URLs are stored as `sandboxUrl`, separate from the still-empty production `wompiUrl`; production routing explicitly rejects `test_` links. The website is still disabled for payments.
+
+The production FOCO-01 link `n2yplv`, created before explicitly activating sandbox, was deactivated and read back as inactive. Recheck it before reuse instead of creating a duplicate. Opening a new browser session can start in production: verify the explicit sandbox banner, not the generic link shown on the home screen.
+
+The owner authorized preparing production on 2026-09-21 and is considering the Wompi widget. Merchant approval, commercial policies, inventory decision and the end-to-end payment test remain unverified; do not treat that authorization as evidence that these facts have been supplied.
+
 Use the Wompi merchant dashboard or a trusted server-side environment, never a browser private key. `paymentLinkDefinition(quantity)` exports the intended payload without making any request. To inspect all three non-secret definitions locally:
 
 ```sh
