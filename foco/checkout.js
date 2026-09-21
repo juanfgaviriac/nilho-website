@@ -3,6 +3,52 @@ import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, offerName, formatCOP, payme
 const checkout = document.querySelector('#comprar');
 const options = document.querySelector('#offer-options');
 const pay = document.querySelector('#wompi-pay');
+const discountRow = document.querySelector('#summary-discount-row');
+const summary = document.querySelector('.order-summary');
+const summaryMovingRows = [document.querySelector('#summary-shipping-row'), document.querySelector('.summary-footer')];
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const summaryAnimations = new Set();
+const motionStyle = getComputedStyle(checkout);
+const motionTiming = { duration: parseFloat(motionStyle.getPropertyValue('--motion-layout')), easing: motionStyle.getPropertyValue('--ease-out').trim() };
+
+function settleSummaryMotion() {
+    for (const animation of summaryAnimations) animation.cancel();
+    summaryAnimations.clear();
+}
+
+function animateSummary(element, keyframes) {
+    const animation = element.animate(keyframes, motionTiming);
+    summaryAnimations.add(animation);
+    animation.onfinish = () => { summaryAnimations.delete(animation); };
+}
+
+// FLIP the shipping/footer from their current visual position, so interrupted
+// transitions continue smoothly. Only the expanding summary surface changes height.
+function captureSummary() {
+    const frame = { height: summary.getBoundingClientRect().height,
+        tops: summaryMovingRows.map(row => row.getBoundingClientRect().top) };
+    settleSummaryMotion();
+    return frame;
+}
+
+function transitionSummary(frame, showDiscount) {
+    const height = summary.getBoundingClientRect().height;
+    if (Math.abs(frame.height - height) > 0.5) {
+        animateSummary(summary, [{ height: `${frame.height}px` }, { height: `${height}px` }]);
+    }
+    summaryMovingRows.forEach((row, index) => {
+        const delta = frame.tops[index] - row.getBoundingClientRect().top;
+        if (Math.abs(delta) > 0.5) animateSummary(row, [{ transform: `translateY(${delta}px)` }, { transform: 'translateY(0)' }]);
+    });
+    if (showDiscount) animateSummary(discountRow, [{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'translateY(0)' }]);
+}
+
+checkout.addEventListener('keydown', () => {
+    checkout.dataset.motion = 'instant';
+    settleSummaryMotion();
+});
+checkout.addEventListener('pointerdown', () => { delete checkout.dataset.motion; });
+reducedMotion.addEventListener('change', event => { if (event.matches) settleSummaryMotion(); });
 let quantity = FOCO_CHECKOUT.defaultQuantity;
 const quantities = Object.keys(FOCO_CHECKOUT.offers).map(Number);
 const setText = (id, text) => { document.getElementById(id).textContent = text; };
@@ -22,7 +68,7 @@ for (const value of quantities) {
         <span class="offer-shipping">${offer.shipping ? `${formatCOP(offer.shipping)} de envío incluido` : 'Envío gratis'}</span>
         <span class="offer-saving">${offer.discount ? `Ahorras ${formatCOP(offer.discount)}` : '\u00a0'}</span>`;
     button.setAttribute('aria-label', `${offerName(value)}. Total ${formatCOP(offer.total)} COP. ${offer.shipping ? `Incluye ${formatCOP(offer.shipping)} de envío` : 'Envío gratis'}.${offer.discount ? ` Ahorras ${formatCOP(offer.discount)}.` : ''}${offer.badge ? ` ${offer.badge}.` : ''}`);
-    button.addEventListener('click', () => select(value));
+    button.addEventListener('click', event => select(value, true, event.detail > 0));
     button.addEventListener('keydown', event => {
         const index = quantities.indexOf(quantity);
         const next = { ArrowRight: quantities[(index + 1) % quantities.length], ArrowDown: quantities[(index + 1) % quantities.length],
@@ -36,7 +82,10 @@ for (const value of quantities) {
     options.append(button);
 }
 
-function select(value, announce = true) {
+function select(value, announce = true, animate = false) {
+    const canAnimate = animate && value !== quantity && !reducedMotion.matches && typeof summary.animate === 'function';
+    const frame = canAnimate ? captureSummary() : null;
+    if (!canAnimate) settleSummaryMotion();
     quantity = value;
     const offer = getOffer(quantity);
     for (const button of options.children) {
@@ -47,7 +96,8 @@ function select(value, announce = true) {
     setText('summary-count', offerName(quantity));
     setText('summary-product', `${offerName(quantity)} Foco NFC`);
     setText('summary-subtotal', formatCOP(offer.subtotal));
-    setText('summary-discount', offer.discount ? `−${formatCOP(offer.discount)}` : formatCOP(0));
+    discountRow.hidden = offer.discount === 0;
+    setText('summary-discount', offer.discount ? `−${formatCOP(offer.discount)}` : '');
     setText('summary-shipping', offer.shipping ? formatCOP(offer.shipping) : 'Envío gratis');
     setText('summary-total', formatCOP(offer.total));
     pay.disabled = !paymentURL(quantity);
@@ -57,6 +107,7 @@ function select(value, announce = true) {
     url.searchParams.set('text', `Hola, quiero información sobre ${offerName(quantity)} Foco. Total: ${formatCOP(offer.total)} COP. ¿Me ayudan?`);
     whatsapp.href = url.href;
     whatsapp.hidden = false;
+    if (frame) transitionSummary(frame, offer.discount > 0);
     if (announce) setText('checkout-announcement', `${offerName(quantity)}. Total ${formatCOP(offer.total)} COP.${offer.shipping ? ' Envío incluido.' : ' Envío gratis.'}${offer.discount ? ` Ahorras ${formatCOP(offer.discount)}.` : ''}`);
 }
 

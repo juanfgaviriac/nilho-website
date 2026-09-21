@@ -14,9 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=checkout-1">
-    <link rel="stylesheet" href="/foco/checkout.css?v=1">
+    <link rel="stylesheet" href="/foco/checkout.css?v=2">
     <script src="/foco/landing.js" defer></script>
-    <script type="module" src="/foco/checkout.js?v=1"></script>
+    <script type="module" src="/foco/checkout.js?v=2"></script>
 </head>
 <body>
     <a class="skip-link" href="#contenido">Ir al contenido</a>
@@ -142,14 +142,16 @@
                     <p class="summary-product" id="summary-product">Tarjeta Foco</p>
                     <dl class="summary-lines">
                         <div><dt>Subtotal</dt><dd id="summary-subtotal">—</dd></div>
-                        <div><dt>Descuento del pack</dt><dd id="summary-discount">—</dd></div>
-                        <div><dt>Envío a Colombia</dt><dd id="summary-shipping">—</dd></div>
+                        <div id="summary-discount-row" hidden><dt>Descuento del pack</dt><dd id="summary-discount"></dd></div>
+                        <div id="summary-shipping-row"><dt>Envío a Colombia</dt><dd id="summary-shipping">—</dd></div>
                     </dl>
-                    <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
-                    <p class="checkout-notice" id="payment-notice">Vista previa · Pagos aún no disponibles.</p>
-                    <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
-                    <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
-                    <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Prefieres WhatsApp? Hablemos <span aria-hidden="true">↗</span></a>
+                    <div class="summary-footer">
+                        <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
+                        <p class="checkout-notice" id="payment-notice">Vista previa · Pagos aún no disponibles.</p>
+                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
+                        <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
+                        <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Prefieres WhatsApp? Hablemos <span aria-hidden="true">↗</span></a>
+                    </div>
                 </aside>
             </div>
             <p class="sr-only" id="checkout-announcement" role="status" aria-live="polite" aria-atomic="true"></p>

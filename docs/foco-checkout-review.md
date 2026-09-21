@@ -26,14 +26,22 @@ Local-only implementation on `codex/foco-checkout`, based on production commit `
 | Keyboard | Tab enters selected radio; arrows wrap; Home/End select endpoints; Space/Enter use native button activation; visible focus; live summary announces quantity/total. |
 | Assistive labels | Chrome and Safari accessibility trees expose three named radio controls with selected state, amount, shipping and savings. This is an accessibility-tree check, not a full spoken VoiceOver user study. |
 | State consistency | All totals verified after repeated selection; refresh resets to two; back navigation leaves selection and summary consistent (browser may reload or restore the page). |
-| Layout stability | At the same viewport the payment button position did not change when switching quantity. |
+| Layout stability | Discount row is omitted for one/two cards. Adding/removing it uses a 200 ms summary resize with translated shipping/footer content; totals update immediately. |
 | Entry points | Header, hero and closing CTA all reach/focus `#comprar`. |
 | Result | Valid synthetic ID displayed as text; `status=APPROVED` does not change neutral state. Missing/hostile IDs have support fallback; no network verification/fulfilment is simulated. |
 | Browser errors | No warnings or errors in the inspected Chrome/embedded-browser logs. |
-| Reduced motion | Existing reduced-motion rule retained; checkout transitions also explicitly disabled under the same preference. No new scrolling/animation timer. |
+| Reduced motion | CSS disables checkout transitions; JavaScript skips/cancels summary animations under the same preference. Verified in source; the OS preference was not changed during browser checks. |
 
 Screenshot artifacts are in the local task folder `.artifacts/checkout-review-2026-09-21/` under the Foco workspace: `desktop-1280.png`, `mobile-390.png`, `mobile-390-summary.png`, `mobile-320.png`, `chrome-390.png`, `chrome-320.png`, `safari-320.png`, `payment-result-320.png`; `tests.txt` contains the automated run.
 
 ## Remaining launch validation
 
 Real Wompi links/merchant configuration have not been supplied or verified. No end-to-end payment was attempted. Mobile checks use desktop responsive browser engines, not a physical iPhone payment session. Complete the launch checklist and one approved payment/fulfilment verification only after explicit authorization. See `foco-checkout-launch.md`.
+
+## Checkout motion refinement
+
+- Discount row is absent from layout and the accessibility tree for one/two cards; three cards show −$50.000.
+- Added 160 ms press feedback, a 200 ms radio indicator, fine-pointer hover lift, and interruptible summary expansion/collapse using native Web Animations. No dependency added.
+- Embedded browser: switched repeatedly among all offers, including rapid 1 → 3 → 2; totals and discount visibility settled correctly. Keyboard Home returned to one card with `data-motion="instant"` and computed transition duration `0s`.
+- Rechecked desktop 1280 px and mobile 390/320 px; no horizontal overflow, payment remains disabled, controls remain at least 44 px tall. No browser warnings/errors observed.
+- Latest screenshots: `desktop-motion-1280.png`, `mobile-motion-390.png`, `mobile-motion-320.png` in the same local artifact folder. Earlier Chrome/Safari evidence predates this motion refinement.

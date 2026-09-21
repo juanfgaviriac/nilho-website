@@ -7,6 +7,8 @@
     padding: var(--space-6) 0 var(--space-7);
     border-top: 1px solid var(--line);
     scroll-margin-top: 24px;
+    --motion-press: 160ms;
+    --motion-layout: 200ms;
 }
 .checkout-section:focus { outline: none; }
 .checkout-heading { display: flex; align-items: end; justify-content: space-between; gap: 3rem; margin-bottom: 3.5rem; }
@@ -19,8 +21,8 @@
 .checkout-card-art { width: 106px; aspect-ratio: 1.6; flex-shrink: 0; display: grid; place-items: center; background: var(--ink); color: var(--white); border-radius: 12px; box-shadow: 0 3px 0 #353533, 0 10px 22px #08080814; transform: rotate(-5deg); }
 .offer-legend { font-size: 0.92rem; margin: 0 0 1.1rem; font-weight: 600; }
 .offer-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.offer-option { min-width: 0; display: flex; flex-direction: column; text-align: left; padding: 20px 16px; border: 1px solid var(--line); border-radius: 22px; background: transparent; cursor: pointer; transition: border-color 180ms var(--ease-out), background 180ms var(--ease-out), box-shadow 180ms var(--ease-out); }
-.offer-option:hover { border-color: var(--ink-soft); }
+.offer-option { min-width: 0; display: flex; flex-direction: column; text-align: left; padding: 20px 16px; border: 1px solid var(--line); border-radius: 22px; background: transparent; cursor: pointer; transition: transform var(--motion-press) var(--ease-out), border-color var(--motion-layout) ease, background var(--motion-layout) ease, box-shadow var(--motion-layout) ease; }
+
 .offer-option[aria-checked="true"] { background: var(--white); border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
 .offer-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 26px; margin-bottom: 25px; }
 .offer-badge { font-size: 0.68rem; font-weight: 700; line-height: 1.4; background: var(--surface); color: var(--ink-soft); padding: 5px 8px; border-radius: 999px; }
@@ -28,7 +30,8 @@
 .offer-option[data-quantity="3"] .offer-badge { background: #e6efeb; color: #245e59; }
 .offer-radio { width: 18px; height: 18px; flex-shrink: 0; border: 1px solid #90908a; border-radius: 50%; display: grid; place-items: center; }
 .offer-option[aria-checked="true"] .offer-radio { border-color: var(--ink); }
-.offer-option[aria-checked="true"] .offer-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); }
+.offer-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); opacity: 0; transform: scale(0.5); transition: opacity var(--motion-press) var(--ease-out), transform var(--motion-layout) var(--ease-out); }
+.offer-option[aria-checked="true"] .offer-radio::after { opacity: 1; transform: scale(1); }
 .offer-name { font-weight: 600; font-size: 0.94rem; margin-bottom: 12px; }
 .offer-price { font-size: clamp(1.3rem, 1.9vw, 1.7rem); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.045em; white-space: nowrap; }
 .offer-total-label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); margin: 5px 0 20px; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -92,4 +95,17 @@
     .site-nav .nav-cta { min-height: 44px; }
     .result-actions { align-items: stretch; flex-direction: column; gap: 1rem; }
 }
-@media (prefers-reduced-motion: reduce) { .offer-option { transition: none; } }
+/* Fine-pointer hover stays off touch devices; keyboard actions remain immediate. */
+@media (hover: hover) and (pointer: fine) {
+    .offer-option:hover { transform: translateY(-2px); border-color: var(--ink-soft); }
+    .checkout-whatsapp span { transition: transform var(--motion-press) var(--ease-out); }
+    .checkout-whatsapp:hover span { transform: translate(2px, -2px); }
+}
+.checkout-section:not([data-motion="instant"]) .offer-option:active { transform: scale(0.99); }
+.checkout-section[data-motion="instant"] .offer-option,
+.checkout-section[data-motion="instant"] .offer-radio::after { transition: none; }
+.checkout-section[data-motion="instant"] .offer-option { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+    .offer-option, .offer-radio::after, .checkout-whatsapp span { transition: none; }
+    .checkout-section .offer-option, .checkout-whatsapp:hover span { transform: none !important; }
+}
