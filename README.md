@@ -17,7 +17,7 @@ All prices, discounts and shipping come from `foco/checkout-config.mjs`; totals/
 
 - Fill the three distinct `FOCO_CHECKOUT.offers[quantity].wompiUrl` values, after verifying each fixed amount, SKU, merchant, reusable link and `collect_shipping=true` in Wompi.
 - Confirm `redirectUrl`: proposed `https://nilho.co/foco/pago/`.
-- Complete merchant/RUT and receiving Bancolombia or Nequi onboarding directly with Wompi. Never commit or request secrets in chat.
+- Merchant choice: persona natural, as requested by the owner. Complete onboarding directly with Wompi using the individual seller's RUT and receiving account. Confirm the seller identity shown in checkout/policies matches Wompi and invoicing before launch. Never commit or request secrets in chat.
 - Confirm IVA/invoicing and approve shipping, returns and warranty copy; set `shippingReturnsUrl`. A visible TODO remains until the real policy exists.
 - Confirm `FOCO_WHATSAPP_URL` (previously supplied support number `+573027738407`) for business orders.
 - Confirm stock or explicitly accept launching without inventory enforcement.
