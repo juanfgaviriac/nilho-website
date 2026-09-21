@@ -37,3 +37,5 @@ This completes key provisioning, secure storage and the email smoke test only. W
 The connection review caught a deployment blocker: `CONTEXT` is a build-time variable and is not automatically supplied in Functions runtime. Both handlers now pass Netlify's trusted `context.deploy.context` into the commerce runtime. A configured `CONTEXT=production` cannot bypass a missing/preview deploy context. **52 tests and the static build passed** after this correction.
 
 References: [Netlify Functions environment variables](https://docs.netlify.com/build/functions/environment-variables/) and [Functions deploy context](https://docs.netlify.com/build/functions/api/#deploy).
+
+Netlify project `nilho` now has `WOMPI_ENVIRONMENT=prod` for Production and `test` for the other four contexts. `FOCO_CHECKOUT_ENABLED` and `FOCO_EMAIL_ENABLED` are explicitly `false` in every context. Saved values were read back through the UI. The existing production-only Resend secret remains unchanged. Wompi's browser session is signed out; its private/public/events credentials and webhook are still not connected. No deploy or production payment was made.
