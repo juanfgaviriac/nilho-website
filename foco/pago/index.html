@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <meta name="theme-color" content="#f7f7f4">
+    <title>Tu pago — Foco</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/foco/landing.css?v=checkout-1">
+    <link rel="stylesheet" href="/foco/checkout.css?v=1">
+    <script type="module" src="/foco/payment-result.js?v=1"></script>
+</head>
+<body>
+    <a class="skip-link" href="#contenido">Ir al contenido</a>
+    <header class="site-header">
+        <a class="brand" href="/foco/" aria-label="Foco, inicio"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>FOCO</span></a>
+        <nav class="site-nav" aria-label="Ayuda"><a class="nav-cta" href="/foco/soporte/">Soporte</a></nav>
+    </header>
+    <main id="contenido" class="payment-result">
+        <div class="result-mark" aria-hidden="true"><span class="foco-mark"><i></i><i></i><i></i><i></i></span></div>
+        <p class="eyebrow">Tu compra de Foco</p>
+        <h1>Estamos verificando tu pago</h1>
+        <p>Esta pantalla no confirma que tu pago haya sido aprobado. Nuestro equipo revisará su estado en Wompi antes de preparar el envío.</p>
+        <dl class="result-reference" id="result-reference" hidden><dt>Referencia de transacción</dt><dd id="transaction-id"></dd></dl>
+        <p id="missing-reference">No recibimos una referencia de transacción. Si ya intentaste pagar, contacta a soporte antes de volver a intentarlo.</p>
+        <noscript><p>Para consultar tu referencia, activa JavaScript o comparte con soporte el identificador que aparece en el comprobante de Wompi.</p></noscript>
+        <div class="result-actions">
+            <a class="button button--dark" id="result-whatsapp" hidden target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <span aria-hidden="true">↗</span></a>
+            <a href="/foco/soporte/">Contactar a soporte</a>
+        </div>
+        <p class="result-help">Después del despacho, te enviaremos la guía de seguimiento por WhatsApp.</p>
+        <a class="text-link" href="/foco/">Volver a Foco</a>
+    </main>
+    <footer class="site-footer">
+        <div class="footer-brand"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>FOCO</span></div>
+        <div class="footer-links"><a href="/foco/soporte/">Soporte</a><a href="/foco/privacidad/">Privacidad</a><a href="/foco/terminos/">Términos</a></div>
+        <p>© 2026 Nilho S.A.S.</p>
+    </footer>
+</body>
+</html>
