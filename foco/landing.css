@@ -138,17 +138,82 @@ button {
     width: min(calc(100% - 48px), 1280px);
     min-height: calc(100svh - 88px);
     margin: 0 auto;
-    padding: var(--space-6) 0 var(--space-7);
+    padding: clamp(2rem, 5vh, 4rem) 0 3rem;
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    grid-template-areas: "intro film" "details film";
+    grid-template-rows: 1fr 1fr;
     align-items: center;
-    gap: clamp(3rem, 8vw, 8rem);
+    column-gap: clamp(3rem, 7vw, 7rem);
+    row-gap: 1.5rem;
 }
 
-.hero-copy {
-    position: relative;
-    z-index: 2;
+.hero-intro { grid-area: intro; align-self: end; }
+.hero-details { grid-area: details; align-self: start; }
+.hero-intro h1 { margin-bottom: 0; }
+
+.product-film {
+    --film-paper: #ddd5c9;
+    --film-radius: 1.75rem;
+    grid-area: film;
+    width: min(100%, 430px, calc((100svh - 210px) * 9 / 16));
+    min-width: 320px;
+    margin: 0 auto;
 }
+
+.film-frame {
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--film-radius);
+    background: var(--film-paper);
+    box-shadow: 0 0 0 1px rgba(44, 34, 23, 0.06), 0 16px 44px -24px rgba(44, 34, 23, 0.24);
+}
+
+.film-frame video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.film-toolbar { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.85rem; }
+.film-toolbar[hidden], .film-error[hidden] { display: none; }
+.film-selector {
+    display: flex;
+    flex: 1;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+}
+.film-selector button {
+    flex: 1;
+    min-height: 36px;
+    padding: 0.45rem 0.55rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.73rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 180ms var(--ease-out), color 180ms var(--ease-out);
+}
+.film-selector button[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+.film-selector button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+.film-playback {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--paper);
+    cursor: pointer;
+}
+.film-playback:hover { background: var(--surface); }
+.film-playback svg { width: 20px; height: 20px; grid-area: 1 / 1; }
+.film-playback[data-playing="true"] .icon-play,
+.film-playback[data-playing="false"] .icon-pause { display: none; }
+.film-toolbar button:focus-visible { outline: 3px solid var(--forest); outline-offset: 3px; }
+.product-film figcaption { margin: 0.65rem 0 0; color: var(--muted); font-size: 0.72rem; line-height: 1.5; text-align: center; }
+.film-error { margin: 0.65rem 0 0; font-size: 0.8rem; line-height: 1.5; text-align: center; }
 
 .eyebrow {
     margin: 0 0 1.35rem;
@@ -238,36 +303,6 @@ h1 span {
     letter-spacing: 0.02em;
 }
 
-.product-stage {
-    position: relative;
-    min-height: min(720px, 72vw);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    background: var(--white);
-    overflow: hidden;
-}
-
-.product-stage::before {
-    content: "FOCO / 01";
-    position: absolute;
-    top: 1.5rem;
-    left: 1.75rem;
-    z-index: 3;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-}
-
-.app-shot {
-    position: absolute;
-    top: 5%;
-    left: 4%;
-    width: min(56%, 380px);
-    height: auto;
-    filter: drop-shadow(var(--shadow-device));
-}
-
 .phone-preview {
     position: relative;
     overflow: hidden;
@@ -275,10 +310,6 @@ h1 span {
     border-radius: 38px;
     background: var(--white);
     box-shadow: 0 0 0 1px #777b78, 0 0 0 3px #d2d4d1;
-}
-
-.phone-preview.app-shot {
-    position: absolute;
 }
 
 .phone-preview img {
@@ -311,46 +342,6 @@ h1 span {
     height: 0.5%;
 }
 
-.card-demo-wrap {
-    position: absolute;
-    right: 7%;
-    bottom: 12%;
-    z-index: 4;
-    display: grid;
-    justify-items: center;
-    gap: 1.2rem;
-}
-
-.foco-card {
-    position: relative;
-    width: clamp(250px, 28vw, 390px);
-    aspect-ratio: 1.58 / 1;
-    padding: 0;
-    border: 0;
-    border-radius: clamp(20px, 2.4vw, 32px);
-    background: #050505;
-    box-shadow: var(--shadow-card);
-    cursor: pointer;
-    isolation: isolate;
-    transition: transform 360ms var(--ease-out), box-shadow 360ms var(--ease-out);
-}
-
-.foco-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.foco-card:hover,
-.foco-card:focus-visible {
-    transform: translateY(-5px);
-    box-shadow: 0 3px 0 #242424, 0 38px 74px rgba(8, 8, 8, 0.25);
-}
-
-.foco-card:focus-visible,
 .button:focus-visible,
 .site-nav a:focus-visible,
 .brand:focus-visible,
@@ -358,32 +349,6 @@ h1 span {
 .site-footer a:focus-visible {
     outline: 3px solid var(--forest);
     outline-offset: 4px;
-}
-
-.card-status {
-    min-height: 34px;
-    padding: 0 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.88);
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-}
-
-.foco-card.is-active .tap-wave {
-    animation: tap 620ms var(--ease-out);
-}
-
-.tap-wave {
-    position: absolute;
-    inset: 38%;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    border-radius: 999px;
-    opacity: 0;
 }
 
 .foco-mark {
@@ -650,26 +615,7 @@ h1 span {
     border: 0;
 }
 
-@keyframes tap {
-    0% { opacity: 0; transform: scale(0.6); }
-    28% { opacity: 0.7; }
-    100% { opacity: 0; transform: scale(4.6); }
-}
-
 @media (max-width: 980px) {
-    .hero {
-        grid-template-columns: 1fr;
-        padding-top: var(--space-5);
-    }
-
-    .hero-copy {
-        max-width: 720px;
-    }
-
-    .product-stage {
-        min-height: 720px;
-    }
-
     .app-section {
         grid-template-columns: minmax(280px, 0.85fr) 1.15fr;
         gap: 3rem;
@@ -683,6 +629,13 @@ h1 span {
         grid-column: 2;
         justify-self: start;
     }
+}
+
+@media (min-width: 721px) and (max-width: 1050px) {
+    .hero { column-gap: 2rem; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr); }
+    .product-film { min-width: 280px; }
+    h1 { font-size: clamp(3.2rem, 6.5vw, 4.8rem); }
+    .hero-actions { flex-wrap: wrap; gap: 1rem; }
 }
 
 @media (max-width: 720px) {
@@ -714,38 +667,22 @@ h1 span {
 
     .hero {
         min-height: auto;
-        gap: 3.5rem;
+        padding: 1.75rem 0 3.5rem;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        grid-template-areas: "intro" "film" "details";
+        gap: 1.75rem;
     }
 
-    h1 {
-        font-size: clamp(3.4rem, 17vw, 5.6rem);
-    }
+    .hero-intro { text-align: center; }
+    .hero-intro .eyebrow { margin-bottom: 1rem; font-size: 0.61rem; }
+    h1 { font-size: clamp(2.6rem, 10.8vw, 4.7rem); line-height: 0.98; }
+    .hero-details { max-width: 460px; margin: 0 auto; text-align: center; }
+    .hero-lede { margin-bottom: 1.4rem; }
+    .product-film { width: min(100%, clamp(270px, calc((100svh - 325px) * 9 / 16), 340px)); min-width: 0; --film-radius: 1.4rem; }
 
-    .hero-actions {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .product-stage {
-        min-height: 590px;
-        border-radius: 2.4rem;
-    }
-
-    .app-shot {
-        top: 5%;
-        left: -2%;
-        width: 66%;
-    }
-
-    .card-demo-wrap {
-        right: 5%;
-        bottom: 10%;
-    }
-
-    .foco-card {
-        width: min(66vw, 290px);
-    }
+    .hero-actions { justify-content: center; flex-wrap: wrap; gap: 1rem; }
+    .microcopy { font-size: 0.68rem; }
 
     .section-heading {
         grid-template-columns: 1fr;
