@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/foco/landing.css">
+    <link rel="stylesheet" href="/foco/landing.css?v=1.0.5">
     <script src="/foco/landing.js" defer></script>
 </head>
 <body>
@@ -45,7 +45,9 @@
             </div>
 
             <section class="product-stage reveal" aria-label="Tarjeta Foco junto a la aplicación">
-                <img class="app-shot" src="/foco/assets/foco-en-foco.webp" alt="Una sesión activa de Foco en un iPhone" width="642" height="1389">
+                <div class="app-shot phone-preview">
+                    <img src="/foco/assets/foco-en-foco-1-0-5.webp" alt="Foco actual: sesión activa, racha diaria y tres desbloqueos de emergencia" width="786" height="1704" fetchpriority="high">
+                </div>
                 <div class="card-demo-wrap">
                     <button class="foco-card" type="button" aria-pressed="false" aria-describedby="card-status">
                         <span class="foco-mark foco-mark--card" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
@@ -84,25 +86,28 @@
         <section class="app-section" id="la-app" aria-labelledby="app-title">
             <div class="time-visual reveal">
                 <div class="time-frame">
-                    <img src="/foco/assets/foco-mi-tiempo.webp" alt="Calendario de tiempo protegido dentro de Foco" width="642" height="1389" loading="lazy">
+                    <div class="phone-preview">
+                        <img src="/foco/assets/foco-mi-tiempo-1-0-5.webp" alt="Mi tiempo en Foco: gráfica de los últimos 30 días, barras apiladas por modo y acceso al historial de sesiones" width="786" height="1704" loading="lazy" decoding="async">
+                    </div>
                 </div>
+                <p class="screenshot-caption">Capturas de la app con datos de ejemplo.</p>
             </div>
             <div class="app-copy reveal">
-                <p class="eyebrow">Lo que volvió a ti</p>
-                <h2 id="app-title">Tu progreso no se mide en culpa.</h2>
-                <p class="app-lede">Foco muestra el tiempo que protegiste, no una lista de todo lo que hiciste mal.</p>
+                <p class="eyebrow">Mi tiempo</p>
+                <h2 id="app-title">Tu progreso,<br>a tu ritmo.</h2>
+                <p class="app-lede">Mira cuándo encuentras tu foco, cómo repartes el tiempo entre tus modos y las sesiones que has hecho.</p>
                 <dl class="feature-list">
                     <div>
-                        <dt>Modos</dt>
-                        <dd>Bloquea distracciones o permite solo lo esencial.</dd>
+                        <dt>Cada modo</dt>
+                        <dd>Gráficas apiladas para ver cuánto tiempo dedicas a trabajar, leer o descansar.</dd>
                     </div>
                     <div>
-                        <dt>Rutinas</dt>
-                        <dd>Programa momentos de enfoque que empiezan solos.</dd>
+                        <dt>A tu escala</dt>
+                        <dd>Explora tu semana, los últimos 30 días o el promedio diario de cada mes del año.</dd>
                     </div>
                     <div>
-                        <dt>Tu tiempo</dt>
-                        <dd>Un calendario simple para ver lo que recuperaste.</dd>
+                        <dt>Cada sesión</dt>
+                        <dd>Vuelve a períodos anteriores y consulta todo el historial guardado en tu iPhone.</dd>
                     </div>
                 </dl>
             </div>
