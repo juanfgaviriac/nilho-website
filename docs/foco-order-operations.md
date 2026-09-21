@@ -4,17 +4,16 @@ Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 
 
 ## Antes de habilitar compras
 
-1. Cotizar desde Bogotá con peso y medidas del paquete completo. Recomendación: comparar en [Envia.com](https://help.envia.com/como-cotizar-un-envio/) y escoger el servicio de menor costo que cumpla el plazo y cobertura. No se ha comprado una guía ni comprobado una tarifa real; el precio depende de destino, peso, dimensiones y cargos de protección/valor declarado aplicables. Las medidas 86 × 54 mm son de la tarjeta, no del paquete.
-2. Confirmar tratamiento tributario de esta venta personal. La [Facturación Gratuita DIAN](https://www.dian.gov.co/impuestos/factura-electronica/facturacion-gratuita/paginas/default.aspx) es la opción propuesta si se emitirá factura electrónica. No se realizó habilitación tributaria ni se determinó exención de facturar. El comprobante Wompi prueba el pago; no sustituye una factura exigible. El documento soporte en adquisiciones a no obligados corresponde al adquirente obligado cuando aplique, no es el nombre de nuestro recibo comercial.
-3. Completar `commerce-config.mjs`: transportadora/estrategia operativa confirmada, `billingConfirmed` y `consentEvidenceVerified`. Mantener `productionEnabled: false` hasta revisión final y publicación de condiciones/retorno.
-4. Verificar aceptación: inspección de Wompi realizada. El formulario permite hasta dos referencias de texto obligatorias; no expone una casilla nativa de condiciones del vendedor ni edición de estos campos en los enlaces ya creados. Hace falta probar en sandbox que respuestas y versión de condiciones queden consultables junto a una transacción. **No se probó aún persistencia ni atribución a un pedido.** Una casilla local o activar un booleano no suple esa evidencia. Si estos campos no dan un flujo adecuado, proponer el registro mínimo del lado del servidor antes de ampliar infraestructura. No cambiar los tres enlaces de producción hasta verificar el reemplazo.
-5. Confirmar aprobación del comercio y proceso operativo de reembolsos con Wompi. El panel todavía muestra saldo en revisión; no se verificó liquidación bancaria.
+1. Configurar el flujo por pedido y Resend siguiendo el [runbook vigente](foco-checkout-launch.md). Verificar una compra sandbox, la aceptación almacenada y la entrega real de un solo comprobante antes de publicar.
+2. El usuario confirmó aprobación de Wompi y decidió mantener los precios sin IVA añadido. El correo es un comprobante de compra, no una factura electrónica; no determina una exención tributaria ni reemplaza una factura exigible.
+3. El usuario aplazó la selección de transportadora. Despacho desde Bogotá, guía por WhatsApp y plazos aprobados se mantienen. Escoger el servicio al despachar, según peso/medidas reales y destino; no se ha cotizado ni comprado una guía.
+4. Retirar los antiguos enlaces reutilizables durante el cambio aprobado. No hay despliegue ni envío de correo real realizado desde esta implementación.
 
 ## Por cada pedido
 
 - Verificar APPROVED, COP, link/SKU, cantidad e importe en Wompi. Comprobar por ID completo que no existe despacho previo ni reembolso/reversión.
-- Asignar referencia `FOCO-[ID Wompi]`. Guardar copia de condiciones vigentes y evidencia de aceptación vinculada al pago.
-- Confirmar el pedido al comprador con la [plantilla de comprobante](templates/confirmacion-pedido.md), preferentemente dentro del día calendario siguiente a recibirlo. Adjuntar factura cuando proceda. No confundir el mensaje neutro de retorno con este comprobante.
+- Usar la referencia `FOCO-[UUID pedido]` generada por el servidor, vinculada al SKU del enlace y al ID Wompi aprobado. Consultar en el registro privado la fecha/versiones de aceptación y sus copias archivadas.
+- Verificar que Resend haya entregado el comprobante automático. Si requiere atención manual, usar la [plantilla de comprobante](templates/confirmacion-pedido.md) solo después de descartar un envío anterior; resolver dentro del día calendario siguiente a recibir el pedido. Adjuntar factura cuando proceda. No confundir el mensaje neutro de retorno con este comprobante.
 - Descontar unidades del stock disponible. Mantener aparte las destinadas a garantías y las comprometidas en pedidos aprobados.
 - Verificar la lectura/validación Foco de cada tarjeta antes de empacar. Registrar su identificador interno sin publicar ni enviar el token NFC.
 - Generar guía con la dirección de Wompi, preparar el paquete, despachar y enviar [seguimiento](templates/seguimiento-pedido.md) por WhatsApp.
@@ -22,7 +21,7 @@ Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 
 
 ## Inventario manual
 
-Pausar TODOS los enlaces de producción en Wompi y deshabilitar el checkout al llegar a cinco tarjetas disponibles. El contador estático no se descuenta automáticamente: se actualiza por el operador. Pausar solo la web no cierra enlaces compartidos directamente.
+Pausar los enlaces de venta pendientes en Wompi y deshabilitar la creación de nuevos enlaces con `FOCO_CHECKOUT_ENABLED=false` al llegar a cinco tarjetas disponibles. El contador estático no se descuenta automáticamente: se actualiza por el operador. Pausar solo la web no cierra enlaces compartidos directamente.
 
 Antes de reabrir, revisar pagos pendientes que podrían aprobarse y conciliarlos con el stock. El margen de cinco reduce, pero no elimina, ventas simultáneas. No anunciar “últimas unidades” con cifras no actualizadas. Sin preventas automáticas. Si no se puede entregar una compra aprobada, contactar y aplicar las condiciones de reintegro; no imponer una nueva fecha.
 
@@ -35,3 +34,13 @@ Distinguir retracto, garantía y reversión. Para reembolsar, comprobar estado a
 ## Mensajes y privacidad
 
 Estas plantillas son borradores de operación: la tarea no envía mensajes al comprador. Compartir únicamente datos del pedido con su titular y lo necesario para la entrega con la transportadora. No usar direcciones/teléfonos para marketing sin autorización separada. Guardar el registro operativo con acceso restringido y conservarlo según finalidad/obligación aplicable.
+
+## Comprobantes y reintentos
+
+Revisar a diario Wompi APPROVED frente a `paid/` y `receipts/` del almacén privado `foco-orders-prod`. Un ID de Resend guardado significa que Resend aceptó el correo, no que llegó al buzón: consultar entrega/rebote en Resend. El servidor no guarda dirección postal ni datos del instrumento de pago; esos se consultan en Wompi.
+
+Ante `pending`, `sending` vencido o `manual_review`, comprobar el ID de transacción y los registros de Resend antes de reenviar. Dentro de la ventana segura, reenviar el evento original desde Wompi conserva el mismo payload y clave idempotente. Pasadas 23 horas se exige revisión manual para evitar duplicados; no borrar el registro de envío como mecanismo de reintento. Rebotes o direcciones erróneas requieren contactar al titular por el canal de soporte y verificar la corrección; no redirigir el recibo a un email recibido sin verificar.
+
+Los enlaces vencen en una hora, pero un pago ya iniciado puede seguir pendiente y aprobarse más tarde. Conciliarlo antes de liberar stock. Los pedidos `creating` sin enlace retornado son intentos ambiguos: buscar el UUID en Wompi antes de recrearlos. El margen de cinco tarjetas y el vencimiento no constituyen reservas ni eliminan sobreventa.
+
+Restringir el acceso del equipo a Netlify/Wompi/Resend. No exportar los registros a este repositorio ni imprimirlos en logs. Revisar y retirar intentos abandonados y datos de recibos cuando dejen de ser necesarios, preservando los soportes de operaciones y autorizaciones sujetos a conservación. No hay automatización de marketing ni vinculación con usuarios de la app.

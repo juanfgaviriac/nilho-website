@@ -1,3 +1,5 @@
+> Evidencia histórica de la interfaz y enlaces reutilizables. El flujo vigente es por pedido; consultar `foco-checkout-launch.md` y `foco-order-receipts-review.md`.
+
 # Foco checkout review — 21 September 2026
 
 ## Commercial readiness update

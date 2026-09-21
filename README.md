@@ -1,34 +1,49 @@
-# Nilho static website
+# Nilho website
 
-Plain HTML/CSS/JS on Netlify. Foco: `/foco/`. No build step or framework.
+Plain HTML/CSS/JS on Netlify. Foco: `/foco/`. The static design, NFC demo and storytelling remain intact. A small Node build copies public assets to `dist/`; two Netlify Functions handle order creation and Wompi callbacks. No frontend framework or marketing SDK was added.
 
-## Foco checkout (preview only)
+## Local checks
 
 ```sh
+npm ci
+npm test
+npm run build
+npm run preview:receipt
 python3 -m http.server 8766 --bind 127.0.0.1
-node --test tests/foco-checkout.test.mjs
 ```
 
-Preview: `http://127.0.0.1:8766/foco/#comprar`.
+Checkout: `http://127.0.0.1:8766/foco/#comprar`. Synthetic email preview: `http://127.0.0.1:8766/.artifacts/receipt-preview.html`. Python serves static files only, not the API. The receipt preview is excluded from the production build. Never expose this source-directory development server publicly.
 
-All prices, discounts and shipping come from `foco/checkout-config.mjs`; totals/centavos are derived. Two cards are selected by default. Wompi handles shipping details. There is no customer database or new analytics SDK.
+## Current purchase flow — prepared, not deployed
 
-**Production links:** created and verified on 2026-09-21, then mapped to each offer in `checkout-config.mjs`. They are active in Wompi; website payments remain gated (`productionEnabled: false`) until the remaining launch requirements are complete. No real payment was performed.
+The owner approved **one server-created, single-use Wompi link per order**, replacing three reusable links. Amounts still come from `foco/checkout-config.mjs`: 11000000, 20000000 and 25000000 centavos. Wompi collects the address once. Links expire after one hour; their SKU is the order UUID, while the stored order and link description retain FOCO-01/02/03.
 
-**Approved and prepared:** dispatch in 1–2 business days, delivery in 3–10 including dispatch, 12-month warranty, statutory withdrawal/refund information, order privacy, and a manual stock pause at five cards. The owner supplied seller identity, public addresses, Bogotá origin, 30 available cards and PVC NTAG215 specifications (86 × 54 mm).
+The server records accepted policy versions, timestamp, archived HTML and hashes with the order before creating the link. It verifies Wompi's callback signature and independently retrieves the transaction using the private API. Only an APPROVED transaction matching the saved link, environment, COP amount and order can generate a Resend receipt. Redirect parameters never confirm payment. Netlify Blobs contains a minimal private order/consent/receipt ledger; there is no customer-account database or duplicated shipping form.
 
-**Still required before publication:**
+**Not live:** `productionEnabled` and `consentEvidenceVerified` remain false; server email/checkout flags default off. Tests use synthetic fixtures and mocked providers. No actual transaction, email, key creation or deployment was performed. `nilho.co` is verified in the owner's existing Resend account. Merchant approval was confirmed by the owner. Shipping-carrier selection is deferred by the owner; the customer is told the carrier with tracking. No IVA is added to the agreed prices; the email is a purchase receipt, not a DIAN invoice or a finding of tax exemption.
 
-- Complete `foco/commerce-config.mjs`: shipping carrier/operating arrangement, billing confirmation, and verified transaction-linked consent evidence. These are separate from the disabled publication flag.
-- Wompi's required text-reference fields were inspected; an actual sandbox transaction readback is still needed. The website checkbox is not represented as persisted order evidence.
-- Confirm package weight/dimensions and shipping quotes. The suggested comparison service is Envia.com; no carrier, guide or paid service was purchased.
-- Verify Wompi merchant approval/refund operation. No real payment or payout was performed.
-- Publish `/foco/compra/`, `/foco/compra/privacidad/` and `/foco/pago/` with checkout after final review. No push to auto-deploying `main` yet.
+## Configuration still needed
 
-`checkout-config.mjs` owns prices; `commerce-config.mjs` owns public seller/product/stock information. `paymentURL` requires both the publication flag and complete commerce configuration. The UI additionally requires current explicit consent. Stock is a manual snapshot, never a reservation system.
+Set these in **Netlify → this site's environment variables → Functions**, with separate production and deploy-preview values. Never put secrets in client code, git, chat or logs. `.env.example` contains names only.
 
-[Order operations and message templates](docs/foco-order-operations.md)
+| Variable | Purpose |
+| --- | --- |
+| `WOMPI_ENVIRONMENT` | `test` in sandbox/preview; `prod` only in Netlify production context |
+| `WOMPI_PRIVATE_KEY` | Server payment-link creation and authenticated transaction lookup |
+| `WOMPI_PUBLIC_KEY` | Verify each created link belongs to this merchant |
+| `WOMPI_EVENTS_SECRET` | Verify Wompi callback checksum; same environment as keys |
+| `RESEND_API_KEY` | Dedicated sending-only key scoped to the verified `nilho.co` domain |
+| `FOCO_CHECKOUT_ENABLED` | `false` until reviewed; server kill switch |
+| `FOCO_EMAIL_ENABLED` | `false` until an authorized send test succeeds |
 
-`/foco/pago/` displays a neutral reference, never payment approval. Fulfil **only** after the merchant verifies Wompi `APPROVED`, the correct amount/product and no previous dispatch.
+Netlify Blobs authenticates automatically in hosted functions. Do not create or publish a storage token. Private stores are separated: `foco-orders-test` and `foco-orders-prod`. Runtime values must be available to Functions, not just Builds.
 
-[Link setup and fulfilment runbook](docs/foco-checkout-launch.md) · [Test evidence](docs/foco-checkout-review.md)
+Before launch: configure secrets and Wompi callback to `https://nilho.co/api/foco/wompi` (a separate preview URL for sandbox); verify actual sandbox transaction → stored consent → one delivered test receipt, including duplicate webhook replay; review the archived policies and fulfilment operation; retire the old reusable links; obtain final publication approval. Then set the client readiness flags and server flags together. Production keys cannot run in deploy previews. No paid plan should be purchased automatically.
+
+The final redirect is `https://nilho.co/foco/pago/`. It stays neutral and must be published with the checkout. [Launch runbook](docs/foco-checkout-launch.md) · [Order operations](docs/foco-order-operations.md).
+
+## Policy archives and prices
+
+`checkout-config.mjs` owns executable prices; `commerce-config.mjs` owns seller/product/stock information. `scripts/policies.mjs` generates fully rendered policy archives in `foco/compra/versiones/`. Build fails if existing archived content changes: bump the appropriate version and preserve the previous file. Receipts retain their original offer, seller and policy links even after prices change. Never overwrite an archive after a sale.
+
+Stock remains manual (30 initially, pause at five). It is **not** automatically reserved or decremented; pending payments and still-active links require reconciliation. Existing reusable production links remain active outside this website until retired explicitly. Disabling the website alone cannot stop them.

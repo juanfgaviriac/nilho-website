@@ -1,89 +1,38 @@
-# Nilho static website
+# Foco checkout launch runbook
 
-Plain HTML/CSS/JS hosted on Netlify. Foco lives at `/foco/`; no framework, build step, cart database, Wompi SDK or new analytics provider.
+## Current architecture
 
-## Foco checkout — private preview, not enabled for sales
+Owner approved single-use links per order on 21 September 2026. This supersedes the former three-reusable-links implementation. The page stays static; server code runs in Netlify Functions using a private Netlify Blobs ledger. Do not deploy before final approval.
 
-Run locally from this directory:
+1. Browser sends quantity, explicit acceptance, policy versions and a random attempt ID to `/api/foco/checkout`. It never supplies prices, buyer email or a redirect.
+2. Server stores order, exact offer/seller snapshot, accepted-at timestamp, policy versions and SHA256 hashes; archives fully rendered policies. Same attempt ID returns the existing link when safe. Ambiguous Wompi creation failures require review, not a second blind POST.
+3. Server creates and reads back a fixed COP Wompi link, `single_use=true`, `collect_shipping=true`, one-hour expiry and order UUID as SKU. Merchant public key, amount, currency, environment and redirect must match. Product SKU remains in description and saved order.
+4. Wompi calls `/api/foco/wompi`. Signature verification is followed by authenticated transaction lookup; email and link from unsigned callback fields are never trusted.
+5. An APPROVED matching order is durably claimed. The complete receipt payload is frozen, sent via Resend and its message ID saved. A lease and conditional writes protect concurrent callbacks; Resend's deterministic idempotency key protects ambiguous retries within 24 hours. Unresolved sends older than 23 hours require manual reconciliation, never automatic resend.
+6. Buyer returns to a neutral page. Fulfilment and tracking remain manual after dashboard verification.
 
-```sh
-python3 -m http.server 8766 --bind 127.0.0.1
-node --test tests/foco-checkout.test.mjs
-```
+## External setup still required
 
-Open `http://127.0.0.1:8766/foco/#comprar`. All purchase CTAs enter the inline checkout; two cards are selected initially. Arrow keys, Home/End, Space/Enter work in the radio group. Refresh returns to two; back/forward restoration reconciles the summary with the selected offer. No cart/customer data is stored. Wompi collects the shipping address once.
+- Dedicated Resend send-only key scoped to `nilho.co`, saved only as a Netlify Functions secret. `Foco <team@nilho.co>` is the sender and reply-to is `team@nilho.co`.
+- Wompi sandbox/private/public/events values in a sandbox deploy context; production values only in production. No secrets in git or chat. See `.env.example`.
+- Sandbox webhook points to the authorized sandbox preview `/api/foco/wompi`; production webhook points to `https://nilho.co/api/foco/wompi`. Inspect existing event destinations before modifying; do not break unrelated commerce.
+- Verify Netlify Functions can read the included policy archives and strongly consistent Blobs store. Check existing plan limits before enabling; do not buy a plan without permission.
+- Public client flags stay off and server flags default false until end-to-end readback and final approval. Enabling only the checkout server flag cannot bypass missing email configuration.
 
-### Current status — 21 September 2026
+## Required live acceptance
 
-The owner approved the commercial proposal and supplied seller identity/addresses, Bogotá dispatch, stock of 30, PVC NTAG215 and 86 × 54 mm dimensions. `/foco/compra/` and `/foco/compra/privacidad/` are implemented locally. See [current order operations](foco-order-operations.md) for the remaining shipping, billing and Wompi consent verification. No deployment occurred.
+For each of 1, 2 and 3 cards: create a sandbox order, read back Wompi's exact amount (11000000 / 20000000 / 25000000 cents), merchant, single use, shipping, SKU, redirect and expiry. Make one authorized sandbox test payment; inspect stored order/consent and archived policy. Verify one receipt in Resend and actual delivery to an approved recipient. Replay the callback and confirm no second message. Also verify declined/pending payment and expired link behavior. All current automated tests mock providers: they are not evidence of these external checks.
 
-### Launch configuration and remaining requirements
+Confirm the result page and versioned policy URLs resolve on the final domain. User reported Wompi approval; settlement and refund operation were not independently tested. Carrier is intentionally deferred; keep the approved delivery promise operational. No added IVA or invented exemption. Email is a commercial receipt, not an electronic tax invoice.
 
-The single source of truth is `foco/checkout-config.mjs`. Totals and centavos are calculated from the configured subtotal, discount and shipping. Do not put private keys, integrity secrets, bank account details or RUT documents in the repository, browser code or chat.
+## Legacy links to retire before launch
 
-| Offer / SKU | Product subtotal | Discount | Shipping | Final COP | Wompi centavos |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| 1 / FOCO-01 | 100,000 | 0 | 10,000 | 110,000 | 11000000 |
-| 2 / FOCO-02 | 200,000 | 0 | 0 | 200,000 | 20000000 |
-| 3 / FOCO-03 | 300,000 | 50,000 | 0 | 250,000 | 25000000 |
+These were created earlier and are no longer used anywhere in client routing. **They have not been deactivated by this implementation.** Existing active production IDs: `yUHYqh` (1), `YtP4V0` (2), `iqLMCM` (3). Sandbox IDs: `test_sTaCFM`, `test_tgJotM`, `test_ql8j7i`. The earlier `n2yplv` was already inactive. Legacy-link transactions are ignored by the new receipt handler because they lack a recorded order/consent mapping; handle them manually. Retire active reusable links during the approved switch, with readback.
 
-This table documents the approved requirements; executable prices exist only in the configuration and their independent test expectations. HTML contains no duplicate prices.
+## Deployment / stop
 
-Required before deployment or enabling payments:
+Publish only after explicit final approval. Use `npm ci && npm test && npm run build`; Netlify serves `dist/` and bundles `netlify/functions/`. Deploy previews must never receive production secrets. Check static asset coverage, callback response, neutral return page, policies and browser flow after deployment before declaring sales enabled.
 
-- **Production links configured:** all three `wompiUrl` values are mapped to verified active production links (see below). `productionEnabled` stays `false` until the remaining launch requirements are complete. Blank, invalid, sandbox or duplicated URLs fail closed.
-- **Redirect deployment:** all production links use `https://nilho.co/foco/pago/` (`redirectUrl`). Publish and verify this page with checkout before promoting the links. It is built locally, not deployed by this change.
-- **Merchant onboarding:** the owner selected **persona natural** for the initial launch. Complete the personal merchant registration directly with Wompi, using a receiving account in the merchant's name. Before enabling payment, verify the legal seller identity and show it in the purchase disclosures/policies consistently with Wompi and invoicing. The existing Nilho app/site branding does not establish the card seller's identity. The live merchant brand Foco and production mode were verified; final merchant/payout approval remains unverified. Wompi displayed that payments can be collected but funds stay in Wompi Cuenta pending merchant approval. Only the seller identity, NIT and business/returns address explicitly authorized for publication belong in the public configuration. Never commit RUT documents, unrelated personal identifiers or bank details.
-- **IVA / invoicing:** accountant to confirm treatment, any required legal customer fields and invoice process. Do not invent IVA or increase the advertised total. Add any approved tax breakdown in Wompi only after confirmation.
-- **Policies:** the approved shipping, returns and 12-month warranty copy is implemented at `/foco/compra/`, with separate purchase privacy at `/foco/compra/privacidad/`. `shippingReturnsUrl` points to the new page. Legacy app legal/support references now say three emergency unlocks. All remain local until final publication; the carrier and billing treatment still need confirmation. The local consent checkbox gates navigation but does not itself provide order-linked evidence; `consentEvidenceVerified` stays false pending a Wompi test or an approved alternative.
-- **WhatsApp:** `FOCO_WHATSAPP_URL` uses the previously supplied Foco support number `+573027738407`. Confirm it is the correct business contact and fulfilment channel. The constant is shared with the payment-result page. Links open a draft only; nothing is sent automatically.
-- **Stock:** 30 cards confirmed. Manual inventory and pausing all three Wompi links plus the website at five remaining were approved. `availableCards` is a manual snapshot, not automatic inventory enforcement; direct links and pending transactions must be reconciled. This static implementation does not reserve cards or prevent overselling.
-- **Final review / explicit approval:** complete merchant, link, policy, stock, browser and payment checks first. Only then enable `productionEnabled` and deploy with the owner's explicit approval. Do not push this work to the auto-deploying `main` branch before approval.
+Stop creation using `FOCO_CHECKOUT_ENABLED=false` and update public availability. This does not revoke issued links. Pause outstanding links in Wompi and reconcile pending transactions; leave the verified webhook/email processor running for already-approved orders. Never turn off confirmation handling just to stop new sales.
 
-### Creating and verifying the Wompi links
-
-Sandbox offers were created through the Wompi merchant dashboard on 2026-09-21:
-
-- FOCO-01: <https://checkout.wompi.co/l/test_sTaCFM>
-- FOCO-02: <https://checkout.wompi.co/l/test_tgJotM>
-- FOCO-03: <https://checkout.wompi.co/l/test_ql8j7i>
-
-The dashboard confirmed all three exact totals, reusable links, shipping collection, matching SKUs and the configured return URL. No expiry or tax breakdown was supplied. Their public checkouts displayed test mode and the shipping form. No test transaction has been completed, and the return page has not been deployed. The URLs are stored as `sandboxUrl`, separate from the production `wompiUrl`; production routing explicitly rejects `test_` links. The website is still disabled for payments.
-
-The earlier production FOCO-01 link `n2yplv` remains inactive and is excluded from the integration. Do not reuse it. Opening a new browser session can start in production: verify the explicit environment, not the generic link shown on the home screen.
-
-The owner explicitly authorized production links on 2026-09-21. The following links were created in production and read back as active in the merchant dashboard:
-
-| Offer / SKU | Production checkout | Fixed COP | Centavos |
-| --- | --- | ---: | ---: |
-| 1 / FOCO-01 | <https://checkout.wompi.co/l/yUHYqh> | 110,000 | 11000000 |
-| 2 / FOCO-02 | <https://checkout.wompi.co/l/YtP4V0> | 200,000 | 20000000 |
-| 3 / FOCO-03 | <https://checkout.wompi.co/l/iqLMCM> | 250,000 | 25000000 |
-
-For all three, saved details confirmed reusable links (not single use), shipping collection, matching SKU and `https://nilho.co/foco/pago/`. No expiry or tax breakdown was supplied. Each public checkout was opened read-only: the displayed fixed total matched the table, the shipping form was present and there was no test-mode banner. No buyer data was entered and no transaction was submitted. This verifies link configuration and initial checkout rendering, not payment settlement or the return journey.
-
-Production URLs are now mapped in the local configuration. The website remains undeployed and its payment button gated while carrier, IVA/invoicing, order-linked consent evidence and final launch review are incomplete. The return page also remains undeployed. The widget was discussed but not selected; this implementation continues to use fixed links.
-
-Use the Wompi merchant dashboard or a trusted server-side environment, never a browser private key. `paymentLinkDefinition(quantity)` exports the intended payload without making any request. To inspect all three non-secret definitions locally:
-
-```sh
-node --input-type=module -e "import { paymentLinkDefinition } from './foco/checkout-config.mjs'; console.log(JSON.stringify([1,2,3].map(q => paymentLinkDefinition(q)), null, 2))"
-```
-
-For every link: fixed exact `amount_in_cents` above, `currency: COP`, `single_use: false`, `collect_shipping: true`, correct `sku`, clear product name, confirmed `redirect_url`, active and no expiry. Omit taxes until confirmed. No custom customer fields are added; Wompi shipping already collects recipient phone/address. If more fields are actually needed, Wompi permits at most two custom references.
-
-Before mapping URLs, independently inspect each link in the merchant dashboard or Wompi's public `GET /v1/payment_links/{id}` response. Verify amount, SKU, merchant, production environment, active state, reuse, shipping collection, redirect and no expiry. Open each checkout and confirm it displays the expected amount. The client cannot infer these properties from an opaque link ID. Do not edit amounts through URL parameters or reuse one offer's link for another.
-
-### Payment result and fulfilment
-
-`/foco/pago/?id=...` shows **“Estamos verificando tu pago”**, a safely rendered transaction reference, WhatsApp and support. It deliberately does not poll Wompi, claim approval, create an order or dispatch anything. Missing, duplicate or malformed IDs get a neutral support fallback. Extra URL parameters, including `status=APPROVED`, have no effect. Reference pages are `noindex` and use `no-referrer`.
-
-The operator must locate the transaction in the **Wompi dashboard** (or a trusted authenticated server/API workflow), verify `APPROVED`, the merchant, correct link/SKU, currency and exact amount, and check it has not already been fulfilled before dispatch. Match the recipient and shipping address from Wompi. Send tracking over WhatsApp after dispatch. A redirect or screenshot is not payment evidence. There is no automated fulfilment and no cash on delivery.
-
-### Analytics and verification
-
-No analytics was installed on this static page, so this change adds no SDK or analytics events. If an existing approved analytics system is connected later, the requested events are `checkout_opened`, `offer_selected`, `checkout_started`, `whatsapp_fallback_clicked`, with quantity and total only; never send identity, shipping data or transaction IDs.
-
-Tests cover all three independent amounts/centavos, shipping/discount, reusable link definitions, fail-closed routing, absent/invalid/duplicate URLs, default state and malicious result parameters. Browser acceptance evidence is recorded in `foco-checkout-review.md`.
-
-Sources: [Wompi payment links](https://docs.wompi.co/docs/colombia/links-de-pago/) and [redirect handling](https://docs.wompi.co/docs/colombia/widget-checkout-web/#paso-4-url-de-redirección). Wompi documents the redirect as informational; frontend transaction lookup is no longer supported. Launch uses manual dashboard verification, without adding a customer database.
+Sources: [Wompi links](https://docs.wompi.co/docs/colombia/links-de-pago/), [events](https://docs.wompi.co/docs/colombia/eventos/), [transaction lookup](https://docs.wompi.co/docs/colombia/seguimiento-de-transacciones/), [Resend idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys), [Netlify Blobs](https://docs.netlify.com/build/data-and-storage/netlify-blobs/).

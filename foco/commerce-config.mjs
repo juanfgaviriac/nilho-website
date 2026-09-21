@@ -12,7 +12,7 @@ export const FOCO_COMMERCE = Object.freeze({
     availableCards: 30,
     pauseAt: 5,
     // Set only after verifying the merchant's billing treatment and Wompi evidence.
-    billingConfirmed: false,
+    billingConfirmed: true, // Owner confirmed no added IVA; receipt is not a DIAN invoice.
     consentEvidenceVerified: false,
 });
 
@@ -24,7 +24,7 @@ export function stockAvailable(commerce = FOCO_COMMERCE) {
 
 export function commerceReady(commerce = FOCO_COMMERCE) {
     const fields = [commerce.seller.name, commerce.seller.nit, commerce.seller.noticeAddress,
-        commerce.seller.returnsAddress, commerce.dispatchCity, commerce.carrier,
+        commerce.seller.returnsAddress, commerce.dispatchCity,
         commerce.product.material, commerce.product.dimensions];
     return fields.every(value => typeof value === 'string' && value.trim().length > 0) &&
         stockAvailable(commerce) && commerce.billingConfirmed === true &&

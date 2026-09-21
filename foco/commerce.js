@@ -1,14 +1,14 @@
-import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, formatCOP, offerName, paymentURL } from './checkout-config.mjs';
+import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, formatCOP, offerName, checkoutAvailable } from './checkout-config.mjs';
 
 const commerce = FOCO_CHECKOUT.commerce;
 const fields = { sellerName: commerce.seller.name, sellerNit: commerce.seller.nit,
     noticeAddress: commerce.seller.noticeAddress, returnsAddress: commerce.seller.returnsAddress,
-    dispatchCity: commerce.dispatchCity, carrier: commerce.carrier,
+    dispatchCity: commerce.dispatchCity, carrier: commerce.carrier || 'Te la informamos con la guía de envío.',
     material: commerce.product.material, dimensions: commerce.product.dimensions };
 for (const element of document.querySelectorAll('[data-field]')) {
     if (fields[element.dataset.field]) element.textContent = fields[element.dataset.field];
 }
-const available = [1, 2, 3].every(quantity => Boolean(paymentURL(quantity)));
+const available = checkoutAvailable();
 for (const banner of document.querySelectorAll('[data-preview]')) banner.hidden = available;
 for (const label of document.querySelectorAll('[data-availability]')) {
     label.textContent = available ? 'Tarjetas disponibles para envío.' : 'Compras aún no habilitadas.';

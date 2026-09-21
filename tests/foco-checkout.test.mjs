@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, formatCOP, paymentURL, paymentLinkDefinition, transactionId, checkoutPaymentURL } from '../foco/checkout-config.mjs';
+import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, formatCOP, checkoutAvailable, checkoutCanStart, safeCheckoutURL, transactionId } from '../foco/checkout-config.mjs';
 import { FOCO_COMMERCE, commerceReady, stockAvailable } from '../foco/commerce-config.mjs';
 
 for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
@@ -12,15 +12,7 @@ for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
     test(`${quantity} cards: exact breakdown and fixed Wompi amount`, () => {
         const offer = getOffer(quantity);
         assert.deepEqual([offer.subtotal, offer.discount, offer.shipping, offer.total, offer.amountInCents, offer.sku], [subtotal, discount, shipping, total, cents, sku]);
-        const payload = paymentLinkDefinition(quantity);
-        assert.equal(payload.amount_in_cents, cents);
-        assert.equal(payload.currency, 'COP');
-        assert.equal(payload.collect_shipping, true);
-        assert.equal(payload.single_use, false);
-        assert.equal(payload.sku, sku);
-        assert.equal(payload.redirect_url, 'https://nilho.co/foco/pago/');
-        assert.equal('expires_at' in payload, false);
-        assert.equal('taxes' in payload, false);
+
     });
 }
 
@@ -28,19 +20,7 @@ test('default is two and website payments remain gated before launch', () => {
     assert.equal(FOCO_CHECKOUT.defaultQuantity, 2);
     assert.equal(FOCO_CHECKOUT.productionEnabled, false);
     for (const quantity of [1, 2, 3]) {
-        assert.equal(paymentURL(quantity), null);
-    }
-});
-
-test('verified production offers resolve to their exact fixed-amount links after enabling', () => {
-    const config = { ...FOCO_CHECKOUT, productionEnabled: true, commerce: readyCommerce() };
-    for (const [quantity, url] of [
-        [1, 'https://checkout.wompi.co/l/yUHYqh'],
-        [2, 'https://checkout.wompi.co/l/YtP4V0'],
-        [3, 'https://checkout.wompi.co/l/iqLMCM'],
-    ]) {
-        assert.equal(paymentURL(quantity, config), url);
-        assert.notEqual(url, FOCO_CHECKOUT.offers[quantity].sandboxUrl);
+        assert.equal(checkoutCanStart(quantity, true), false);
     }
 });
 
@@ -52,55 +32,29 @@ function readyCommerce() {
         billingConfirmed: true, consentEvidenceVerified: true };
 }
 
-function configuredLinks() {
-    return { ...FOCO_CHECKOUT, productionEnabled: true, commerce: readyCommerce(), offers: Object.fromEntries([1, 2, 3].map(quantity => [quantity, {
-        ...FOCO_CHECKOUT.offers[quantity], wompiUrl: `https://checkout.wompi.co/l/fixture-${quantity}`,
-    }])) };
+function configuredCheckout() {
+    return { ...FOCO_CHECKOUT, productionEnabled: true, commerce: readyCommerce() };
 }
 
-test('each selected offer resolves only to its own link through repeated changes', () => {
-    const config = configuredLinks();
-    for (const quantity of [2, 1, 3, 2, 3, 1]) {
-        assert.equal(paymentURL(quantity, config), config.offers[quantity].wompiUrl);
-        assert.equal(paymentURL(quantity, { ...config, productionEnabled: false }), null);
+test('each quantity starts a server checkout only after consent and launch gates', () => {
+    const config = configuredCheckout();
+    for (const quantity of [2,1,3,2,3,1]) {
+        assert.equal(checkoutCanStart(quantity, true, config), true);
+        assert.equal(checkoutCanStart(quantity, false, config), false);
+        assert.equal(checkoutCanStart(quantity, true, {...config, productionEnabled:false}), false);
     }
-});
-
-test('missing one offer link never falls back to another quantity', () => {
-    const config = configuredLinks();
-    config.offers[3].wompiUrl = '';
-    assert.equal(paymentURL(3, config), null);
-    assert.equal(paymentURL(2, config), config.offers[2].wompiUrl);
-});
-
-test('sandbox links cannot become production payment targets', () => {
-    for (const quantity of [1, 2, 3]) {
-        const config = configuredLinks();
-        config.offers[quantity].wompiUrl = FOCO_CHECKOUT.offers[quantity].sandboxUrl;
-        assert.equal(paymentURL(quantity, config), null);
-        assert.equal(paymentURL(quantity), null);
-    }
-});
-
-test('reusing one payment link across quantities fails closed', () => {
-    const config = configuredLinks();
-    config.offers[3].wompiUrl = config.offers[2].wompiUrl;
-    assert.equal(paymentURL(2, config), null);
-    assert.equal(paymentURL(3, config), null);
 });
 
 for (const url of ['https://checkout.wompi.co/l/test ', 'javascript:alert(1)', 'http://checkout.wompi.co/l/fixture-1', 'https://checkout.wompi.co.evil.test/l/test', 'https://checkout.wompi.co@evil.test/l/test', 'https://user:password@checkout.wompi.co/l/test', 'https://checkout.wompi.co/p/', 'https://checkout.wompi.co/l/test?amount=1', 'https://checkout.wompi.co/l/test#override']) {
     test(`reject unsupported payment target: ${url}`, () => {
-        const config = configuredLinks();
-        config.offers[1].wompiUrl = url;
-        assert.equal(paymentURL(1, config), null);
+        assert.equal(safeCheckoutURL(url), null);
     });
 }
 
 test('unsupported quantities cannot select a product or payment', () => {
     for (const quantity of [0, 4, -1, 1.5, '', null, '__proto__', 'constructor', '2abc']) {
         assert.throws(() => getOffer(quantity), RangeError);
-        assert.throws(() => paymentURL(quantity), RangeError);
+        assert.throws(() => checkoutCanStart(quantity, true), RangeError);
     }
 });
 
@@ -143,33 +97,33 @@ test('result has neutral copy and no automatic fulfilment or trust in URL status
 
 test('turning on the publication flag alone cannot bypass missing merchant facts', () => {
     assert.equal(commerceReady(), false);
-    assert.equal(paymentURL(2, { ...FOCO_CHECKOUT, productionEnabled: true }), null);
-    const ready = configuredLinks();
+    assert.equal(checkoutAvailable({ ...FOCO_CHECKOUT, productionEnabled: true }), false);
+    const ready = configuredCheckout();
     for (const key of ['noticeAddress', 'nit', 'returnsAddress', 'name']) {
         const commerce = { ...ready.commerce, seller: { ...ready.commerce.seller, [key]: ' ' } };
-        assert.equal(paymentURL(2, { ...ready, commerce }), null);
+        assert.equal(checkoutAvailable({ ...ready, commerce }), false);
     }
     for (const key of ['billingConfirmed', 'consentEvidenceVerified']) {
-        assert.equal(paymentURL(2, { ...ready, commerce: { ...ready.commerce, [key]: false } }), null);
+        assert.equal(checkoutAvailable({ ...ready, commerce: { ...ready.commerce, [key]: false } }), false);
     }
 });
 
 test('manual stock gate pauses at five cards and never treats unknown stock as available', () => {
-    const config = configuredLinks();
+    const config = configuredCheckout();
     for (const availableCards of [null, undefined, '30', NaN, Infinity, -1, 0, 3, 5, 5.5]) {
         const commerce = { ...config.commerce, availableCards };
         assert.equal(stockAvailable(commerce), false);
-        for (const quantity of [1, 2, 3]) assert.equal(paymentURL(quantity, { ...config, commerce }), null);
+        for (const quantity of [1, 2, 3]) assert.equal(checkoutCanStart(quantity, true, { ...config, commerce }), false);
     }
     assert.equal(stockAvailable({ ...config.commerce, availableCards: 6 }), true);
 });
 
 test('checkout requires explicit current consent for the selected offer', () => {
-    const config = configuredLinks();
+    const config = configuredCheckout();
     for (const quantity of [1, 2, 3]) {
-        for (const accepted of [false, undefined, 'true', 1]) assert.equal(checkoutPaymentURL(quantity, accepted, config), null);
-        assert.equal(checkoutPaymentURL(quantity, true, config), config.offers[quantity].wompiUrl);
-        assert.equal(checkoutPaymentURL(quantity, true, { ...config, productionEnabled: false }), null);
+        for (const accepted of [false, undefined, 'true', 1]) assert.equal(checkoutCanStart(quantity, accepted, config), false);
+        assert.equal(checkoutCanStart(quantity, true, config), true);
+        assert.equal(checkoutCanStart(quantity, true, { ...config, productionEnabled: false }), false);
     }
 });
 
@@ -179,7 +133,7 @@ test('consent is not preselected or persisted as fake evidence and resets on ret
     assert.doesNotMatch(html.match(/<input[^>]+id="purchase-consent"[^>]*>/)[0], /\schecked(?:[\s=>])/);
     assert.doesNotMatch(script, /localStorage|sessionStorage|document\.cookie/);
     assert.match(script, /pageshow.*consent.checked = false/);
-    assert.match(script, /checkoutPaymentURL\(quantity, consent.checked\)/);
+    assert.match(script, /checkoutCanStart\(quantity, consent.checked\)/);
 });
 
 test('commercial pages separate seller, app and purchase privacy and retain neutral payment status', () => {

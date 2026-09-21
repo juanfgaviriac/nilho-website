@@ -8,14 +8,15 @@ export const FOCO_CHECKOUT = Object.freeze({
     defaultQuantity: 2,
     // Final publication gate; merchant facts and consent evidence are checked separately.
     productionEnabled: false,
+    endpoint: '/api/foco/checkout',
     redirectUrl: 'https://nilho.co/foco/pago/', // Configured in Wompi; publish this page with checkout.
     shippingReturnsUrl: FOCO_COMMERCE.termsUrl,
     commerce: FOCO_COMMERCE,
     currency: 'COP',
     offers: Object.freeze({
-        1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '', wompiUrl: 'https://checkout.wompi.co/l/yUHYqh', sandboxUrl: 'https://checkout.wompi.co/l/test_sTaCFM' }),
-        2: Object.freeze({ quantity: 2, subtotal: 200000, discount: 0, shipping: 0, sku: 'FOCO-02', badge: 'Más elegido', wompiUrl: 'https://checkout.wompi.co/l/YtP4V0', sandboxUrl: 'https://checkout.wompi.co/l/test_tgJotM' }),
-        3: Object.freeze({ quantity: 3, subtotal: 300000, discount: 50000, shipping: 0, sku: 'FOCO-03', badge: 'Mejor valor', wompiUrl: 'https://checkout.wompi.co/l/iqLMCM', sandboxUrl: 'https://checkout.wompi.co/l/test_ql8j7i' }),
+        1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '' }),
+        2: Object.freeze({ quantity: 2, subtotal: 200000, discount: 0, shipping: 0, sku: 'FOCO-02', badge: 'Más elegido' }),
+        3: Object.freeze({ quantity: 3, subtotal: 300000, discount: 50000, shipping: 0, sku: 'FOCO-03', badge: 'Mejor valor' }),
     }),
 });
 
@@ -31,43 +32,27 @@ export function getOffer(quantity, config = FOCO_CHECKOUT) {
 
 export function offerName(quantity) { return `${quantity} ${quantity === 1 ? 'tarjeta' : 'tarjetas'}`; }
 
-// No query-string prices, user-provided redirects or checkout URL construction.
-// Payment amounts live in the merchant's fixed links and MUST be verified before enabling.
-export function paymentURL(quantity, config = FOCO_CHECKOUT) {
-    const offer = getOffer(quantity, config);
-    if (!config.productionEnabled || !commerceReady(config.commerce) || !offer.wompiUrl) return null;
-    try {
-        const url = new URL(offer.wompiUrl);
-        if (offer.wompiUrl !== url.href || url.origin !== 'https://checkout.wompi.co' || url.username || url.password ||
-            !/^\/l\/[A-Za-z0-9_-]+$/.test(url.pathname) || /^\/l\/test_/i.test(url.pathname) || url.search || url.hash) return null;
-        // Accidentally assigning one link to multiple quantities must fail closed.
-        if (Object.values(config.offers).filter(item => item.wompiUrl === offer.wompiUrl).length !== 1) return null;
-        return url.href;
-    } catch { return null; }
+// The browser never chooses a reusable link or sends an amount. The server creates
+// a fixed-price, single-use link after recording this order's consent.
+export function checkoutAvailable(config = FOCO_CHECKOUT) {
+    return config.productionEnabled === true && commerceReady(config.commerce);
 }
 
-// Preparation helper for a trusted server/merchant workflow. Does not make requests.
-// Omits taxes and expiry deliberately: IVA needs accountant approval; links never expire.
-export function paymentLinkDefinition(quantity, config = FOCO_CHECKOUT) {
-    const offer = getOffer(quantity, config);
-    return {
-        name: `Foco - ${offerName(offer.quantity)}`,
-        description: `${offerName(offer.quantity)} Foco NFC. Envío a Colombia incluido en el total.`,
-        currency: config.currency,
-        amount_in_cents: offer.amountInCents,
-        single_use: false,
-        collect_shipping: true,
-        sku: offer.sku,
-        redirect_url: config.redirectUrl,
-    };
+export function checkoutCanStart(quantity, accepted, config = FOCO_CHECKOUT) {
+    getOffer(quantity, config);
+    return accepted === true && checkoutAvailable(config);
+}
+
+export function safeCheckoutURL(value) {
+    try {
+        const url = new URL(value);
+        return typeof value === 'string' && value === url.href &&
+            url.origin === 'https://checkout.wompi.co' && !url.username && !url.password &&
+            /^\/l\/[A-Za-z0-9_-]+$/.test(url.pathname) && !url.search && !url.hash ? url.href : null;
+    } catch { return null; }
 }
 
 export function transactionId(search) {
     const values = new URLSearchParams(search).getAll('id');
     return values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(values[0]) ? values[0] : null;
-}
-
-// Consent is intentionally not persisted in the browser or advertised as an order record.
-export function checkoutPaymentURL(quantity, accepted, config = FOCO_CHECKOUT) {
-    return accepted === true ? paymentURL(quantity, config) : null;
 }
