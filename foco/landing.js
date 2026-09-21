@@ -21,26 +21,9 @@ const filmToolbar = document.querySelector(".film-toolbar");
 
 if (film && filmToolbar) {
     const playback = filmToolbar.querySelector(".film-playback");
-    const choices = filmToolbar.querySelectorAll("[data-film]");
-    const caption = document.querySelector("#film-caption");
     const errorMessage = document.querySelector(".film-error");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const saveData = navigator.connection?.saveData === true;
-    const clips = {
-        in: {
-            source: "/foco/assets/film/foco-tap-in-v1.mp4",
-            poster: "/foco/assets/film/foco-tap-in-v1.jpg",
-            description: "Un iPhone se acerca a la tarjeta Foco y activa una sesión de concentración",
-            caption: "Un toque para entrar en Foco."
-        },
-        out: {
-            source: "/foco/assets/film/foco-tap-out-v1.mp4",
-            poster: "/foco/assets/film/foco-tap-out-v1.jpg",
-            description: "Un iPhone vuelve a la tarjeta Foco para cerrar la sesión y recuperar el acceso a las apps",
-            caption: "Otro toque para volver a tus apps."
-        }
-    };
-    let selected = "in";
     let wantsPlayback = !reducedMotion.matches && !saveData;
     let visible = false;
 
@@ -83,25 +66,6 @@ if (film && filmToolbar) {
         } else {
             film.pause();
         }
-    });
-
-    choices.forEach((choice) => {
-        choice.addEventListener("click", () => {
-            if (choice.dataset.film === selected) return;
-            selected = choice.dataset.film;
-            const clip = clips[selected];
-            film.pause();
-            film.poster = clip.poster;
-            film.src = clip.source;
-            film.setAttribute("aria-label", clip.description);
-            caption.textContent = clip.caption;
-            errorMessage.hidden = true;
-            errorMessage.querySelector("a").href = clip.source;
-            choices.forEach((button) => button.setAttribute("aria-pressed", String(button === choice)));
-            film.load();
-            wantsPlayback = true;
-            playIfWanted();
-        });
     });
 
     if ("IntersectionObserver" in window) {
