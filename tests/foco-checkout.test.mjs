@@ -23,13 +23,23 @@ for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
     });
 }
 
-test('default is two and all production payments are disabled', () => {
+test('default is two and website payments remain gated before launch', () => {
     assert.equal(FOCO_CHECKOUT.defaultQuantity, 2);
     assert.equal(FOCO_CHECKOUT.productionEnabled, false);
     for (const quantity of [1, 2, 3]) {
-        assert.equal(FOCO_CHECKOUT.offers[quantity].wompiUrl, '');
         assert.equal(paymentURL(quantity), null);
-        assert.equal(paymentURL(quantity, { ...FOCO_CHECKOUT, productionEnabled: true }), null);
+    }
+});
+
+test('verified production offers resolve to their exact fixed-amount links after enabling', () => {
+    const config = { ...FOCO_CHECKOUT, productionEnabled: true };
+    for (const [quantity, url] of [
+        [1, 'https://checkout.wompi.co/l/yUHYqh'],
+        [2, 'https://checkout.wompi.co/l/YtP4V0'],
+        [3, 'https://checkout.wompi.co/l/iqLMCM'],
+    ]) {
+        assert.equal(paymentURL(quantity, config), url);
+        assert.notEqual(url, FOCO_CHECKOUT.offers[quantity].sandboxUrl);
     }
 });
 

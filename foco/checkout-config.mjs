@@ -6,13 +6,13 @@ export const FOCO_CHECKOUT = Object.freeze({
     defaultQuantity: 2,
     // Keep false until links, merchant details, policies, stock and final review are approved.
     productionEnabled: false,
-    redirectUrl: 'https://nilho.co/foco/pago/', // Proposed: merchant must confirm before creating links.
+    redirectUrl: 'https://nilho.co/foco/pago/', // Configured in Wompi; publish this page with checkout.
     shippingReturnsUrl: '', // TODO: published shipping, returns and warranty policy.
     currency: 'COP',
     offers: Object.freeze({
-        1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '', wompiUrl: '', sandboxUrl: 'https://checkout.wompi.co/l/test_sTaCFM' }),
-        2: Object.freeze({ quantity: 2, subtotal: 200000, discount: 0, shipping: 0, sku: 'FOCO-02', badge: 'Más elegido', wompiUrl: '', sandboxUrl: 'https://checkout.wompi.co/l/test_tgJotM' }),
-        3: Object.freeze({ quantity: 3, subtotal: 300000, discount: 50000, shipping: 0, sku: 'FOCO-03', badge: 'Mejor valor', wompiUrl: '', sandboxUrl: 'https://checkout.wompi.co/l/test_ql8j7i' }),
+        1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '', wompiUrl: 'https://checkout.wompi.co/l/yUHYqh', sandboxUrl: 'https://checkout.wompi.co/l/test_sTaCFM' }),
+        2: Object.freeze({ quantity: 2, subtotal: 200000, discount: 0, shipping: 0, sku: 'FOCO-02', badge: 'Más elegido', wompiUrl: 'https://checkout.wompi.co/l/YtP4V0', sandboxUrl: 'https://checkout.wompi.co/l/test_tgJotM' }),
+        3: Object.freeze({ quantity: 3, subtotal: 300000, discount: 50000, shipping: 0, sku: 'FOCO-03', badge: 'Mejor valor', wompiUrl: 'https://checkout.wompi.co/l/iqLMCM', sandboxUrl: 'https://checkout.wompi.co/l/test_ql8j7i' }),
     }),
 });
 
