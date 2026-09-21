@@ -14,9 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=checkout-1">
-    <link rel="stylesheet" href="/foco/checkout.css?v=2">
+    <link rel="stylesheet" href="/foco/checkout.css?v=3">
     <script src="/foco/landing.js" defer></script>
-    <script type="module" src="/foco/checkout.js?v=2"></script>
+    <script type="module" src="/foco/checkout.js?v=3"></script>
 </head>
 <body>
     <a class="skip-link" href="#contenido">Ir al contenido</a>
@@ -133,8 +133,13 @@
                     </div>
                     <h3 class="offer-legend" id="offer-legend">¿Cuántas tarjetas necesitas?</h3>
                     <div class="offer-options" role="radiogroup" aria-labelledby="offer-legend" id="offer-options"></div>
-                    <p class="checkout-shipping-note">Después del despacho, te enviaremos la guía de seguimiento por WhatsApp.</p>
-                    <p class="checkout-policy" id="checkout-policy">TODO antes de vender: publicar las condiciones de envío, devoluciones y garantía.</p>
+                    <dl class="checkout-details">
+                        <div><dt>En tus manos</dt><dd>Entrega en 3–10 días hábiles desde el pago aprobado. Incluye el despacho en 1–2 días hábiles.</dd></div>
+                        <div><dt>Con tranquilidad</dt><dd>12 meses de garantía. Seguimiento por WhatsApp después del despacho.</dd></div>
+                        <div><dt>Tu iPhone, en foco</dt><dd>iOS 17.6 o posterior y permiso de Tiempo en Pantalla. No compatible con Android.</dd></div>
+                    </dl>
+                    <p class="checkout-policy" id="checkout-policy"><a href="/foco/compra/">Compra, envíos y garantía <span aria-hidden="true">↗</span></a></p>
+                    <p class="checkout-seller" id="checkout-seller">Venta de tarjetas por persona natural · Datos del vendedor pendientes de completar.</p>
                     <noscript><p class="checkout-notice">Activa JavaScript para elegir tus tarjetas y ver el total. Los pagos están deshabilitados en esta vista previa.</p></noscript>
                 </div>
                 <aside class="order-summary" aria-labelledby="summary-title">
@@ -147,7 +152,12 @@
                     </dl>
                     <div class="summary-footer">
                         <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
-                        <p class="checkout-notice" id="payment-notice">Vista previa · Pagos aún no disponibles.</p>
+                        <p class="checkout-availability" id="checkout-availability">Próximamente disponible</p>
+                        <div class="checkout-consent">
+                            <input type="checkbox" id="purchase-consent" aria-labelledby="consent-text" autocomplete="off">
+                            <label id="consent-text" for="purchase-consent">Acepto las <a href="/foco/compra/" target="_blank" rel="noopener">condiciones de compra<span class="sr-only"> (abre otra pestaña)</span></a> y autorizo el uso de mis datos para gestionar el pedido según el <a href="/foco/compra/privacidad/" target="_blank" rel="noopener">aviso de privacidad<span class="sr-only"> (abre otra pestaña)</span></a>.</label>
+                        </div>
+                        <p class="checkout-notice" id="payment-notice" role="status" aria-live="polite">Vista previa · Pagos aún no disponibles.</p>
                         <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
                         <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
                         <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Prefieres WhatsApp? Hablemos <span aria-hidden="true">↗</span></a>
@@ -177,7 +187,9 @@
         <div class="footer-links">
             <a href="/foco/soporte/">Soporte</a>
             <a href="/foco/privacidad/">Privacidad</a>
-            <a href="/foco/terminos/">Términos</a>
+            <a href="/foco/terminos/">Términos de la app</a>
+            <a href="/foco/compra/">Condiciones de compra</a>
+            <a href="https://www.sic.gov.co/">Protección al consumidor · SIC</a>
         </div>
         <p>© 2026 Nilho S.A.S.</p>
     </footer>

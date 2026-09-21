@@ -109,3 +109,22 @@
     .offer-option, .offer-radio::after, .checkout-whatsapp span { transition: none; }
     .checkout-section .offer-option, .checkout-whatsapp:hover span { transform: none !important; }
 }
+/* Purchase conditions share the product's quiet editorial rhythm. */
+.checkout-details { margin: 1.8rem 0 0; }
+.checkout-details > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 16px; padding: 1rem 0; border-top: 1px solid var(--line); font-size: 0.8rem; line-height: 1.65; }
+.checkout-details dt { font-weight: 700; }
+.checkout-details dd { margin: 0; color: var(--ink-soft); }
+.checkout-policy a { gap: 10px; }
+.checkout-seller { font-size: 0.72rem; line-height: 1.7; color: var(--muted); overflow-wrap: anywhere; margin: 0.5rem 0 0; }
+.checkout-availability { margin: 1.1rem 0; font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+.checkout-consent { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 2px; align-items: start; }
+.checkout-consent input { appearance: none; position: relative; width: 44px; height: 44px; margin: -5px 0 0; background: transparent; border: 0; cursor: pointer; }
+.checkout-consent input::before { content: ''; position: absolute; inset: 12px; border: 1px solid #85857e; border-radius: 5px; }
+.checkout-consent input:checked::before { background: var(--ink); border-color: var(--ink); }
+.checkout-consent input:checked::after { content: ''; position: absolute; left: 19px; top: 16px; width: 5px; height: 9px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.checkout-consent label { padding: 3px 0; min-height: 44px; font-size: 0.73rem; line-height: 1.9; color: var(--ink-soft); cursor: pointer; }
+.checkout-consent a { text-underline-offset: 3px; }
+.site-footer .footer-links { flex-wrap: wrap; }
+@media (max-width: 380px) {
+    .checkout-details > div { grid-template-columns: 1fr; gap: 4px; }
+}

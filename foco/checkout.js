@@ -1,8 +1,9 @@
-import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, offerName, formatCOP, paymentURL } from './checkout-config.mjs';
+import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, offerName, formatCOP, paymentURL, checkoutPaymentURL } from './checkout-config.mjs';
 
 const checkout = document.querySelector('#comprar');
 const options = document.querySelector('#offer-options');
 const pay = document.querySelector('#wompi-pay');
+const consent = document.querySelector('#purchase-consent');
 const discountRow = document.querySelector('#summary-discount-row');
 const summary = document.querySelector('.order-summary');
 const summaryMovingRows = [document.querySelector('#summary-shipping-row'), document.querySelector('.summary-footer')];
@@ -100,8 +101,7 @@ function select(value, announce = true, animate = false) {
     setText('summary-discount', offer.discount ? `−${formatCOP(offer.discount)}` : '');
     setText('summary-shipping', offer.shipping ? formatCOP(offer.shipping) : 'Envío gratis');
     setText('summary-total', formatCOP(offer.total));
-    pay.disabled = !paymentURL(quantity);
-    setText('payment-notice', pay.disabled ? 'Vista previa · Pagos aún no disponibles.' : 'Completa el pago y la dirección de envío en Wompi.');
+    updatePayment();
     const whatsapp = document.querySelector('#checkout-whatsapp');
     const url = new URL(FOCO_WHATSAPP_URL);
     url.searchParams.set('text', `Hola, quiero información sobre ${offerName(quantity)} Foco. Total: ${formatCOP(offer.total)} COP. ¿Me ayudan?`);
@@ -113,7 +113,7 @@ function select(value, announce = true, animate = false) {
 
 pay.addEventListener('click', () => {
     // Re-resolve from the selected offer at click time; never retain a stale payment link.
-    const url = paymentURL(quantity);
+    const url = checkoutPaymentURL(quantity, consent.checked);
     if (url) window.location.assign(url);
 });
 
@@ -121,15 +121,18 @@ for (const link of document.querySelectorAll('[data-checkout-open]')) {
     link.addEventListener('click', () => checkout.focus({ preventScroll: true }));
 }
 
-if (FOCO_CHECKOUT.shippingReturnsUrl) {
-    const policy = document.querySelector('#checkout-policy');
-    const link = document.createElement('a');
-    link.href = FOCO_CHECKOUT.shippingReturnsUrl;
-    link.textContent = 'Envíos, devoluciones y garantía';
-    policy.replaceChildren(link);
+function updatePayment() {
+    const available = Boolean(paymentURL(quantity));
+    pay.disabled = !checkoutPaymentURL(quantity, consent.checked);
+    setText('checkout-availability', available ? 'Disponible para envío' : 'Próximamente disponible');
+    setText('payment-notice', !available ? 'Vista previa · Pagos aún no disponibles.' :
+        !consent.checked ? 'Acepta las condiciones para continuar.' : 'Completa el pago y la dirección de envío en Wompi.');
 }
+consent.addEventListener('change', updatePayment);
+const seller = FOCO_CHECKOUT.commerce.seller;
+if (seller.name && seller.nit) setText('checkout-seller', `Vendido por ${seller.name} · NIT ${seller.nit}`);
 
 // No persisted cart or query-string prices: refresh starts with the configured default;
 // restoring this document from the back/forward cache reconciles every displayed value.
-window.addEventListener('pageshow', () => select(quantity, false));
+window.addEventListener('pageshow', () => { consent.checked = false; select(quantity, false); });
 select(quantity, false);

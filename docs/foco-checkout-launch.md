@@ -13,7 +13,11 @@ node --test tests/foco-checkout.test.mjs
 
 Open `http://127.0.0.1:8766/foco/#comprar`. All purchase CTAs enter the inline checkout; two cards are selected initially. Arrow keys, Home/End, Space/Enter work in the radio group. Refresh returns to two; back/forward restoration reconciles the summary with the selected offer. No cart/customer data is stored. Wompi collects the shipping address once.
 
-### Configuration and launch blockers
+### Current status — 21 September 2026
+
+The owner approved the commercial proposal and supplied seller identity/addresses, Bogotá dispatch, stock of 30, PVC NTAG215 and 86 × 54 mm dimensions. `/foco/compra/` and `/foco/compra/privacidad/` are implemented locally. See [current order operations](foco-order-operations.md) for the remaining shipping, billing and Wompi consent verification. No deployment occurred.
+
+### Launch configuration and remaining requirements
 
 The single source of truth is `foco/checkout-config.mjs`. Totals and centavos are calculated from the configured subtotal, discount and shipping. Do not put private keys, integrity secrets, bank account details or RUT documents in the repository, browser code or chat.
 
@@ -29,11 +33,11 @@ Required before deployment or enabling payments:
 
 - **Production links configured:** all three `wompiUrl` values are mapped to verified active production links (see below). `productionEnabled` stays `false` until the remaining launch requirements are complete. Blank, invalid, sandbox or duplicated URLs fail closed.
 - **Redirect deployment:** all production links use `https://nilho.co/foco/pago/` (`redirectUrl`). Publish and verify this page with checkout before promoting the links. It is built locally, not deployed by this change.
-- **Merchant onboarding:** the owner selected **persona natural** for the initial launch. Complete the personal merchant registration directly with Wompi, using a receiving account in the merchant's name. Before enabling payment, verify the legal seller identity and show it in the purchase disclosures/policies consistently with Wompi and invoicing. The existing Nilho app/site branding does not establish the card seller's identity. The live merchant brand Foco and production mode were verified; final merchant/payout approval remains unverified. Wompi displayed that payments can be collected but funds stay in Wompi Cuenta pending merchant approval. Never commit RUT documents, personal identifiers or bank details.
+- **Merchant onboarding:** the owner selected **persona natural** for the initial launch. Complete the personal merchant registration directly with Wompi, using a receiving account in the merchant's name. Before enabling payment, verify the legal seller identity and show it in the purchase disclosures/policies consistently with Wompi and invoicing. The existing Nilho app/site branding does not establish the card seller's identity. The live merchant brand Foco and production mode were verified; final merchant/payout approval remains unverified. Wompi displayed that payments can be collected but funds stay in Wompi Cuenta pending merchant approval. Only the seller identity, NIT and business/returns address explicitly authorized for publication belong in the public configuration. Never commit RUT documents, unrelated personal identifiers or bank details.
 - **IVA / invoicing:** accountant to confirm treatment, any required legal customer fields and invoice process. Do not invent IVA or increase the advertised total. Add any approved tax breakdown in Wompi only after confirmation.
-- **Policies:** approve shipping, returns and warranty copy, publish its page and set `shippingReturnsUrl`. Existing `/foco/terminos/` covers app use, not shipping/returns. Checkout deliberately shows a visible TODO until real policy exists. Also review legacy support/terms references to ten emergency unlocks before launch (current product shows three); no legal text was changed in this branch.
+- **Policies:** the approved shipping, returns and 12-month warranty copy is implemented at `/foco/compra/`, with separate purchase privacy at `/foco/compra/privacidad/`. `shippingReturnsUrl` points to the new page. Legacy app legal/support references now say three emergency unlocks. All remain local until final publication; the carrier and billing treatment still need confirmation. The local consent checkbox gates navigation but does not itself provide order-linked evidence; `consentEvidenceVerified` stays false pending a Wompi test or an approved alternative.
 - **WhatsApp:** `FOCO_WHATSAPP_URL` uses the previously supplied Foco support number `+573027738407`. Confirm it is the correct business contact and fulfilment channel. The constant is shared with the payment-result page. Links open a draft only; nothing is sent automatically.
-- **Stock:** confirm current stock or explicitly approve launch without inventory enforcement. This static implementation does not reserve cards or prevent overselling.
+- **Stock:** 30 cards confirmed. Manual inventory and pausing all three Wompi links plus the website at five remaining were approved. `availableCards` is a manual snapshot, not automatic inventory enforcement; direct links and pending transactions must be reconciled. This static implementation does not reserve cards or prevent overselling.
 - **Final review / explicit approval:** complete merchant, link, policy, stock, browser and payment checks first. Only then enable `productionEnabled` and deploy with the owner's explicit approval. Do not push this work to the auto-deploying `main` branch before approval.
 
 ### Creating and verifying the Wompi links
@@ -58,7 +62,7 @@ The owner explicitly authorized production links on 2026-09-21. The following li
 
 For all three, saved details confirmed reusable links (not single use), shipping collection, matching SKU and `https://nilho.co/foco/pago/`. No expiry or tax breakdown was supplied. Each public checkout was opened read-only: the displayed fixed total matched the table, the shipping form was present and there was no test-mode banner. No buyer data was entered and no transaction was submitted. This verifies link configuration and initial checkout rendering, not payment settlement or the return journey.
 
-Production URLs are now mapped in the local configuration. The website remains undeployed and its payment button gated while merchant disclosures, IVA/invoicing, commercial policies, inventory and final launch review are incomplete. The return page also remains undeployed. The widget was discussed but not selected; this implementation continues to use fixed links.
+Production URLs are now mapped in the local configuration. The website remains undeployed and its payment button gated while carrier, IVA/invoicing, order-linked consent evidence and final launch review are incomplete. The return page also remains undeployed. The widget was discussed but not selected; this implementation continues to use fixed links.
 
 Use the Wompi merchant dashboard or a trusted server-side environment, never a browser private key. `paymentLinkDefinition(quantity)` exports the intended payload without making any request. To inspect all three non-secret definitions locally:
 

@@ -1,13 +1,16 @@
+import { FOCO_COMMERCE, commerceReady } from './commerce-config.mjs';
+
 // Public configuration only. Never add Wompi keys, integrity secrets or bank details here.
-// Existing Foco support number supplied by the merchant; confirm business use before launch.
+// Existing Foco support number supplied by the merchant; approved for orders and support.
 export const FOCO_WHATSAPP_URL = 'https://wa.me/573027738407';
 
 export const FOCO_CHECKOUT = Object.freeze({
     defaultQuantity: 2,
-    // Keep false until links, merchant details, policies, stock and final review are approved.
+    // Final publication gate; merchant facts and consent evidence are checked separately.
     productionEnabled: false,
     redirectUrl: 'https://nilho.co/foco/pago/', // Configured in Wompi; publish this page with checkout.
-    shippingReturnsUrl: '', // TODO: published shipping, returns and warranty policy.
+    shippingReturnsUrl: FOCO_COMMERCE.termsUrl,
+    commerce: FOCO_COMMERCE,
     currency: 'COP',
     offers: Object.freeze({
         1: Object.freeze({ quantity: 1, subtotal: 100000, discount: 0, shipping: 10000, sku: 'FOCO-01', badge: '', wompiUrl: 'https://checkout.wompi.co/l/yUHYqh', sandboxUrl: 'https://checkout.wompi.co/l/test_sTaCFM' }),
@@ -32,7 +35,7 @@ export function offerName(quantity) { return `${quantity} ${quantity === 1 ? 'ta
 // Payment amounts live in the merchant's fixed links and MUST be verified before enabling.
 export function paymentURL(quantity, config = FOCO_CHECKOUT) {
     const offer = getOffer(quantity, config);
-    if (!config.productionEnabled || !offer.wompiUrl) return null;
+    if (!config.productionEnabled || !commerceReady(config.commerce) || !offer.wompiUrl) return null;
     try {
         const url = new URL(offer.wompiUrl);
         if (offer.wompiUrl !== url.href || url.origin !== 'https://checkout.wompi.co' || url.username || url.password ||
@@ -62,4 +65,9 @@ export function paymentLinkDefinition(quantity, config = FOCO_CHECKOUT) {
 export function transactionId(search) {
     const values = new URLSearchParams(search).getAll('id');
     return values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(values[0]) ? values[0] : null;
+}
+
+// Consent is intentionally not persisted in the browser or advertised as an order record.
+export function checkoutPaymentURL(quantity, accepted, config = FOCO_CHECKOUT) {
+    return accepted === true ? paymentURL(quantity, config) : null;
 }

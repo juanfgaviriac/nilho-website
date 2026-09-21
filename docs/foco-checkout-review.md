@@ -1,5 +1,24 @@
 # Foco checkout review — 21 September 2026
 
+## Commercial readiness update
+
+Approved commercial terms, seller identity/addresses, Bogotá dispatch, 30-card manual stock, purchase privacy and operational templates are implemented locally. Production links were created and independently read back earlier today; none were created or edited in this policy update. No deployment or transaction has occurred. The original review below is historical evidence, not current merchant status.
+
+`node --test tests/foco-checkout.test.mjs`: **28 passed, 0 failed**. Added gates for complete seller facts, stock above the manual pause threshold, confirmed billing and verified order-linked consent; explicit current checkbox consent is required. Production remains disabled.
+
+Current browser checks used the Codex embedded Chromium browser:
+
+- 1280 px: three offers beside the summary; commercial conditions use the existing Foco typography, colors, mark and spacing.
+- 390 and 320 px: checkout and conditions have no horizontal page overflow; single-card and three-card summaries fit without clipped totals. The purchase privacy page was also opened and inspected.
+- At 320 px: quantity controls are at least 155 px tall, consent 44 px, payment 56 px and WhatsApp 44 px.
+- Three-card selection shows 250000 COP and the discount; one-card selection shows 110000 COP with no discount row. Checking consent still leaves payment disabled under the current launch gates.
+- Back navigation resets consent and keeps the selected offer and summary consistent. Home-key radio navigation and the checkbox's accessible name were inspected.
+- No warnings/errors in the inspected browser logs. No physical iPhone checkout, spoken VoiceOver session or payment transaction was performed. Safari evidence in the original review predates this commercial update.
+
+Screenshots: `/Users/juanfelipe/foco/.artifacts/commerce-review-2026-09-21/`, including `desktop-checkout.png`, `desktop-conditions.png`, `mobile-390-summary.png`, `mobile-390-conditions.png`, `mobile-320-summary.png` and `mobile-320-prices.png`.
+
+## Original checkout review
+
 Local-only implementation on `codex/foco-checkout`, based on production commit `51323cc`. No push, deployment, merchant account change, payment link creation or transaction was performed.
 
 ## Automated checks
@@ -36,7 +55,7 @@ Screenshot artifacts are in the local task folder `.artifacts/checkout-review-20
 
 ## Remaining launch validation
 
-Real Wompi links/merchant configuration have not been supplied or verified. No end-to-end payment was attempted. Mobile checks use desktop responsive browser engines, not a physical iPhone payment session. Complete the launch checklist and one approved payment/fulfilment verification only after explicit authorization. See `foco-checkout-launch.md`.
+At the time of the original review, links had not been supplied; the current production link readbacks are now recorded in `foco-checkout-launch.md`. No end-to-end payment has been attempted. Mobile checks use desktop responsive browser engines, not a physical iPhone payment session. Complete the launch checklist and one approved payment/fulfilment verification only after explicit authorization. See `foco-checkout-launch.md`.
 
 ## Checkout motion refinement
 
