@@ -4,17 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Foco — Toca. Vuelve a lo tuyo.</title>
-    <meta name="description" content="Foco convierte una tarjeta NFC en una decisión física para pausar distracciones y recuperar tu tiempo.">
+    <meta name="description" content="Foco: tarjeta NFC y app solo para iPhone. Pausa las apps que te distraen y recupera tu tiempo. No compatible con Android.">
     <meta name="theme-color" content="#f7f7f4">
     <meta property="og:title" content="Foco — Toca. Vuelve a lo tuyo.">
-    <meta property="og:description" content="Una tarjeta NFC y una app para recuperar tiempo para lo que importa.">
+    <meta property="og:description" content="Una tarjeta NFC y una app solo para iPhone. Recupera tiempo para lo que importa. No compatible con Android.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nilho.co/foco/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=checkout-1">
-    <link rel="stylesheet" href="/foco/checkout.css?v=3">
+    <link rel="stylesheet" href="/foco/checkout.css?v=4">
     <script src="/foco/landing.js" defer></script>
     <script type="module" src="/foco/checkout.js?v=3"></script>
 </head>
@@ -36,7 +36,7 @@
     <main id="contenido">
         <section class="hero" id="inicio">
             <div class="hero-copy reveal">
-                <p class="eyebrow">Tarjeta NFC + app para iPhone</p>
+                <p class="eyebrow">Tarjeta NFC + app · Solo para iPhone</p>
                 <h1>Toca Foco.<br><span>Vuelve a lo tuyo.</span></h1>
                 <p class="hero-lede">Pausa las apps que te distraen con una decisión física. Sin pelear con tu fuerza de voluntad. Sin convertir tu tiempo en otro dashboard.</p>
                 <div class="hero-actions">
@@ -129,14 +129,14 @@
                         <div class="checkout-card-art" aria-hidden="true">
                             <span class="foco-mark foco-mark--small"><i></i><i></i><i></i><i></i></span>
                         </div>
-                        <div><h3>Tarjeta Foco</h3><p>Una decisión física. Una app para iPhone.</p></div>
+                        <div><h3>Tarjeta Foco</h3><p>Solo para iPhone.<br>No compatible con Android.</p></div>
                     </div>
                     <h3 class="offer-legend" id="offer-legend">¿Cuántas tarjetas necesitas?</h3>
                     <div class="offer-options" role="radiogroup" aria-labelledby="offer-legend" id="offer-options"></div>
                     <dl class="checkout-details">
                         <div><dt>En tus manos</dt><dd>Entrega en 3–10 días hábiles desde el pago aprobado. Incluye el despacho en 1–2 días hábiles.</dd></div>
                         <div><dt>Con tranquilidad</dt><dd>12 meses de garantía. Seguimiento por WhatsApp después del despacho.</dd></div>
-                        <div><dt>Tu iPhone, en foco</dt><dd>iOS 17.6 o posterior y permiso de Tiempo en Pantalla. No compatible con Android.</dd></div>
+                        <div><dt>Compatibilidad</dt><dd>Solo para iPhone con iOS 17.6 o posterior y permiso de Tiempo en Pantalla. No compatible con Android.</dd></div>
                     </dl>
                     <p class="checkout-policy" id="checkout-policy"><a href="/foco/compra/">Compra, envíos y garantía <span aria-hidden="true">↗</span></a></p>
                     <p class="checkout-seller" id="checkout-seller">Venta de tarjetas por persona natural · Datos del vendedor pendientes de completar.</p>
@@ -145,6 +145,7 @@
                 <aside class="order-summary" aria-labelledby="summary-title">
                     <div class="summary-heading"><h3 id="summary-title">Tu pedido</h3><span class="summary-count" id="summary-count">—</span></div>
                     <p class="summary-product" id="summary-product">Tarjeta Foco</p>
+                    <p class="summary-compatibility" id="summary-compatibility"><strong>Solo para iPhone</strong> <span>No compatible con Android.</span></p>
                     <dl class="summary-lines">
                         <div><dt>Subtotal</dt><dd id="summary-subtotal">—</dd></div>
                         <div id="summary-discount-row" hidden><dt>Descuento del pack</dt><dd id="summary-discount"></dd></div>
@@ -158,7 +159,7 @@
                             <label id="consent-text" for="purchase-consent">Acepto las <a href="/foco/compra/" target="_blank" rel="noopener">condiciones de compra<span class="sr-only"> (abre otra pestaña)</span></a> y autorizo el uso de mis datos para gestionar el pedido según el <a href="/foco/compra/privacidad/" target="_blank" rel="noopener">aviso de privacidad<span class="sr-only"> (abre otra pestaña)</span></a>.</label>
                         </div>
                         <p class="checkout-notice" id="payment-notice" role="status" aria-live="polite">Vista previa · Pagos aún no disponibles.</p>
-                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
+                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="summary-compatibility payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
                         <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
                         <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Prefieres WhatsApp? Hablemos <span aria-hidden="true">↗</span></a>
                     </div>

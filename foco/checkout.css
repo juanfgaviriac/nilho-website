@@ -44,7 +44,10 @@
 .summary-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .summary-heading h3 { font-size: 1.15rem; margin: 0; letter-spacing: -0.03em; }
 .summary-count { font-family: var(--font-mono); font-size: 0.66rem; color: var(--muted); }
-.summary-product { margin: 0.9rem 0 1.6rem; color: var(--muted); font-size: 0.85rem; }
+.summary-product { margin: 0.9rem 0 1rem; color: var(--muted); font-size: 0.85rem; }
+.summary-compatibility { display: grid; gap: 3px; margin: 0 0 1.6rem; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 0.8rem; line-height: 1.5; }
+.summary-compatibility strong { color: var(--ink); font-weight: 700; }
+.summary-compatibility span { color: var(--ink-soft); }
 .summary-lines { display: grid; gap: 1rem; margin: 0 0 1.6rem; font-size: 0.85rem; }
 .summary-lines > div { display: flex; justify-content: space-between; gap: 12px; }
 .summary-lines dt { color: var(--muted); }
