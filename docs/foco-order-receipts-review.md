@@ -31,3 +31,9 @@ No deployment, production enablement, external email, actual test payment or key
 - The authorized test process received the key through a local FIFO, not a secret-bearing disk file. The FIFO was removed and the browser-side working copy cleared after storage/send verification. Synthetic test script and non-secret result are in ignored `.artifacts/resend-verification/`.
 
 This completes key provisioning, secure storage and the email smoke test only. Wompi credentials/callback, hosted function execution, durable order storage and an end-to-end sandbox purchase are still unverified. Checkout remains gated; no deployment, real transaction or production activation occurred.
+
+## Wompi connection preparation — 2026-09-21
+
+The connection review caught a deployment blocker: `CONTEXT` is a build-time variable and is not automatically supplied in Functions runtime. Both handlers now pass Netlify's trusted `context.deploy.context` into the commerce runtime. A configured `CONTEXT=production` cannot bypass a missing/preview deploy context. **52 tests and the static build passed** after this correction.
+
+References: [Netlify Functions environment variables](https://docs.netlify.com/build/functions/environment-variables/) and [Functions deploy context](https://docs.netlify.com/build/functions/api/#deploy).

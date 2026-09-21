@@ -1,10 +1,10 @@
 import { runtime } from '../../server/foco/runtime.mjs';
 import { json, readJSON, errorResponse, checkoutOriginAllowed } from '../../server/foco/http.mjs';
-export default async request => {
+export default async (request, context) => {
     try {
         if (!checkoutOriginAllowed(request, process.env)) return json({ error: 'origin_not_allowed' }, 403);
         const input = await readJSON(request, 4096);
-        const commerce = await runtime();
+        const commerce = await runtime(context);
         return json(await commerce.createCheckout(input));
     } catch (error) { return errorResponse(error); }
 };

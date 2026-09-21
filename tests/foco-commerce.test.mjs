@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { makeCommerce, environment, verifyWompiEvent } from '../server/foco/commerce.mjs';
+import { runtimeEnvironment } from '../server/foco/runtime.mjs';
 import { readJSON, checkoutOriginAllowed } from '../server/foco/http.mjs';
 import { FOCO_CHECKOUT, getOffer } from '../foco/checkout-config.mjs';
 
@@ -104,6 +105,15 @@ test('disabled checkout and stock threshold fail closed on server',async()=>{
 test('production credentials cannot run in preview or mismatch environments',()=>{
     assert.throws(()=>environment({...fixtureEnv(),WOMPI_ENVIRONMENT:'prod'}),{code:'production_context_required'});
     assert.throws(()=>environment({...fixtureEnv(),WOMPI_PRIVATE_KEY:'prv_prod_fixture'}),{code:'commerce_not_configured'});
+});
+test('Functions runtime uses the trusted deploy context, not a build-only or configured variable',()=>{
+    const variables = { WOMPI_ENVIRONMENT: 'prod', WOMPI_PRIVATE_KEY: 'prv_prod_fixture',
+        WOMPI_PUBLIC_KEY: 'pub_prod_fixture', WOMPI_EVENTS_SECRET: 'prod_events_fixture' };
+    assert.equal(environment(runtimeEnvironment({ deploy: { context: 'production' } }, variables)).mode, 'prod');
+    for (const context of [undefined, {}, { deploy: { context: 'deploy-preview' } }, { deploy: { context: 'branch-deploy' } }]) {
+        assert.throws(() => environment(runtimeEnvironment(context, { ...variables, CONTEXT: 'production' })),
+            { code: 'production_context_required' });
+    }
 });
 test('a mismatched provider link is never returned or retried automatically',async()=>{
     for(const changeLink of [l=>l.amount_in_cents=1,l=>l.collect_shipping=false,l=>l.single_use=false,l=>l.sku='wrong',
