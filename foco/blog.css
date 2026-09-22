@@ -1,0 +1,11 @@
+.blog-page {
+    width: min(calc(100% - 48px), 1280px);
+    min-height: 50svh;
+    margin: 0 auto;
+    padding: clamp(72px, 12vw, 144px) clamp(8px, 4vw, 52px);
+}
+.blog-page h1 { margin: 0; font-size: clamp(3.5rem, 9vw, 7rem); font-weight: 500; letter-spacing: -0.065em; line-height: 1.05; }
+.blog-page p { margin: 24px 0 0; color: var(--muted); font-size: 0.95rem; }
+@media (max-width: 720px) {
+    .blog-page { width: calc(100% - 30px); min-height: 44svh; }
+}

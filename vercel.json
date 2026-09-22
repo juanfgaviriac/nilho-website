@@ -102,6 +102,11 @@
       "source": "/foco/comprar/",
       "destination": "/comprar/",
       "permanent": true
+    },
+    {
+      "source": "/foco/blog/:path*",
+      "destination": "/blog/:path*",
+      "permanent": true
     }
   ],
   "headers": [

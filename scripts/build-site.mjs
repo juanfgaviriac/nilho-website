@@ -16,7 +16,7 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
 }
 for (const dir of ['assets','foco']) await cp(new URL(dir, root), new URL(`dist/${dir}`, root), { recursive: true });
 const homepage = await readFile(new URL('foco/index.html', root), 'utf8');
-for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
+for (const path of ['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
     const file = new URL(`dist/foco/${path}index.html`, root);
     let html = await readFile(file, 'utf8');
     if (path === 'compra/' || path === 'compra/privacidad/') html = renderCommercePage(html);

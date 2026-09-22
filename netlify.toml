@@ -67,3 +67,9 @@
   to = "https://getfoco.co/comprar/"
   status = 301
   force = true
+
+[[redirects]]
+  from = "https://nilho.co/foco/blog/*"
+  to = "https://getfoco.co/blog/:splat"
+  status = 301
+  force = true

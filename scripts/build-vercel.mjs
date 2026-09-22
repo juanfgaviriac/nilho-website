@@ -19,7 +19,7 @@ const iconLinks = `    <link rel="icon" href="/foco/assets/favicon/favicon.ico" 
     <link rel="manifest" href="/foco/assets/favicon/site.webmanifest">
 `;
 await cp(new URL('foco/assets/favicon/favicon.ico',root),new URL('favicon.ico',out));
-for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
+for (const path of ['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
     const source = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
     let html = path === 'compra/' || path === 'compra/privacidad/' ? renderCommercePage(source) : source;
     html = renderSharedFooter(html, homepage);
@@ -28,7 +28,7 @@ for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soport
     await writeFile(new URL(`foco/${path}index.html`,out),html);
     await mkdir(new URL(path,out),{recursive:true});
     // Archives remain byte-for-byte original. Only current pages get clean links.
-    await writeFile(new URL(`${path}index.html`,out),html.replaceAll('href="/foco/#comprar"', 'href="/comprar/"').replace(/href="\/foco\/(?=[#"]|(?:comprar|pago|privacidad|terminos|soporte|compra)\/)/g,'href="/'));
+    await writeFile(new URL(`${path}index.html`,out),html.replaceAll('href="/foco/#comprar"', 'href="/comprar/"').replace(/href="\/foco\/(?=[#"]|(?:blog|comprar|pago|privacidad|terminos|soporte|compra)\/)/g,'href="/'));
 }
 await cp(new URL('foco/compra/versiones/',root),new URL('compra/versiones/',out),{recursive:true});
 await writeFile(new URL('robots.txt',out),'User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: https://getfoco.co/sitemap.xml\n');
