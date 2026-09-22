@@ -6,7 +6,7 @@ import webhook from '../netlify/functions/foco-wompi.mjs';
 test('legacy production checkout cannot create a second order ledger', async () => {
     const response = await checkout(new Request('https://nilho.co/api/foco/checkout', { method: 'POST' }), { deploy: { context: 'production' } });
     assert.equal(response.status, 410);
-    assert.deepEqual(await response.json(), { error: 'checkout_moved', checkoutURL: 'https://getfoco.co/#comprar' });
+    assert.deepEqual(await response.json(), { error: 'checkout_moved', checkoutURL: 'https://getfoco.co/comprar/' });
 });
 
 test('legacy webhook preserves POST payload and rejection status from the new verifier', async t => {

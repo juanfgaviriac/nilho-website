@@ -88,6 +88,16 @@
       "source": "/foco/compra/:path*/",
       "destination": "/compra/:path*/",
       "permanent": true
+    },
+    {
+      "source": "/foco/comprar",
+      "destination": "/comprar/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/comprar/",
+      "destination": "/comprar/",
+      "permanent": true
     }
   ],
   "headers": [

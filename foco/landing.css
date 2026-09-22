@@ -852,3 +852,8 @@ h1 span {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Footer must wrap independently of checkout styles on the landing. */
+.site-footer > * { min-width: 0; }
+.site-footer .footer-links { flex-wrap: wrap; }
+.site-footer a { min-height: 44px; display: inline-flex; align-items: center; }

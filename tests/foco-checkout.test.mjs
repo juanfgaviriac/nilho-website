@@ -73,16 +73,29 @@ test('result accepts only a bounded transaction id, never a claimed payment stat
     }
 });
 
-test('all three purchase CTAs lead to checkout; no address form or price literals in HTML', () => {
+test('landing links to the dedicated cart without loading checkout controls', () => {
     const html = readFileSync(new URL('../foco/index.html', import.meta.url), 'utf8');
-    assert.equal((html.match(/href="#comprar" data-checkout-open/g) || []).length, 3);
-    assert.equal((html.match(/>Comprar Foco<\/a>/g) || []).length, 3);
-    assert.doesNotMatch(html, /mailto:.*Quiero|<form|100000|200000|250000/);
-    assert.match(html, /id="wompi-pay"[^>]*disabled/);
-    assert.match(html, /href="\/foco\/compra\/"/);
-    assert.match(html, /id="purchase-consent"/);
-    assert.match(html, /role="radiogroup"/);
-    assert.match(html, /role="status" aria-live="polite"/);
+    const links = [...html.matchAll(/href="([^"]+)" data-checkout-open/g)];
+    assert.ok(links.length >= 2);
+    for (const link of links) assert.equal(link[1], '/comprar/');
+    assert.doesNotMatch(html, /id="wompi-pay"|id="purchase-consent"|checkout\.js/);
+    const page = readFileSync(new URL('../foco/comprar/index.html', import.meta.url), 'utf8');
+    assert.match(page, /id="wompi-pay"[^>]*disabled/);
+    assert.match(page, /href="\/compra\/"/);
+    assert.match(page, /id="purchase-consent"/);
+    assert.match(page, /role="radiogroup"/);
+    assert.match(page, /role="status" aria-live="polite"/);
+    assert.doesNotMatch(page, /<form|100000|200000|250000/);
+});
+
+test('shared cart anchors preserve campaign parameters and lead to the new page', () => {
+    const script = readFileSync(new URL('../foco/landing.js', import.meta.url), 'utf8');
+    assert.match(script, /location.hash === '#comprar'/);
+    assert.match(script, /location.replace\('\/comprar\/' \+ location.search\)/);
+    const build = readFileSync(new URL('../scripts/build-vercel.mjs', import.meta.url), 'utf8');
+    assert.match(build, /'comprar\/'/);
+    const routes = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')).redirects;
+    assert.ok(routes.some(r => r.source === '/foco/comprar/' && r.destination === '/comprar/'));
 });
 
 test('result has neutral copy and no automatic fulfilment or trust in URL status', () => {
@@ -131,7 +144,7 @@ test('checkout requires explicit current consent for the selected offer', () => 
 });
 
 test('consent is not preselected or persisted as fake evidence and resets on return', () => {
-    const html = readFileSync(new URL('../foco/index.html', import.meta.url), 'utf8');
+    const html = readFileSync(new URL('../foco/comprar/index.html', import.meta.url), 'utf8');
     const script = readFileSync(new URL('../foco/checkout.js', import.meta.url), 'utf8');
     assert.doesNotMatch(html.match(/<input[^>]+id="purchase-consent"[^>]*>/)[0], /\schecked(?:[\s=>])/);
     assert.doesNotMatch(script, /localStorage|sessionStorage|document\.cookie/);

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f7f4">
+    <title>Comprar Foco — Tu tiempo vuelve a ti</title>
+    <meta name="description" content="Elige tus tarjetas Foco para iPhone. Pago único, sin suscripción y envío a toda Colombia. Revisa tu total y paga con Wompi.">
+    <link rel="canonical" href="https://getfoco.co/comprar/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/foco/landing.css?v=cart-1">
+    <link rel="stylesheet" href="/foco/checkout.css?v=cart-1">
+    <link rel="stylesheet" href="/foco/cart.css?v=1">
+    <script type="module" src="/foco/checkout.js?v=cart-1"></script>
+</head>
+<body class="cart-page">
+    <a class="skip-link" href="#comprar">Ir a tu pedido</a>
+    <header class="cart-header">
+        <a class="brand" href="/" aria-label="Foco, inicio"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>FOCO</span></a>
+        <a class="cart-back" href="/"><span aria-hidden="true">←</span> Volver a Foco</a>
+    </header>
+    <main class="checkout-section cart-main" id="comprar" aria-labelledby="checkout-title" tabindex="-1" data-quantity="2">
+        <div class="cart-intro">
+            <p class="cart-eyebrow">MENOS DISTRACCIONES. MÁS VIDA.</p>
+            <h1 id="checkout-title">Elige tu Foco.</h1>
+            <p>Un pequeño gesto. Todo el tiempo por recuperar.</p>
+        </div>
+        <div class="checkout-layout">
+            <div class="checkout-selection">
+                <div class="cart-product">
+                    <div class="cart-art" aria-hidden="true">
+                        <div class="cart-card cart-card--third"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+                        <div class="cart-card cart-card--second"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+                        <div class="cart-card cart-card--first"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+                    </div>
+                    <div class="cart-product-copy"><h2>Tarjeta Foco</h2><p>Tu señal para volver<br>a lo que importa.</p><span class="cart-product-detail">NFC · SIN BATERÍA</span></div>
+                </div>
+                <div class="cart-selection-heading"><h2 id="offer-legend">¿Cuántas tarjetas?</h2><span>Un solo pago.</span></div>
+                <div class="offer-options" role="radiogroup" aria-labelledby="offer-legend" id="offer-options"></div>
+                <p class="cart-recommendation"><span aria-hidden="true">↗</span> Dos tarjetas. Una para ti, otra para compartir. El envío va por nuestra cuenta.</p>
+                <details class="cart-details">
+                    <summary>Envíos y garantía <span aria-hidden="true">+</span></summary>
+                    <div><p>Despachamos desde Bogotá en 1–2 días hábiles desde el pago aprobado. La entrega toma 3–10 días hábiles en total, incluido el despacho.</p><p>12 meses de garantía. <a href="/compra/">Ver condiciones de compra, envíos y devoluciones</a>.</p></div>
+                </details>
+                <noscript><p class="checkout-notice">Activa JavaScript para elegir tus tarjetas y ver el total antes de pagar. También puedes escribirnos a <a href="mailto:team@getfoco.co">team@getfoco.co</a>.</p></noscript>
+            </div>
+                <aside class="order-summary" aria-labelledby="summary-title">
+                    <div class="summary-heading"><h2 id="summary-title">Tu pedido</h2><span class="summary-count" id="summary-count">—</span></div>
+                    <p class="summary-product" id="summary-product">Tarjeta Foco</p>
+                    <p class="summary-compatibility" id="summary-compatibility"><strong>Solo para iPhone</strong><span>iOS 17.6 o posterior. No compatible con Android.</span></p>
+                    <dl class="summary-lines">
+                        <div><dt>Subtotal</dt><dd id="summary-subtotal">—</dd></div>
+                        <div id="summary-discount-row" hidden><dt>Descuento del pack</dt><dd id="summary-discount"></dd></div>
+                        <div id="summary-shipping-row"><dt>Envío a Colombia</dt><dd id="summary-shipping">—</dd></div>
+                    </dl>
+                    <div class="summary-footer">
+                        <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
+                        <p class="checkout-availability" id="checkout-availability"></p><p class="cart-delivery">En tus manos en <strong>3–10 días hábiles</strong>.<br>Te enviamos la guía por WhatsApp al despachar.</p>
+                        <div class="checkout-consent">
+                            <input type="checkbox" id="purchase-consent" aria-labelledby="consent-text" autocomplete="off">
+                            <label id="consent-text" for="purchase-consent">Acepto las <a href="/compra/" target="_blank" rel="noopener">condiciones de compra<span class="sr-only"> (abre otra pestaña)</span></a> y autorizo el uso de mis datos para gestionar el pedido según el <a href="/compra/privacidad/" target="_blank" rel="noopener">aviso de privacidad<span class="sr-only"> (abre otra pestaña)</span></a>.</label>
+                        </div>
+                        <p class="checkout-notice" id="payment-notice" role="status" aria-live="polite">Acepta las condiciones para continuar.</p>
+                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="summary-compatibility payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
+                        <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
+                        <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Necesitas ayuda? Escríbenos <span aria-hidden="true">↗</span></a>
+                    </div>
+                </aside>
+
+        </div>
+        <p class="sr-only" id="checkout-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+    </main>
+    <footer class="site-footer">
+        <div class="footer-brand">
+            <span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span>FOCO</span>
+        </div>
+        <div class="footer-links">
+            <a href="/soporte/">Soporte</a>
+            <a href="/privacidad/">Privacidad</a>
+            <a href="/terminos/">Términos de la app</a>
+            <a href="/compra/">Condiciones de compra</a>
+            <a href="https://www.sic.gov.co/">Protección al consumidor · SIC</a>
+        </div>
+        <p>© 2026 Nilho S.A.S.</p>
+    </footer>
+</body>
+</html>

@@ -15,10 +15,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="/foco/assets/film/foco-tap-in-v1.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="/foco/landing.css?v=features-4">
-    <link rel="stylesheet" href="/foco/checkout.css?v=5">
-    <script src="/foco/landing.js?v=features-1" defer></script>
-    <script type="module" src="/foco/checkout.js?v=4"></script>
+    <link rel="stylesheet" href="/foco/landing.css?v=cart-1">
+    <script src="/foco/landing.js?v=cart-1" defer></script>
 </head>
 <body>
     <a class="skip-link" href="#contenido">Ir al contenido</a>
@@ -31,7 +29,7 @@
         <nav class="site-nav" aria-label="Navegación principal">
             <a href="#como-funciona">Cómo funciona</a>
             <a href="#la-app">La app</a>
-            <a class="nav-cta" href="#comprar" data-checkout-open>Comprar Foco</a>
+            <a class="nav-cta" href="/comprar/" data-checkout-open>Comprar Foco</a>
         </nav>
     </header>
 
@@ -61,7 +59,7 @@
             <div class="hero-details">
                 <p class="hero-lede">Pausa las apps que te distraen con un toque. Deja la tarjeta a un lado y vuelve a lo que importa.</p>
                 <div class="hero-actions">
-                    <a class="button button--dark" href="#comprar" data-checkout-open>Comprar Foco</a>
+                    <a class="button button--dark" href="/comprar/" data-checkout-open>Comprar Foco</a>
                     <a class="text-link" href="#como-funciona">Cómo funciona <span aria-hidden="true">↓</span></a>
                 </div>
                 <p class="microcopy">Sin batería · Sin Bluetooth · Diseñada en Colombia</p>
@@ -172,57 +170,6 @@
             </div>
         </section>
 
-        <section class="checkout-section" id="comprar" aria-labelledby="checkout-title" tabindex="-1">
-            <div class="checkout-heading">
-                <div>
-                    <h2 id="checkout-title">Para ti.<br>O para compartir.</h2>
-                </div>
-                <p>Elige tus tarjetas. El tiempo que recuperas lo decides tú.</p>
-            </div>
-            <div class="checkout-layout">
-                <div class="checkout-selection">
-                    <div class="checkout-product">
-                        <div class="checkout-card-art" aria-hidden="true">
-                            <span class="foco-mark foco-mark--small"><i></i><i></i><i></i><i></i></span>
-                        </div>
-                        <div><h3>Tarjeta Foco</h3><p>Solo para iPhone.<br>No compatible con Android.</p></div>
-                    </div>
-                    <h3 class="offer-legend" id="offer-legend">¿Cuántas tarjetas necesitas?</h3>
-                    <div class="offer-options" role="radiogroup" aria-labelledby="offer-legend" id="offer-options"></div>
-                    <dl class="checkout-details">
-                        <div><dt>En tus manos</dt><dd>Entrega en 3–10 días hábiles desde el pago aprobado. Incluye el despacho en 1–2 días hábiles.</dd></div>
-                        <div><dt>Con tranquilidad</dt><dd>12 meses de garantía. Seguimiento por WhatsApp después del despacho.</dd></div>
-                        <div><dt>Compatibilidad</dt><dd>Solo para iPhone con iOS 17.6 o posterior y permiso de Tiempo en Pantalla. No compatible con Android.</dd></div>
-                    </dl>
-                    <p class="checkout-policy" id="checkout-policy"><a href="/foco/compra/">Compra, envíos y garantía <span aria-hidden="true">↗</span></a></p>
-                    <noscript><p class="checkout-notice">Activa JavaScript para elegir tus tarjetas y ver el total antes de pagar.</p></noscript>
-                </div>
-                <aside class="order-summary" aria-labelledby="summary-title">
-                    <div class="summary-heading"><h3 id="summary-title">Tu pedido</h3><span class="summary-count" id="summary-count">—</span></div>
-                    <p class="summary-product" id="summary-product">Tarjeta Foco</p>
-                    <p class="summary-compatibility" id="summary-compatibility"><strong>Solo para iPhone</strong> <span>No compatible con Android.</span></p>
-                    <dl class="summary-lines">
-                        <div><dt>Subtotal</dt><dd id="summary-subtotal">—</dd></div>
-                        <div id="summary-discount-row" hidden><dt>Descuento del pack</dt><dd id="summary-discount"></dd></div>
-                        <div id="summary-shipping-row"><dt>Envío a Colombia</dt><dd id="summary-shipping">—</dd></div>
-                    </dl>
-                    <div class="summary-footer">
-                        <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
-                        <p class="checkout-availability" id="checkout-availability"></p>
-                        <div class="checkout-consent">
-                            <input type="checkbox" id="purchase-consent" aria-labelledby="consent-text" autocomplete="off">
-                            <label id="consent-text" for="purchase-consent">Acepto las <a href="/foco/compra/" target="_blank" rel="noopener">condiciones de compra<span class="sr-only"> (abre otra pestaña)</span></a> y autorizo el uso de mis datos para gestionar el pedido según el <a href="/foco/compra/privacidad/" target="_blank" rel="noopener">aviso de privacidad<span class="sr-only"> (abre otra pestaña)</span></a>.</label>
-                        </div>
-                        <p class="checkout-notice" id="payment-notice" role="status" aria-live="polite">Acepta las condiciones para continuar.</p>
-                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="summary-compatibility payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
-                        <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
-                        <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Prefieres WhatsApp? Hablemos <span aria-hidden="true">↗</span></a>
-                    </div>
-                </aside>
-            </div>
-            <p class="sr-only" id="checkout-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
-        </section>
-
         <section class="faq-section" id="faq" aria-labelledby="faq-title">
             <div class="faq-heading">
                 <h2 id="faq-title">Preguntas frecuentes</h2>
@@ -249,7 +196,7 @@
                     <p>Foco funciona con iPhone con iOS 17.6 o posterior y permiso de Tiempo en Pantalla. No es compatible con Android.</p>
                 </details>
             </div>
-            <a class="faq-cta button button--dark" href="#comprar" data-checkout-open>Comprar Foco</a>
+            <a class="faq-cta button button--dark" href="/comprar/" data-checkout-open>Comprar Foco</a>
         </section>
     </main>
 

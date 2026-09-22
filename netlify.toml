@@ -61,3 +61,9 @@
   [headers.values]
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"
+
+[[redirects]]
+  from = "https://nilho.co/foco/comprar/*"
+  to = "https://getfoco.co/comprar/"
+  status = 301
+  force = true

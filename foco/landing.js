@@ -1,3 +1,6 @@
+// Preserve previously shared cart anchors after moving checkout to its own page.
+if (location.hash === '#comprar') location.replace('/comprar/' + location.search);
+
 document.documentElement.classList.add("js");
 
 const revealItems = document.querySelectorAll(".reveal");

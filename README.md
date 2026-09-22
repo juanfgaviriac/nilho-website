@@ -12,7 +12,7 @@ npm run preview:receipt
 python3 -m http.server 8766 --bind 127.0.0.1
 ```
 
-Checkout: `http://127.0.0.1:8766/foco/#comprar`. Synthetic email preview: `http://127.0.0.1:8766/.artifacts/receipt-preview.html`. Python serves static files only, not the API. The receipt preview is excluded from the production build. Never expose this source-directory development server publicly.
+Checkout source: `http://127.0.0.1:8766/foco/comprar/`. To preview canonical paths, run `npm run build:vercel` and serve `dist/`; the cart is at `/comprar/`. Synthetic email preview: `http://127.0.0.1:8766/.artifacts/receipt-preview.html`. Python serves static files only, not the API. The receipt preview is excluded from the production build. Never expose this source-directory development server publicly.
 
 ## Current purchase flow — production enabled
 
@@ -40,7 +40,7 @@ The `getfoco` project belongs to `juanfgaviriacs-projects`. `npm run build:verce
 builds only Foco; the original `npm run build` still builds the Nilho corporate
 site for Netlify. Keep both sites' existing editorial/UI changes when merging.
 
-Canonical routes: `/`, `/soporte/`, `/privacidad/`, `/terminos/`, `/compra/`,
+Canonical routes: `/`, `/comprar/`, `/soporte/`, `/privacidad/`, `/terminos/`, `/compra/`,
 `/compra/privacidad/`, `/pago/`. Legacy `/foco/` page paths redirect to these;
 `/foco/` assets remain available. Preserve query strings, particularly Wompi's
 transaction `id`. Never treat that id as proof of payment.
@@ -67,3 +67,15 @@ identity; support replies sent manually still need that client setup.
 Migration checks, actual new-domain email delivery and exact verification limits
 are recorded in [the migration report](docs/foco-vercel-migration.md).
 The browser's success URL is not a paid order. Fulfil only Wompi APPROVED orders.
+
+### Dedicated cart page
+
+`/comprar/` is the purchase page; landing purchase links navigate there. Old
+`#comprar` links redirect with their query string intact. The two-card offer is
+selected by default, with the full COP total and free shipping visible. All
+three offers use the same pricing configuration and existing server checkout.
+The landing no longer loads the order form or checkout module.
+
+The cart preserves radio keyboard navigation, explicit consent, reduced motion,
+retry idempotency, and back/forward state reconciliation. A failed payment-link
+request keeps the selected offer available for retry and shows WhatsApp help.

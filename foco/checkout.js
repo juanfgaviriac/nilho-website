@@ -65,12 +65,12 @@ for (const value of quantities) {
     button.setAttribute('role', 'radio');
     button.dataset.quantity = value;
     // All content is static product configuration, never customer/URL input.
-    button.innerHTML = `<span class="offer-top"><span class="offer-badge">${offer.badge || 'Para ti'}</span><span class="offer-radio" aria-hidden="true"></span></span>
-        <span class="offer-name">${offerName(value)}</span>
+    button.innerHTML = `<span class="offer-radio" aria-hidden="true"></span>
+        <span class="offer-title-line"><span class="offer-name">${offerName(value)}</span>${offer.badge ? `<span class="offer-badge">${offer.badge}</span>` : ''}</span>
         <span class="offer-price">${formatCOP(offer.total)}</span>
-        <span class="offer-total-label">Total en COP</span>
+        <span class="offer-total-label">TOTAL COP</span>
         <span class="offer-shipping">${offer.shipping ? `${formatCOP(offer.shipping)} de envío incluido` : 'Envío gratis'}</span>
-        <span class="offer-saving">${offer.discount ? `Ahorras ${formatCOP(offer.discount)}` : '\u00a0'}</span>`;
+        ${offer.discount ? `<span class="offer-saving">Ahorras ${formatCOP(offer.discount)}</span>` : ''}`;
     button.setAttribute('aria-label', `${offerName(value)}. Total ${formatCOP(offer.total)} COP. ${offer.shipping ? `Incluye ${formatCOP(offer.shipping)} de envío` : 'Envío gratis'}.${offer.discount ? ` Ahorras ${formatCOP(offer.discount)}.` : ''}${offer.badge ? ` ${offer.badge}.` : ''}`);
     button.addEventListener('click', event => select(value, true, event.detail > 0));
     button.addEventListener('keydown', event => {
@@ -94,6 +94,7 @@ function select(value, announce = true, animate = false) {
     const frame = canAnimate ? captureSummary() : null;
     if (!canAnimate) settleSummaryMotion();
     quantity = value;
+    checkout.dataset.quantity = String(quantity);
     const offer = getOffer(quantity);
     for (const button of options.children) {
         const selected = Number(button.dataset.quantity) === quantity;
@@ -106,6 +107,7 @@ function select(value, announce = true, animate = false) {
     discountRow.hidden = offer.discount === 0;
     setText('summary-discount', offer.discount ? `−${formatCOP(offer.discount)}` : '');
     setText('summary-shipping', offer.shipping ? formatCOP(offer.shipping) : 'Envío gratis');
+    document.getElementById('summary-shipping').dataset.free = String(offer.shipping === 0);
     setText('summary-total', formatCOP(offer.total));
     updatePayment();
     const whatsapp = document.querySelector('#checkout-whatsapp');
@@ -142,10 +144,6 @@ pay.addEventListener('click', async () => {
         updatePayment();
     }
 });
-
-for (const link of document.querySelectorAll('[data-checkout-open]')) {
-    link.addEventListener('click', () => checkout.focus({ preventScroll: true }));
-}
 
 function updatePayment() {
     const available = checkoutAvailable();
