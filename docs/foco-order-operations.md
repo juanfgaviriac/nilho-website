@@ -1,13 +1,13 @@
 # Operación de pedidos Foco
 
-Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 tarjetas. Sitio pendiente de publicación; no hay despachos ni pedidos reales procesados desde esta tarea.
+Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 tarjetas. Sitio publicado con checkout de producción autorizado; esta tarea no ha realizado compras con dinero real ni despachos.
 
-## Antes de habilitar compras
+## Configuración de lanzamiento
 
-1. Configurar el flujo por pedido y Resend siguiendo el [runbook vigente](foco-checkout-launch.md). Verificar una compra sandbox, la aceptación almacenada y la entrega real de un solo comprobante antes de publicar.
+1. Flujo por pedido y Resend configurados según el [runbook vigente](foco-checkout-launch.md). Compra sandbox, aceptación almacenada y entrega de un comprobante verificadas. Checkout y correos habilitados en producción.
 2. El usuario confirmó aprobación de Wompi y decidió mantener los precios sin IVA añadido. El correo es un comprobante de compra, no una factura electrónica; no determina una exención tributaria ni reemplaza una factura exigible.
 3. El usuario aplazó la selección de transportadora. Despacho desde Bogotá, guía por WhatsApp y plazos aprobados se mantienen. Escoger el servicio al despachar, según peso/medidas reales y destino; no se ha cotizado ni comprado una guía.
-4. Retirar los antiguos enlaces reutilizables durante el cambio aprobado. No hay despliegue ni envío de correo real realizado desde esta implementación.
+4. Los tres enlaces reutilizables anteriores se desactivaron durante el cambio aprobado. Revisar el primer pago real y su comprobante en producción; la entrega verificada hasta ahora corresponde a la prueba sandbox.
 
 ## Por cada pedido
 
