@@ -509,9 +509,8 @@ h1 span {
     padding: var(--space-7) 0;
 }
 
-.app-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-bottom: 3rem; }
-.app-heading h2 span { color: var(--muted); }
-.app-heading > p { margin: 0 0 0.25rem; padding-right: 2rem; color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.7; }
+.app-heading { margin-bottom: 3rem; text-align: center; }
+.app-heading h2 span { display: inline-block; }
 .feature-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 40px) / 3); gap: 20px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 0 8px; }
 .feature-track::-webkit-scrollbar { display: none; }
 .feature-track:focus-visible { outline: 2px solid var(--forest); outline-offset: 5px; border-radius: 1.5rem; }
@@ -538,13 +537,10 @@ h1 span {
 @media (max-width: 1100px) {
     .feature-track { grid-auto-columns: 60%; gap: 16px; }
     .feature-copy { padding: 1.3rem; }
-    .app-heading > p { padding-right: 0; }
 }
 @media (max-width: 720px) {
-    .app-heading { display: block; margin-bottom: 2rem; }
-    .app-heading > p { margin-top: 1.5rem; font-size: .95rem; }
-    .app-heading > p br { display: none; }
-    .app-heading > p br::after { content: " "; }
+    .app-heading { margin-bottom: 2rem; }
+    .app-heading h2 span { display: block; }
     .feature-track { grid-auto-columns: 90%; gap: 12px; }
     .feature-card { border-radius: 1.5rem; }
     .feature-copy { min-height: 0; margin: 0; padding: 1.25rem; }
