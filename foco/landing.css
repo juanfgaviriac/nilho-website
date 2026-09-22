@@ -54,6 +54,12 @@ a {
     color: inherit;
 }
 
+/* Purchase calls to action use a simple text label across all pages. */
+a[href="/comprar/"] > span[aria-hidden="true"],
+a[href="/foco/comprar/"] > span[aria-hidden="true"] {
+    display: none;
+}
+
 button {
     color: inherit;
 }
