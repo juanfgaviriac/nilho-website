@@ -118,7 +118,6 @@
 .checkout-details dt { font-weight: 700; }
 .checkout-details dd { margin: 0; color: var(--ink-soft); }
 .checkout-policy a { gap: 10px; }
-.checkout-seller { font-size: 0.72rem; line-height: 1.7; color: var(--muted); overflow-wrap: anywhere; margin: 0.5rem 0 0; }
 .checkout-availability { margin: 1.1rem 0; font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
 .checkout-consent { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 2px; align-items: start; }
 .checkout-consent input { appearance: none; position: relative; width: 44px; height: 44px; margin: -5px 0 0; background: transparent; border: 0; cursor: pointer; }

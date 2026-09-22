@@ -160,9 +160,6 @@ function updatePayment() {
         !consent.checked ? 'Acepta las condiciones para continuar.' : 'Completa el pago y la dirección de envío en Wompi.'));
 }
 consent.addEventListener('change', updatePayment);
-const seller = FOCO_CHECKOUT.commerce.seller;
-if (seller.name && seller.nit) setText('checkout-seller', `Vendido por ${seller.name} · NIT ${seller.nit}`);
-
 // No persisted cart or query-string prices: refresh starts with the configured default;
 // restoring this document from the back/forward cache reconciles every displayed value.
 window.addEventListener('pageshow', () => { busy = false; attemptId = null; consent.checked = false; select(quantity, false); });
