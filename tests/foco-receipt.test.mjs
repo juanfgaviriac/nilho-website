@@ -38,7 +38,7 @@ test('uses a deterministic Resend key and fixed sender; test makes no network re
     assert.deepEqual(await sendOrderReceipt({...fixture(),apiKey:'re_test_fixture',fetchImpl}),{emailId:'email-test-id'});
     assert.equal(requests[0].url,'https://api.resend.com/emails');
     assert.equal(requests[0].options.headers['Idempotency-Key'],'foco-receipt-v1/test-transaction');
-    assert.equal(JSON.parse(requests[0].options.body).reply_to,'team@nilho.co');
+    assert.equal(JSON.parse(requests[0].options.body).reply_to,'team@getfoco.co');
     await assert.rejects(sendOrderReceipt({...fixture(),apiKey:'re_test_fixture',from:'Other <other@elsewhere.example>',fetchImpl}));
     assert.equal(requests.length,1);
 });

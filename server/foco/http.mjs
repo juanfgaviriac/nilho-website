@@ -27,7 +27,7 @@ export function errorResponse(error) {
 }
 export function checkoutOriginAllowed(request, env) {
     const origin = request.headers.get('origin');
-    if (env.WOMPI_ENVIRONMENT === 'prod') return origin === 'https://nilho.co';
+    if (env.WOMPI_ENVIRONMENT === 'prod') return origin === 'https://getfoco.co';
     // Sandbox only: same-origin local/preview requests. No wildcard CORS.
     return Boolean(origin && origin === new URL(request.url).origin);
 }

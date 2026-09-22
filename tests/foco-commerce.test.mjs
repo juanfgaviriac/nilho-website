@@ -178,13 +178,13 @@ test('ambiguous email after 23 hours requires manual review instead of risking a
     assert.equal((await h.store.get('receipts/tx-fixture')).state,'manual_review');
 });
 test('HTTP rejects oversized, malformed and non-JSON input and wrong origins',async()=>{
-    const req=(body,headers={})=>new Request('https://nilho.co/api/foco/checkout',{method:'POST',headers:{'content-type':'application/json',...headers},body});
+    const req=(body,headers={})=>new Request('https://getfoco.co/api/foco/checkout',{method:'POST',headers:{'content-type':'application/json',...headers},body});
     await assert.rejects(readJSON(req('a'.repeat(5000)),4096),{code:'request_too_large'});
     await assert.rejects(readJSON(req('{bad'),4096),{code:'invalid_json'});
     await assert.rejects(readJSON(req('{}',{'content-type':'text/plain'}),4096),{code:'json_required'});
     assert.deepEqual(await readJSON(req('{"quantity":2}'),4096),{quantity:2});
     assert.equal(checkoutOriginAllowed(req('{}',{origin:'https://evil.example'}),{WOMPI_ENVIRONMENT:'prod'}),false);
-    assert.equal(checkoutOriginAllowed(req('{}',{origin:'https://nilho.co'}),{WOMPI_ENVIRONMENT:'prod'}),true);
+    assert.equal(checkoutOriginAllowed(req('{}',{origin:'https://getfoco.co'}),{WOMPI_ENVIRONMENT:'prod'}),true);
 });
 test('checkout cannot accept money while email delivery is unconfigured',async()=>{
     for (const change of [h=>h.env.FOCO_EMAIL_ENABLED='false', h=>delete h.env.RESEND_API_KEY]) {

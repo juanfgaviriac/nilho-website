@@ -61,3 +61,40 @@ The final redirect is `https://nilho.co/foco/pago/`. It stays neutral and must b
 `checkout-config.mjs` owns executable prices; `commerce-config.mjs` owns seller/product/stock information. `scripts/policies.mjs` generates fully rendered policy archives in `foco/compra/versiones/`. Build fails if existing archived content changes: bump the appropriate version and preserve the previous file. Receipts retain their original offer, seller and policy links even after prices change. Never overwrite an archive after a sale.
 
 Stock remains manual (30 initially, pause at five). It is **not** automatically reserved or decremented; pending payments and still-active links require reconciliation. The three legacy reusable production offers were deactivated during launch. New issued single-use links must still be paused explicitly when stopping sales; disabling the website alone cannot stop them.
+
+### Foco on getfoco.co (Vercel)
+
+The `getfoco` project belongs to `juanfgaviriacs-projects`. `npm run build:vercel`
+builds only Foco; the original `npm run build` still builds the Nilho corporate
+site for Netlify. Keep both sites' existing editorial/UI changes when merging.
+
+Canonical routes: `/`, `/soporte/`, `/privacidad/`, `/terminos/`, `/compra/`,
+`/compra/privacidad/`, `/pago/`. Legacy `/foco/` page paths redirect to these;
+`/foco/` assets remain available. Preserve query strings, particularly Wompi's
+transaction `id`. Never treat that id as proof of payment.
+
+Vercel Production needs `WOMPI_ENVIRONMENT=prod`, the three `WOMPI_*` credentials,
+`RESEND_API_KEY` limited to sending from getfoco.co, a private production
+`BLOB_READ_WRITE_TOKEN`, and the two `FOCO_*_ENABLED=true` gates. Set these only
+server-side. Preview uses separate test credentials/storage and a fixed
+`FOCO_TEST_EMAIL_TO`. Production credentials fail closed outside `VERCEL_ENV=production`.
+
+Orders, consent and receipt leases use private Vercel Blob storage with uncached
+origin reads, atomic creates, and ETag conditional writes. Never substitute
+cached reads or unconditional writes for that contract. Checkout requests are
+limited to ten per IP per minute; rate-limit keys use an HMAC, not raw IPs.
+
+Wompi production events go to `https://getfoco.co/api/foco/wompi`; new payment
+links return to `https://getfoco.co/pago/`. Old nilho.co event endpoints must
+remain functional during cutover. Pause old checkout creation, recheck its
+production ledger for new orders, then transfer any records before changing the
+webhook. Never run two independent writers against separate order ledgers.
+Do not delete historical policy archives or sandbox evidence.
+
+`team@getfoco.co` sends receipts through Resend; Namecheap forwards incoming
+mail to `team@nilho.co`. That forwarding does not configure Gmail/Mail's "send as"
+identity; support replies sent manually still need that client setup.
+
+Before cutover: verify DNS/TLS, checkout totals, signed event handling, private
+storage isolation, receipt deduplication, email delivery, and old page redirects.
+The browser's success URL is not a paid order. Fulfil only Wompi APPROVED orders.

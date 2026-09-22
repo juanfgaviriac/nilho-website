@@ -9,7 +9,7 @@ export const FOCO_CHECKOUT = Object.freeze({
     // Final publication gate; merchant facts and consent evidence are checked separately.
     productionEnabled: true,
     endpoint: '/api/foco/checkout',
-    redirectUrl: 'https://nilho.co/foco/pago/', // Configured in Wompi; publish this page with checkout.
+    redirectUrl: 'https://getfoco.co/pago/', // Configured in Wompi; publish this page with checkout.
     shippingReturnsUrl: FOCO_COMMERCE.termsUrl,
     commerce: FOCO_COMMERCE,
     currency: 'COP',

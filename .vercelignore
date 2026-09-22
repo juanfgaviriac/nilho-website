@@ -1,0 +1,6 @@
+.git
+.netlify
+.artifacts
+.env*
+node_modules
+dist

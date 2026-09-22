@@ -18,17 +18,3 @@
   [headers.values]
     Cache-Control = "no-store"
     X-Content-Type-Options = "nosniff"
-
-# Keep Nilho's homepage and Foco's order ledger on the same project.
-# Only the Foco hostname serves the product page at its root.
-[[redirects]]
-  from = "https://www.getfoco.co/*"
-  to = "https://getfoco.co/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "https://getfoco.co/"
-  to = "/foco/index.html"
-  status = 200
-  force = true

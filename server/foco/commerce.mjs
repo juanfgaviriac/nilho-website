@@ -88,7 +88,7 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         // No blind retry: an ambiguous POST might already have created a link.
         const link = await wompi('/payment_links', {
             name: `Foco - ${offer.quantity} ${offer.quantity === 1 ? 'tarjeta' : 'tarjetas'}`,
-            description: `Solo para iPhone. ${offer.sku}. Pedido ${orderId}. Condiciones: https://nilho.co/foco/compra/versiones/${input.termsVersion}/terms.html`,
+            description: `Solo para iPhone. ${offer.sku}. Pedido ${orderId}. Condiciones: https://getfoco.co/compra/versiones/${input.termsVersion}/terms.html`,
             single_use: true, collect_shipping: true, currency: 'COP', amount_in_cents: offer.amountInCents,
             sku: orderId, redirect_url: config.redirectUrl, expires_at: order.expiresAt,
         });
