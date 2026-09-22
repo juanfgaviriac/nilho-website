@@ -14,7 +14,7 @@ Owner approved single-use links per order on 21 September 2026. This supersedes 
 ## External setup still required
 
 - **Completed 2026-09-21:** dedicated `Foco Comprobantes` send-only key scoped to `nilho.co`, saved as a production secret on the existing `nilho` Netlify project. Functions-only scope requires an upgrade on this account; the secret uses the plan's Builds/Functions/Runtime scope, with every non-production context empty. No paid upgrade was made. `Foco <team@nilho.co>` is the sender and reply-to is `team@nilho.co`.
-- Wompi sandbox/private/public/events values in a sandbox deploy context; production values only in production. No secrets in git or chat. See `.env.example`. These Wompi values remain unconfigured.
+- **Completed 2026-09-21:** Wompi private/public/events keys saved as secrets: production values only in Production, sandbox values only in Deploy Previews. Branch/agent/local key values remain empty. Each saved masked suffix and context was verified. `WOMPI_ENVIRONMENT` is `prod` in Production and `test` elsewhere; both checkout/email switches remain explicitly false. See `.env.example`.
 - Sandbox webhook points to the authorized sandbox preview `/api/foco/wompi`; production webhook points to `https://nilho.co/api/foco/wompi`. Inspect existing event destinations before modifying; do not break unrelated commerce.
 - Verify Netlify Functions can read the included policy archives and strongly consistent Blobs store. Check existing plan limits before enabling; do not buy a plan without permission.
 - Public client flags stay off and server flags default false until end-to-end readback and final approval. Enabling only the checkout server flag cannot bypass missing email configuration.
@@ -23,7 +23,7 @@ Owner approved single-use links per order on 21 September 2026. This supersedes 
 
 For each of 1, 2 and 3 cards: create a sandbox order, read back Wompi's exact amount (11000000 / 20000000 / 25000000 cents), merchant, single use, shipping, SKU, redirect and expiry. Make one authorized sandbox test payment; inspect stored order/consent and archived policy. Verify one receipt in Resend and actual delivery to an approved recipient. Replay the callback and confirm no second message. Also verify declined/pending payment and expired link behavior. All automated tests mock providers: they are not evidence of the Wompi checks. A standalone authorized Resend test was delivered to team@nilho.co, confirming that key/sender/recipient path only; it did not run through a deployed Netlify function, Wompi or Blobs.
 
-Confirm the result page and versioned policy URLs resolve on the final domain. User reported Wompi approval; settlement and refund operation were not independently tested. Carrier is intentionally deferred; keep the approved delivery promise operational. No added IVA or invented exemption. Email is a commercial receipt, not an electronic tax invoice.
+Confirm the result page and versioned policy URLs resolve on the final domain. User reported Wompi approval, but the merchant dashboard on 2026-09-21 still displayed a banner saying receipts can accumulate while merchant approval is pending and labelled the balance as under review. Confirm withdrawal eligibility before launch; settlement and refunds were not tested. Carrier is intentionally deferred; keep the approved delivery promise operational. No added IVA or invented exemption. Email is a commercial receipt, not an electronic tax invoice.
 
 ## Legacy links to retire before launch
 
