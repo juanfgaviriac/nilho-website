@@ -4,11 +4,26 @@ import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { renderCommercePage } from '../scripts/policies.mjs';
+import { renderSharedFooter } from '../scripts/shared-footer.mjs';
 import { FOCO_CHECKOUT, getOffer, formatCOP } from '../foco/checkout-config.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
 const pages = ['compra/', 'compra/privacidad/', 'soporte/', 'privacidad/', 'terminos/'];
+const footer = html => html.match(/<footer\b[^>]*>[\s\S]*?<\/footer>/)[0];
+
+test('current pages reuse the homepage footer without changing their content', () => {
+    const homepage = read('foco/index.html');
+    for (const page of [...pages, 'comprar/', 'pago/']) {
+        const source = read(`foco/${page}index.html`);
+        const rendered = renderSharedFooter(source, homepage);
+        assert.equal(footer(rendered), footer(homepage));
+        assert.equal(rendered.replace(footer(rendered), ''), source.replace(footer(source), ''));
+    }
+    for (const file of ['commerce.css', 'checkout.css', 'cart.css', 'info-pages.css']) {
+        assert.doesNotMatch(read(`foco/${file}`), /\.site-footer|\.info-footer|\.footer-links/);
+    }
+});
 
 test('all information pages share the accessible storefront navigation and working section indexes', () => {
     for (const page of pages) {
@@ -52,6 +67,11 @@ test('production build publishes complete canonical pages and preserves earlier 
         '2026-09-21.2/terms': 'eb5e1e6cff43b59e2be7bc9d738f81da2d1e7c60d449226dbdee15256a910256',
     };
     execFileSync(process.execPath, ['scripts/build-vercel.mjs'], { cwd: root });
+    const homepageFooter = footer(read('dist/index.html'));
+    for (const page of [...pages, 'comprar/', 'pago/']) {
+        assert.equal(footer(read(`dist/${page}index.html`)), homepageFooter);
+        assert.equal(footer(read(`dist/foco/${page}index.html`)), footer(read('dist/foco/index.html')));
+    }
     for (const page of pages) {
         const html = read(`dist/${page}index.html`);
         assert.doesNotMatch(html, /Pendiente de completar|Compras aún no habilitadas/);

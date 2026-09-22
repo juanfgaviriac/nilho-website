@@ -1,5 +1,6 @@
 import { cp, mkdir, readdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { renderCommercePage, snapshotPolicies } from './policies.mjs';
+import { renderSharedFooter } from './shared-footer.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
 await rm(new URL('dist/', root), { recursive: true, force: true });
@@ -11,8 +12,11 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
     }
 }
 for (const dir of ['assets','foco']) await cp(new URL(dir, root), new URL(`dist/${dir}`, root), { recursive: true });
-for (const path of ['compra/', 'compra/privacidad/']) {
+const homepage = await readFile(new URL('foco/index.html', root), 'utf8');
+for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
     const file = new URL(`dist/foco/${path}index.html`, root);
-    await writeFile(file, renderCommercePage(await readFile(file, 'utf8')));
+    let html = await readFile(file, 'utf8');
+    if (path === 'compra/' || path === 'compra/privacidad/') html = renderCommercePage(html);
+    await writeFile(file, renderSharedFooter(html, homepage));
 }
 console.log('Static site built in dist/. Checkout remains gated by configuration.');

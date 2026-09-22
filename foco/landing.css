@@ -857,3 +857,7 @@ h1 span {
 .site-footer > * { min-width: 0; }
 .site-footer .footer-links { flex-wrap: wrap; }
 .site-footer a { min-height: 44px; display: inline-flex; align-items: center; }
+@media (min-width: 721px) and (max-width: 1100px) {
+    .site-footer { grid-template-columns: 1fr; padding: 2rem 0 3rem; gap: 1.5rem; }
+    .site-footer p { text-align: left; }
+}

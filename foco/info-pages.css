@@ -20,15 +20,6 @@
 .info-contact-inline a { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.87rem; text-underline-offset: 5px; }
 .info-note { max-width: 620px; margin-top: 24px; padding: 18px 22px; font-size: 0.83rem; line-height: 1.8; border-left: 2px solid var(--forest); background: var(--surface); border-radius: 0 12px 12px 0; }
 .info-page .commerce-contact { margin-top: 44px; }
-.info-page .info-footer { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 28px 48px; align-items: start; }
-.info-page .info-footer .footer-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 22px; }
-.info-page .info-footer .footer-links a { font-size: 0.75rem; line-height: 1.7; text-decoration: none; gap: 5px; }
-.info-page .info-footer .footer-links a:hover { text-decoration: underline; text-underline-offset: 5px; }
-.info-page .info-footer p { grid-column: 2; margin: 0; }
-@media (max-width: 900px) {
-    .info-page .info-footer { grid-template-columns: 120px minmax(0, 1fr); gap: 24px; }
-    .info-page .info-footer .footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 @media (max-width: 720px) {
     .info-page .commerce-page { width: calc(100% - 40px); }
     .info-page .commerce-heading h1 { font-size: clamp(2.5rem, 10vw, 4rem); letter-spacing: -0.06em; }
@@ -36,9 +27,6 @@
     .info-pages-nav a { font-size: 0.71rem; }
     .info-index-label { flex-basis: 100%; margin: 4px 0 8px; }
     .info-page .commerce-index { gap: 0 18px; }
-    .info-page .info-footer { grid-template-columns: 1fr; }
-    .info-page .info-footer p { grid-column: 1; text-align: left; }
-    .info-page .info-footer .footer-links { width: 100%; }
     .info-page .commerce-contact-actions span { overflow-wrap: anywhere; }
 }
 @media (max-width: 360px) {
@@ -46,5 +34,4 @@
     .info-page .site-nav .nav-cta { padding: 0 16px; font-size: 0.75rem; }
     .info-page .commerce-offers > div { grid-template-columns: 1fr; }
     .info-page .commerce-timeline { gap: 16px; }
-    .info-page .info-footer .footer-links { grid-template-columns: 1fr; }
 }

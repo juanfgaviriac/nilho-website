@@ -73,7 +73,7 @@
 .result-actions a { min-height: 44px; display: inline-flex; align-items: center; }
 .payment-result > .text-link { min-height: 44px; display: inline-flex; align-items: center; }
 .result-help { margin-top: 2rem; font-size: 0.85rem; }
-.site-footer a, .brand { min-height: 44px; display: inline-flex; align-items: center; }
+.brand { min-height: 44px; display: inline-flex; align-items: center; }
 @media (max-width: 1050px) {
     .checkout-layout { grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr); gap: 24px; }
     .offer-options { grid-template-columns: 1fr; }
@@ -126,7 +126,6 @@
 .checkout-consent input:checked::after { content: ''; position: absolute; left: 19px; top: 16px; width: 5px; height: 9px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .checkout-consent label { padding: 3px 0; min-height: 44px; font-size: 0.73rem; line-height: 1.9; color: var(--ink-soft); cursor: pointer; }
 .checkout-consent a { text-underline-offset: 3px; }
-.site-footer .footer-links { flex-wrap: wrap; }
 @media (max-width: 380px) {
     .checkout-details > div { grid-template-columns: 1fr; gap: 4px; }
 }

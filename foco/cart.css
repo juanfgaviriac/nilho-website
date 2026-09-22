@@ -7,7 +7,7 @@
     --cart-gap: clamp(28px, 5vw, 72px);
     overflow-x: visible;
 }
-.cart-header, .cart-main, .cart-page .site-footer { width: min(calc(100% - 64px), 1120px); }
+.cart-header, .cart-main { width: min(calc(100% - 64px), 1120px); }
 .cart-header { margin: 0 auto; min-height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
 .cart-back { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: .8rem; text-decoration: none; color: var(--cart-muted); }
 .cart-back span { font-size: 1.2rem; }
@@ -76,11 +76,6 @@
 .cart-page .checkout-notice { font-size: .7rem; margin: 14px 0 11px; min-height: 2.8em; line-height: 1.4; }
 .cart-page .payment-button { border-radius: 14px; min-height: 56px; font-size: .88rem; }
 .cart-page .checkout-whatsapp { font-size: .73rem; margin-top: 12px; text-decoration: none; color: var(--cart-muted); }
-.cart-page .site-footer { padding: 24px 0 32px; margin: 0 auto; font-size: .7rem; }
-.cart-page .site-footer .footer-brand { display: none; }
-.cart-page .site-footer .footer-links { gap: 8px 20px; }
-.cart-page .site-footer a { font-size: .68rem; }
-.cart-page .site-footer > p { font-size: .65rem; }
 .cart-intro, .checkout-selection, .order-summary { animation: cart-arrive 400ms var(--ease-out) both; }
 .checkout-selection { animation-delay: 55ms; }
 .order-summary { animation-delay: 95ms; }
@@ -97,7 +92,7 @@
     .cart-page .order-summary { padding: 25px; }
 }
 @media (max-width: 760px) {
-    .cart-header, .cart-main, .cart-page .site-footer { width: min(calc(100% - 40px), 540px); }
+    .cart-header, .cart-main { width: min(calc(100% - 40px), 540px); }
     .cart-header { min-height: 77px; }
     .cart-back { font-size: .73rem; gap: 7px; }
     .cart-main { padding: 30px 0 36px; }
@@ -119,12 +114,9 @@
     .cart-page .checkout-consent label { font-size: .74rem; }
     .cart-page .checkout-notice { min-height: 0; font-size: .75rem; margin: 17px 0 13px; }
     .cart-page .checkout-whatsapp { font-size: .77rem; }
-    .cart-page .site-footer { display: block; }
-    .cart-page .site-footer .footer-links { justify-content: flex-start; display: flex; gap: 0 19px; }
-    .cart-page .site-footer > p { margin-top: 18px; }
 }
 @media (max-width: 360px) {
-    .cart-header, .cart-main, .cart-page .site-footer { width: calc(100% - 32px); }
+    .cart-header, .cart-main { width: calc(100% - 32px); }
     .cart-product { padding: 6px 10px; gap: 8px; }
     .cart-page .offer-option { padding: 14px 12px; column-gap: 9px; }
     .cart-page .offer-title-line { flex-direction: column; align-items: flex-start; }
