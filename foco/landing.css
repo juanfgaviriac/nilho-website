@@ -521,12 +521,9 @@ h1 span {
 .feature-card--analytics { --feature-tint: #e9d6cc; }
 .feature-scene { position: relative; flex: none; background: var(--feature-tint); }
 .feature-scene img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; }
-.feature-label { position: absolute; top: 1rem; left: 1rem; padding: .4rem .75rem; border-radius: 999px; background: #fff; font-size: .72rem; line-height: 1.4; font-weight: 700; }
-.feature-copy { flex: 1; position: relative; min-height: 226px; margin: 0; padding: 1.5rem; background: #fff; }
+.feature-copy { flex: 1; position: relative; margin: 0; padding: 1.5rem; background: #fff; }
 .feature-copy h3 { max-width: 260px; margin: 0 0 .85rem; font-size: clamp(1.5rem, 2.2vw, 1.95rem); font-weight: 600; letter-spacing: -.045em; line-height: 1.1; }
 .feature-copy p { margin: 0; color: #42463f; font-size: .875rem; line-height: 1.65; }
-.feature-detail { display: flex; align-items: center; gap: .45rem; margin-top: 1.25rem; color: #4c5148; font-size: .7rem; font-weight: 600; }
-.feature-detail > span { font-size: 1rem; line-height: 1; }
 .feature-toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; }
 .feature-toolbar[hidden] { display: none; }
 .feature-pagination, .feature-arrows { display: flex; align-items: center; gap: .5rem; }
@@ -537,11 +534,10 @@ h1 span {
 .feature-arrows svg { width: 21px; height: 21px; }
 .feature-arrows button:disabled { opacity: .3; cursor: default; }
 .feature-toolbar button:focus-visible { outline: 3px solid var(--forest); outline-offset: 2px; }
-.screenshot-caption { margin: 1.25rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.5; text-align: center; }
 @media (hover: hover) and (pointer: fine) { .feature-arrows button:not(:disabled):hover { background: var(--surface); } }
 @media (max-width: 1100px) {
     .feature-track { grid-auto-columns: 60%; gap: 16px; }
-    .feature-copy { min-height: 246px; padding: 1.3rem; }
+    .feature-copy { padding: 1.3rem; }
     .app-heading > p { padding-right: 0; }
 }
 @media (max-width: 720px) {
@@ -551,12 +547,9 @@ h1 span {
     .app-heading > p br::after { content: " "; }
     .feature-track { grid-auto-columns: 90%; gap: 12px; }
     .feature-card { border-radius: 1.5rem; }
-    .feature-label { top: .85rem; left: .85rem; }
     .feature-copy { min-height: 0; margin: 0; padding: 1.25rem; }
     .feature-copy h3 { font-size: clamp(1.45rem,6vw,1.85rem); }
     .feature-copy p { font-size: .85rem; }
-    .feature-detail { margin-top: 1rem; }
-    .screenshot-caption { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) { .feature-pagination span { transition: none; } }
 
