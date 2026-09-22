@@ -10,7 +10,10 @@ export function vercelStore({ mode, token, storeId, sdk = { get, put } }) {
         return `${mode}/${key}`;
     };
     async function getWithMetadata(key, options = {}) {
-        const result = await sdk.get(path(key), {...auth,access:'private',useCache:false});
+        // Brotli/gzip representations have a different HTTP ETag from the stored
+        // object. Request identity so a body and its CAS token describe one version.
+        const result = await sdk.get(path(key), {...auth,access:'private',useCache:false,
+            headers:{'Accept-Encoding':'identity'}});
         if (!result) return null;
         if (result.statusCode !== 200) throw new Error('Unexpected ledger response.');
         const text = await new Response(result.stream).text();

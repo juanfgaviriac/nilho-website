@@ -28,6 +28,7 @@ test('private ledger adapter: strong reads, atomic create and compare-and-swap',
     assert.equal((await h.store.get('orders/one',{type:'json'})).n,3);
     assert.ok(h.calls.every(c=>c.path.startsWith('test/')&&c.options.access==='private'));
     assert.ok(h.calls.filter(c=>c.method==='get').every(c=>c.options.useCache===false));
+    assert.ok(h.calls.filter(c=>c.method==='get').every(c=>c.options.headers['Accept-Encoding']==='identity'));
 });
 test('storage outage is never mistaken for a successful claim',async()=>{
     const sdk={get:async()=>{throw Error('outage')},put:async()=>{throw Error('outage')}};
