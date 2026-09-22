@@ -10,7 +10,6 @@
 .cart-header, .cart-main { width: min(calc(100% - 64px), 1120px); }
 .cart-header { margin: 0 auto; min-height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
 .cart-back { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: .8rem; text-decoration: none; color: var(--cart-muted); }
-.cart-back span { font-size: 1.2rem; }
 .cart-main { padding: 52px 0 68px; border: 0; }
 .cart-intro { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
 .cart-intro h1 { min-width: 0; margin: 0; font-size: clamp(38px, 4.5vw, 58px); line-height: 1.1; letter-spacing: -.065em; font-weight: 600; }

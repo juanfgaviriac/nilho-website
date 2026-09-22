@@ -13,16 +13,47 @@ export const commonQuestions = [
     ['¿Cuánto tarda en llegar?', 'Enviamos en Colombia desde Bogotá. La entrega tarda de 3 a 10 días hábiles desde el pago aprobado; ese plazo ya incluye los 1–2 días hábiles de despacho. Te enviamos la guía por WhatsApp.'],
     ['¿Foco puede ver lo que hago en otras apps?', 'No. Foco no conoce los nombres de las apps y sitios que seleccionas ni tu actividad dentro de ellos. Compartir datos de uso de Foco es opcional y puedes desactivarlo en Ajustes → Datos de uso.'],
 ];
+const faqIds = ['funcionamiento', 'compatibilidad', 'suscripcion', 'compartir', 'sesiones', 'envio', 'privacidad'];
+const aliases = [
+    ['¿Qué es Foco?', '¿Cómo funciona Foco?', '¿Para qué sirve Foco?'],
+    ['¿Funciona en Android?', '¿Funciona con Android?', '¿Funciona Foco en Android?', '¿Sirve para Android?', '¿Qué iOS necesito?', '¿Qué teléfonos son compatibles?'],
+    ['¿Hay que pagar mensualidad?', '¿Tiene suscripción?', '¿Hay que pagar cada mes?', '¿Foco tiene suscripción?', '¿Es un pago único?'],
+    ['¿Puedo compartir mi tarjeta?', '¿La tarjeta se puede compartir entre dos personas?', '¿Puedo usar la misma tarjeta en dos iPhone?'],
+    ['¿Cómo termino una sesión?', '¿Cómo finalizo una sesión?', '¿Qué pasa si pierdo la tarjeta?'],
+    ['¿Cuánto tarda el envío?', '¿Cuánto se demora el envío?', '¿En cuántos días llega?'],
+    ['¿Foco ve mis apps?', '¿Foco sabe qué aplicaciones uso?'],
+];
 
-export function renderFAQ(html) {
+export function buildInstantAnswers(documents) {
+    const fromDocument = (id, questions) => {
+        const doc = documents.find(entry => entry.id === id);
+        if (!doc || doc.text.length > 1400) throw new Error(`Invalid instant FAQ source: ${id}`);
+        return {id, questions, answer:doc.text.replaceAll(' → ', ' / '), sources:[{title:doc.title, url:doc.url}]};
+    };
+    const entries = commonQuestions.map(([question], i) => fromDocument(`faq-${faqIds[i]}`, [question, ...aliases[i]]));
+    entries.push(fromDocument('soporte-conexion', ['¿Funciona sin internet?', '¿Funciona Foco sin internet?', '¿Puedo usar Foco sin internet?', '¿Puedo usarlo sin internet?', '¿Necesita wifi?', '¿Funciona sin wifi?', '¿Funciona sin conexión?']));
+    entries.push(fromDocument('terminos-emergencias', ['¿Cuántos desbloqueos de emergencia tengo?', '¿Se renuevan cada mes los desbloqueos de emergencia?', '¿Los desbloqueos de emergencia se renuevan?', '¿Se recargan los desbloqueos de emergencia?']));
+    const priceSource = documents.find(doc => doc.id === 'precios');
+    if (!priceSource) throw new Error('Missing instant FAQ prices.');
+    for (const [quantity, words] of [[1,'una tarjeta'], [2,'dos tarjetas'], [3,'tres tarjetas']]) {
+        const offer = getOffer(quantity);
+        entries.push({id:`precio-${quantity}`, questions:[`Precio de ${words}`, `¿Cuánto cuesta${quantity === 1 ? '' : 'n'} ${words}?`, `¿Cuánto cuesta${quantity === 1 ? '' : 'n'} ${words} con envío?`, `Precio de ${quantity} tarjeta${quantity === 1 ? '' : 's'}`],
+            answer:`${quantity === 1 ? 'Una tarjeta cuesta' : `${quantity} tarjetas cuestan`} ${formatCOP(offer.total)} COP en total. ${offer.shipping ? `Incluye ${formatCOP(offer.shipping)} COP de envío.` : 'El envío está incluido sin costo adicional.'} Es un pago único, sin suscripción.`,
+            sources:[{title:priceSource.title, url:priceSource.url}]});
+    }
+    return entries;
+}
+
+export function renderFAQ(html, instantAnswers = []) {
     return html.replace(/<!-- foco-faq:start -->[\s\S]*?<!-- foco-faq:end -->/g, `<!-- foco-faq:start -->
         <section class="faq-section faq-section--assistant" id="faq" aria-labelledby="faq-title">
             <div class="faq-heading">
                 <h2 id="faq-title">Menos dudas.<br>Más foco.</h2>
                 <p>Si te queda una duda, pregúntanos abajo.</p>
-                <a href="/foco/soporte/#contact-title">¿Prefieres hablar con alguien? <span aria-hidden="true">↗</span></a>
+                <a href="/foco/soporte/#contact-title">¿Prefieres hablar con alguien?</a>
             </div>
             <div class="faq-body">
+                <script type="application/json" data-faq-instant>${JSON.stringify(instantAnswers).replace(/</g, '\\u003c')}</script>
                 <div class="faq-list">${commonQuestions.map(([question, answer]) => `
                     <details><summary>${escape(question)}</summary><p>${escape(answer)}</p></details>`).join('')}
                 </div>
@@ -66,7 +97,8 @@ export async function buildKnowledge() {
         if (!sections.length) throw new Error(`Missing public knowledge sections: ${path}`);
         for (const [, id, body] of sections) {
             const title = plainText(body.match(/<h2[^>]*>([\s\S]*?)<\/h2>/)?.[1] || label);
-            documents.push({id:`${prefix}-${id}`, title:`${label}: ${title}`, url:`/${path}#${id}`, text:plainText(body)});
+            const content = body.replace(/<span\b[^>]*class="commerce-number"[^>]*>[\s\S]*?<\/span>/g, '').replace(/<h2[^>]*>[\s\S]*?<\/h2>/g, '');
+            documents.push({id:`${prefix}-${id}`, title:`${label}: ${title}`, url:`/${path}#${id}`, text:plainText(content)});
         }
     }
     documents.push({id:'precios', title:'Precios y envío', url:'/comprar/', text:[1,2,3].map(q => {
@@ -74,10 +106,13 @@ export async function buildKnowledge() {
         return `${q} tarjeta(s): ${formatCOP(o.subtotal)} COP antes de descuento; descuento ${formatCOP(o.discount)} COP; envío ${formatCOP(o.shipping)} COP; total final ${formatCOP(o.total)} COP.`;
     }).join(' ') + ' Pago único, sin suscripción. No consultar ni prometer existencias en tiempo real.'});
     documents.push({id:'contacto', title:'Habla con el equipo', url:'/soporte/#contact-title', text:'team@getfoco.co. WhatsApp +57 302 773 8407. Lunes a viernes, 9 a. m.–5 p. m., hora de Colombia, excepto festivos. Primera respuesta en un día hábil. El asistente no puede consultar pedidos, cuentas, pagos ni saldos personales, hacer reembolsos, reponer tarjetas o desbloquear sesiones.'});
-    documents.push({id:'preguntas', title:'Preguntas frecuentes', url:'/#faq', text:commonQuestions.map(entry => entry.join(' ')).join('\n')});
+    commonQuestions.forEach(([question, answer], i) => documents.push({id:`faq-${faqIds[i]}`, title:`Preguntas frecuentes: ${question}`, url:'/#faq', text:answer}));
     if (JSON.stringify(documents).length > 50000) throw new Error('FAQ knowledge exceeds the reviewed input budget.');
     return documents;
 }
 export async function writeKnowledge() {
-    await writeFile(new URL('server/foco/faq-knowledge.json', root), JSON.stringify(await buildKnowledge()));
+    const documents = await buildKnowledge();
+    const knowledge = {documents, instantAnswers:buildInstantAnswers(documents)};
+    await writeFile(new URL('server/foco/faq-knowledge.json', root), JSON.stringify(knowledge));
+    return knowledge;
 }

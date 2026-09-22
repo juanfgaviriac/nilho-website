@@ -5,12 +5,21 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { renderCommercePage } from '../scripts/policies.mjs';
 import { renderSharedFooter } from '../scripts/shared-footer.mjs';
+import { renderArrowFreePage } from '../scripts/page-presentation.mjs';
 import { FOCO_CHECKOUT, getOffer, formatCOP } from '../foco/checkout-config.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
 const pages = ['compra/', 'compra/privacidad/', 'soporte/', 'privacidad/', 'terminos/'];
 const footer = html => html.match(/<footer\b[^>]*>[\s\S]*?<\/footer>/)[0];
+
+test('current-page presentation removes arrow glyphs without changing links or SVG controls', () => {
+    const source = '<a href="/comprar/">Comprar Foco <span aria-hidden="true">↗</span></a><a href="/" aria-label="Volver"><span aria-hidden="true">←</span> Volver</a><strong>Ajustes → Mi cuenta</strong><button aria-label="Siguiente"><svg><path d="M1 1h2"/></svg></button>';
+    const result = renderArrowFreePage(source);
+    assert.equal(result, '<a href="/comprar/">Comprar Foco</a><a href="/" aria-label="Volver">Volver</a><strong>Ajustes / Mi cuenta</strong><button aria-label="Siguiente"><svg><path d="M1 1h2"/></svg></button>');
+    assert.equal(renderArrowFreePage(result), result);
+    assert.doesNotMatch(read('foco/card-orbit.css'), /content:\s*["'][↗↓←]/);
+});
 
 test('current pages reuse the homepage footer without changing their content', () => {
     const homepage = read('foco/index.html');
@@ -71,6 +80,11 @@ test('production build publishes complete canonical pages and preserves earlier 
     };
     execFileSync(process.execPath, ['scripts/build-vercel.mjs'], { cwd: root });
     const homepageFooter = footer(read('dist/index.html'));
+    for (const page of ['', ...pages, 'comprar/', 'pago/']) {
+        for (const prefix of ['dist/', 'dist/foco/']) {
+            assert.doesNotMatch(read(`${prefix}${page}index.html`), /[←↑→↓↖↗↘↙]/, `${prefix}${page}`);
+        }
+    }
     for (const page of [...pages, 'comprar/', 'pago/']) {
         assert.equal(footer(read(`dist/${page}index.html`)), homepageFooter);
         assert.equal(footer(read(`dist/foco/${page}index.html`)), footer(read('dist/foco/index.html')));

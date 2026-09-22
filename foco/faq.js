@@ -1,3 +1,5 @@
+import { findInstantAnswer } from './faq-matching.mjs';
+
 const form = document.querySelector('[data-faq-form]');
 if (form) {
     const input = form.elements.question;
@@ -7,6 +9,11 @@ if (form) {
     const answer = form.querySelector('[data-faq-answer]');
     const text = form.querySelector('[data-faq-text]');
     const sources = form.querySelector('[data-faq-sources]');
+    let instantAnswers = [];
+    try {
+        const data = JSON.parse(document.querySelector('[data-faq-instant]')?.textContent || '[]');
+        if (Array.isArray(data)) instantAnswers = data;
+    } catch { /* A stale or malformed bundle must not disable the API fallback. */ }
     let active;
     form.hidden = false;
     input.addEventListener('focus', () => { form.querySelector('#faq-notice').hidden = false; }, {once:true});
@@ -16,12 +23,30 @@ if (form) {
         cancel.hidden = !value;
         form.setAttribute('aria-busy', String(value));
     };
+    const renderAnswer = data => {
+        if (typeof data.answer !== 'string' || !Array.isArray(data.sources)) throw new Error('Invalid answer');
+        text.textContent = data.answer.replace(/[←↑→↓↖↗↘↙]\uFE0F?/g, ' / ');
+        sources.replaceChildren();
+        for (const source of data.sources) {
+            // Only same-site source links. Never render model HTML or Markdown.
+            if (!/^\/(?:#faq|comprar\/|(?:soporte|compra|compra\/privacidad|privacidad|terminos)\/#[-a-z0-9]+)$/.test(source.url)) continue;
+            const link = document.createElement('a');
+            link.href = source.url;
+            link.textContent = source.title;
+            sources.append(link);
+        }
+        answer.hidden = false;
+        status.textContent = '';
+        answer.focus({preventScroll:true});
+    };
     cancel.addEventListener('click', () => { active?.abort(); input.focus(); });
     form.addEventListener('submit', async event => {
         event.preventDefault();
         if (active) return;
         const question = input.value.trim();
         if (question.length < 3) { status.textContent = 'Escribe una pregunta de al menos tres caracteres.'; input.focus(); return; }
+        const instant = findInstantAnswer(question, instantAnswers);
+        if (instant) { renderAnswer(instant); return; }
         const controller = new AbortController();
         active = controller;
         const timeout = setTimeout(() => controller.abort('timeout'), 25000);
@@ -40,20 +65,7 @@ if (form) {
                 return;
             }
             const data = await response.json();
-            if (typeof data.answer !== 'string' || !Array.isArray(data.sources)) throw new Error('Invalid answer');
-            text.textContent = data.answer;
-            sources.replaceChildren();
-            for (const source of data.sources) {
-                // Only same-site source links. Never render model HTML or Markdown.
-                if (!/^\/(?:#faq|comprar\/|(?:soporte|compra|compra\/privacidad|privacidad|terminos)\/#[-a-z0-9]+)$/.test(source.url)) continue;
-                const link = document.createElement('a');
-                link.href = source.url;
-                link.textContent = source.title;
-                sources.append(link);
-            }
-            answer.hidden = false;
-            status.textContent = '';
-            answer.focus({preventScroll:true});
+            renderAnswer(data);
         } catch {
             status.textContent = controller.signal.aborted
                 ? (controller.signal.reason === 'timeout' ? 'La respuesta tardó demasiado. Vuelve a intentarlo o habla con el equipo.' : 'Consulta cancelada.')

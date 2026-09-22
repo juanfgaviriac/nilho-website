@@ -13,8 +13,6 @@
 }
 .card-orbit-copy { position: relative; z-index: 1; width: 46%; }
 .card-orbit h2 { margin: 0 0 36px; font-size: clamp(3rem, 6vw, 5.3rem); font-weight: 500; letter-spacing: -.065em; line-height: 1.02; }
-.card-orbit-copy .button { gap: 2.2rem; }
-.card-orbit-copy .button::after { content: "↗"; }
 .card-orbit-film { position: absolute; width: 64%; right: -2%; top: 50%; transform: translateY(-50%); }
 .card-orbit video {
     display: block;

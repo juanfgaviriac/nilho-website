@@ -2,9 +2,10 @@ import { cp, mkdir, readdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { renderCommercePage, snapshotPolicies } from './policies.mjs';
 import { renderSharedFooter } from './shared-footer.mjs';
 import { renderFAQ, writeKnowledge } from './faq.mjs';
+import { renderArrowFreePage } from './page-presentation.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
-await writeKnowledge();
+const knowledge = await writeKnowledge();
 await rm(new URL('dist/', root), { recursive: true, force: true });
 await mkdir(new URL('dist/', root));
 // Explicit public allowlist. Source, order functions, env files and docs never ship.
@@ -19,6 +20,6 @@ for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soport
     const file = new URL(`dist/foco/${path}index.html`, root);
     let html = await readFile(file, 'utf8');
     if (path === 'compra/' || path === 'compra/privacidad/') html = renderCommercePage(html);
-    await writeFile(file, renderFAQ(renderSharedFooter(html, homepage)));
+    await writeFile(file, renderArrowFreePage(renderFAQ(renderSharedFooter(html, homepage), knowledge.instantAnswers)));
 }
 console.log('Static site built in dist/. Checkout remains gated by configuration.');
