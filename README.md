@@ -64,6 +64,6 @@ Do not delete historical policy archives or sandbox evidence.
 mail to `team@nilho.co`. That forwarding does not configure Gmail/Mail's "send as"
 identity; support replies sent manually still need that client setup.
 
-Before cutover: verify DNS/TLS, checkout totals, signed event handling, private
-storage isolation, receipt deduplication, email delivery, and old page redirects.
+Migration checks, actual new-domain email delivery and exact verification limits
+are recorded in [the migration report](docs/foco-vercel-migration.md).
 The browser's success URL is not a paid order. Fulfil only Wompi APPROVED orders.

@@ -1,13 +1,13 @@
 # Operación de pedidos Foco
 
-Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 tarjetas. Sitio publicado con checkout de producción autorizado; esta tarea no ha realizado compras con dinero real ni despachos.
+Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 tarjetas. Sitio https://getfoco.co publicado en el proyecto Vercel `getfoco` de `juanfgaviriacs-projects`, con checkout de producción autorizado; esta tarea no ha realizado compras con dinero real ni despachos.
 
 ## Configuración de lanzamiento
 
 1. Flujo por pedido y Resend configurados según el [runbook vigente](foco-checkout-launch.md). Compra sandbox, aceptación almacenada y entrega de un comprobante verificadas. Checkout y correos habilitados en producción.
 2. El usuario confirmó aprobación de Wompi y decidió mantener los precios sin IVA añadido. El correo es un comprobante de compra, no una factura electrónica; no determina una exención tributaria ni reemplaza una factura exigible.
 3. El usuario aplazó la selección de transportadora. Despacho desde Bogotá, guía por WhatsApp y plazos aprobados se mantienen. Escoger el servicio al despachar, según peso/medidas reales y destino; no se ha cotizado ni comprado una guía.
-4. Los tres enlaces reutilizables anteriores se desactivaron durante el cambio aprobado. Revisar el primer pago real y su comprobante en producción; la entrega verificada hasta ahora corresponde a la prueba sandbox.
+4. Los tres enlaces reutilizables anteriores se desactivaron durante el cambio aprobado. Revisar el primer pago real y su comprobante en producción; ver el alcance actualizado de las pruebas en [la verificación de migración](foco-vercel-migration.md).
 
 ## Por cada pedido
 
@@ -37,10 +37,10 @@ Estas plantillas son borradores de operación: la tarea no envía mensajes al co
 
 ## Comprobantes y reintentos
 
-Revisar a diario Wompi APPROVED frente a `paid/` y `receipts/` del almacén privado `foco-orders-prod`. Un ID de Resend guardado significa que Resend aceptó el correo, no que llegó al buzón: consultar entrega/rebote en Resend. El servidor no guarda dirección postal ni datos del instrumento de pago; esos se consultan en Wompi.
+Revisar a diario Wompi APPROVED frente a `paid/` y `receipts/` del almacén privado Vercel Blob `foco-orders-production` (prefijo `prod/`). Un ID de Resend guardado significa que Resend aceptó el correo, no que llegó al buzón: consultar entrega/rebote en Resend. El servidor no guarda dirección postal ni datos del instrumento de pago; esos se consultan en Wompi.
 
 Ante `pending`, `sending` vencido o `manual_review`, comprobar el ID de transacción y los registros de Resend antes de reenviar. Dentro de la ventana segura, reenviar el evento original desde Wompi conserva el mismo payload y clave idempotente. Pasadas 23 horas se exige revisión manual para evitar duplicados; no borrar el registro de envío como mecanismo de reintento. Rebotes o direcciones erróneas requieren contactar al titular por el canal de soporte y verificar la corrección; no redirigir el recibo a un email recibido sin verificar.
 
 Los enlaces vencen en una hora, pero un pago ya iniciado puede seguir pendiente y aprobarse más tarde. Conciliarlo antes de liberar stock. Los pedidos `creating` sin enlace retornado son intentos ambiguos: buscar el UUID en Wompi antes de recrearlos. El margen de cinco tarjetas y el vencimiento no constituyen reservas ni eliminan sobreventa.
 
-Restringir el acceso del equipo a Netlify/Wompi/Resend. No exportar los registros a este repositorio ni imprimirlos en logs. Revisar y retirar intentos abandonados y datos de recibos cuando dejen de ser necesarios, preservando los soportes de operaciones y autorizaciones sujetos a conservación. No hay automatización de marketing ni vinculación con usuarios de la app.
+Restringir el acceso del equipo a Vercel/Wompi/Resend. No exportar los registros a este repositorio ni imprimirlos en logs. Revisar y retirar intentos abandonados y datos de recibos cuando dejen de ser necesarios, preservando los soportes de operaciones y autorizaciones sujetos a conservación. No hay automatización de marketing ni vinculación con usuarios de la app.

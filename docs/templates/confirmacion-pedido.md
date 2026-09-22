@@ -6,7 +6,7 @@ Este formato confirma el pedido; no es una factura electrónica ni sustituye la 
 - Pedido: FOCO-[ID completo de transacción Wompi]
 - Fecha y hora: [fecha, hora y zona horaria]
 - Vendedor: [nombre y NIT de commerce-config.mjs]
-- Contacto: team@nilho.co · +57 302 773 8407
+- Contacto: team@getfoco.co · +57 302 773 8407
 - Dirección del vendedor: [dirección de commerce-config.mjs]
 - Comprador: [nombre]
 - Producto: [cantidad] tarjetas Foco NFC NTAG215
