@@ -67,9 +67,9 @@ for (const value of quantities) {
     // All content is static product configuration, never customer/URL input.
     button.innerHTML = `<span class="offer-radio" aria-hidden="true"></span>
         <span class="offer-title-line"><span class="offer-name">${offerName(value)}</span>${offer.badge ? `<span class="offer-badge">${offer.badge}</span>` : ''}</span>
-        <span class="offer-price">${formatCOP(offer.total)}</span>
-        <span class="offer-total-label">TOTAL COP</span>
-        <span class="offer-shipping">${offer.shipping ? `${formatCOP(offer.shipping)} de envío incluido` : 'Envío gratis'}</span>
+        <span class="offer-price">${formatCOP(offer.subtotal - offer.discount)}</span>
+        <span class="offer-total-label">COP</span>
+        <span class="offer-shipping">${offer.shipping ? `+ ${formatCOP(offer.shipping)} de envío` : 'Envío gratis'}</span>
         ${offer.discount ? `<span class="offer-saving">Ahorras ${formatCOP(offer.discount)}</span>` : ''}`;
     button.setAttribute('aria-label', `${offerName(value)}. Total ${formatCOP(offer.total)} COP. ${offer.shipping ? `Incluye ${formatCOP(offer.shipping)} de envío` : 'Envío gratis'}.${offer.discount ? ` Ahorras ${formatCOP(offer.discount)}.` : ''}${offer.badge ? ` ${offer.badge}.` : ''}`);
     button.addEventListener('click', event => select(value, true, event.detail > 0));

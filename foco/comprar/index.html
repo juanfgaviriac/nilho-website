@@ -12,8 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=cart-1">
     <link rel="stylesheet" href="/foco/checkout.css?v=cart-1">
-    <link rel="stylesheet" href="/foco/cart.css?v=1">
-    <script type="module" src="/foco/checkout.js?v=cart-1"></script>
+    <link rel="stylesheet" href="/foco/cart.css?v=2">
+    <script type="module" src="/foco/checkout.js?v=cart-2"></script>
 </head>
 <body class="cart-page">
     <a class="skip-link" href="#comprar">Ir a tu pedido</a>
@@ -23,9 +23,7 @@
     </header>
     <main class="checkout-section cart-main" id="comprar" aria-labelledby="checkout-title" tabindex="-1" data-quantity="2">
         <div class="cart-intro">
-            <p class="cart-eyebrow">MENOS DISTRACCIONES. MÁS VIDA.</p>
             <h1 id="checkout-title">Elige tu Foco.</h1>
-            <p>Un pequeño gesto. Todo el tiempo por recuperar.</p>
         </div>
         <div class="checkout-layout">
             <div class="checkout-selection">
@@ -37,9 +35,8 @@
                     </div>
                     <div class="cart-product-copy"><h2>Tarjeta Foco</h2><p>Tu señal para volver<br>a lo que importa.</p><span class="cart-product-detail">NFC · SIN BATERÍA</span></div>
                 </div>
-                <div class="cart-selection-heading"><h2 id="offer-legend">¿Cuántas tarjetas?</h2><span>Un solo pago.</span></div>
+                <div class="cart-selection-heading"><h2 id="offer-legend">¿Cuántas tarjetas?</h2><span>Sin suscripciones. Un solo pago.</span></div>
                 <div class="offer-options" role="radiogroup" aria-labelledby="offer-legend" id="offer-options"></div>
-                <p class="cart-recommendation"><span aria-hidden="true">↗</span> Dos tarjetas. Una para ti, otra para compartir. El envío va por nuestra cuenta.</p>
                 <details class="cart-details">
                     <summary>Envíos y garantía <span aria-hidden="true">+</span></summary>
                     <div><p>Despachamos desde Bogotá en 1–2 días hábiles desde el pago aprobado. La entrega toma 3–10 días hábiles en total, incluido el despacho.</p><p>12 meses de garantía. <a href="/compra/">Ver condiciones de compra, envíos y devoluciones</a>.</p></div>
@@ -53,7 +50,7 @@
                     <dl class="summary-lines">
                         <div><dt>Subtotal</dt><dd id="summary-subtotal">—</dd></div>
                         <div id="summary-discount-row" hidden><dt>Descuento del pack</dt><dd id="summary-discount"></dd></div>
-                        <div id="summary-shipping-row"><dt>Envío a Colombia</dt><dd id="summary-shipping">—</dd></div>
+                        <div id="summary-shipping-row"><dt>Envío</dt><dd id="summary-shipping">—</dd></div>
                     </dl>
                     <div class="summary-footer">
                         <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
@@ -63,8 +60,7 @@
                             <label id="consent-text" for="purchase-consent">Acepto las <a href="/compra/" target="_blank" rel="noopener">condiciones de compra<span class="sr-only"> (abre otra pestaña)</span></a> y autorizo el uso de mis datos para gestionar el pedido según el <a href="/compra/privacidad/" target="_blank" rel="noopener">aviso de privacidad<span class="sr-only"> (abre otra pestaña)</span></a>.</label>
                         </div>
                         <p class="checkout-notice" id="payment-notice" role="status" aria-live="polite">Acepta las condiciones para continuar.</p>
-                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="summary-compatibility payment-notice checkout-trust">Pagar con Wompi <span aria-hidden="true">↗</span></button>
-                        <p class="checkout-trust" id="checkout-trust">Pago único · Sin suscripción · Envíos a toda Colombia.</p>
+                        <button class="button button--dark payment-button" id="wompi-pay" type="button" disabled aria-describedby="summary-compatibility payment-notice">Pagar con Wompi <span aria-hidden="true">↗</span></button>
                         <a class="checkout-whatsapp" id="checkout-whatsapp" hidden target="_blank" rel="noopener noreferrer">¿Necesitas ayuda? Escríbenos <span aria-hidden="true">↗</span></a>
                     </div>
                 </aside>
