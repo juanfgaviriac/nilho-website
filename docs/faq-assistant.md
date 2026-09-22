@@ -6,6 +6,10 @@ The homepage and support page share seven static, accessible FAQs and an inline,
 optional AI question field. `scripts/faq.mjs` owns the short copy and the build-time
 renderer. Edit those entries, not generated `dist/` files.
 
+The AI input is styled as the final FAQ row. Its short disclosure links directly
+to `/terminos/#asistente-ia`, where provider processing, privacy and usage details
+are published. Keep that section current when changing the integration.
+
 Both builds compile `server/foco/faq-knowledge.json` from the reviewed public support,
 purchase terms, purchase privacy, app privacy and app terms sections. Prices come
 from `foco/checkout-config.mjs`. The JSON is a server-only generated artifact,

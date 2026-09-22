@@ -18,9 +18,8 @@ export function renderFAQ(html) {
     return html.replace(/<!-- foco-faq:start -->[\s\S]*?<!-- foco-faq:end -->/g, `<!-- foco-faq:start -->
         <section class="faq-section faq-section--assistant" id="faq" aria-labelledby="faq-title">
             <div class="faq-heading">
-                <p class="eyebrow">Todo claro</p>
                 <h2 id="faq-title">Menos dudas.<br>Más foco.</h2>
-                <p>Las respuestas cortas, aquí.<br>Si te queda una duda, pregúntanos abajo.</p>
+                <p>Si te queda una duda, pregúntanos abajo.</p>
                 <a href="/foco/soporte/#contact-title">¿Prefieres hablar con alguien? <span aria-hidden="true">↗</span></a>
             </div>
             <div class="faq-body">
@@ -28,18 +27,15 @@ export function renderFAQ(html) {
                     <details><summary>${escape(question)}</summary><p>${escape(answer)}</p></details>`).join('')}
                 </div>
                 <form class="faq-ask" data-faq-form hidden>
-                    <label for="faq-question">Pregunta lo que quieras sobre Foco</label>
+                    <label for="faq-question" class="sr-only">Pregunta lo que quieras sobre Foco</label>
                     <div class="faq-input-row">
-                        <input id="faq-question" name="question" type="text" placeholder="¿Puedo usarlo sin internet?" maxlength="500" minlength="3" required autocomplete="off" aria-describedby="faq-notice">
-                        <button class="faq-send" type="submit" aria-label="Enviar pregunta"><span aria-hidden="true">↗</span></button>
+                        <input id="faq-question" name="question" type="text" placeholder="Pregunta cualquier cosa…" maxlength="500" minlength="3" required autocomplete="off" enterkeyhint="send" aria-describedby="faq-notice">
+                        <button class="faq-send" type="submit" aria-label="Enviar pregunta">Enviar</button>
                         <button class="faq-cancel" type="button" hidden>Cancelar</button>
                     </div>
-                    <p class="faq-notice" id="faq-notice">IA basada en nuestras guías; puede equivocarse. Al enviar, autorizas procesar tu pregunta con Vercel e Inception. No incluyas datos personales, de pago ni de tu tarjeta.</p>
-                    <details class="faq-privacy"><summary>Cómo se usa tu pregunta</summary><p>Al enviar, autorizas a Nilho S.A.S. a procesar tu pregunta con Vercel AI Gateway e Inception para responderte. Puede procesarse fuera de Colombia. Este asistente no accede a tu cuenta ni a tus pedidos, ni realiza cambios. No guardamos una conversación ni registramos su contenido en la aplicación del sitio. Los proveedores aplican sus políticas de privacidad y seguridad. Usamos contadores técnicos y un identificador seudónimo de red para limitar abusos; se reemplazan al comenzar un nuevo día de uso. Puedes consultar o ejercer tus derechos escribiendo a <a href="mailto:team@getfoco.co">team@getfoco.co</a>. Usar el asistente es opcional: también puedes <a href="/foco/soporte/#contact-title">hablar con una persona</a>.</p></details>
+                    <p class="faq-notice" id="faq-notice" hidden><a href="/foco/terminos/#asistente-ia">Respuestas con IA</a>, puede equivocarse</p>
                     <p class="faq-status" role="status" aria-live="polite" data-faq-status></p>
-                    <a class="faq-human" href="/foco/soporte/#contact-title">Para pedidos o tu cuenta, habla con el equipo <span aria-hidden="true">↗</span></a>
                     <div class="faq-answer" data-faq-answer hidden tabindex="-1" aria-label="Respuesta del asistente">
-                        <p class="faq-answer-label">Foco · Asistente IA</p>
                         <p data-faq-text></p>
                         <nav class="faq-sources" aria-label="Fuentes de la respuesta" data-faq-sources></nav>
                     </div>

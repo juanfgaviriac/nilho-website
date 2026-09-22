@@ -9,6 +9,7 @@ if (form) {
     const sources = form.querySelector('[data-faq-sources]');
     let active;
     form.hidden = false;
+    input.addEventListener('focus', () => { form.querySelector('#faq-notice').hidden = false; }, {once:true});
     const busy = value => {
         input.readOnly = value;
         send.hidden = value;
@@ -51,7 +52,7 @@ if (form) {
                 sources.append(link);
             }
             answer.hidden = false;
-            status.textContent = 'Respuesta lista.';
+            status.textContent = '';
             answer.focus({preventScroll:true});
         } catch {
             status.textContent = controller.signal.aborted

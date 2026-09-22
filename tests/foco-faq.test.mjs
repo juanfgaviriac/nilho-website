@@ -54,8 +54,26 @@ test('homepage and support share accessible, no-JS FAQs without changing other s
         assert.match(rendered, /label for="faq-question"/);
         assert.match(rendered, /maxlength="500"/);
         assert.match(rendered, /aria-live="polite"/);
-        assert.match(rendered, /No incluyas datos personales/);
+        assert.match(rendered, /<label for="faq-question" class="sr-only">/);
+        assert.match(rendered, /placeholder="Pregunta cualquier cosa…"/);
+        assert.match(rendered, /aria-label="Enviar pregunta">Enviar<\/button>/);
+        assert.match(rendered, /<a href="\/foco\/terminos\/#asistente-ia">Respuestas con IA<\/a>, puede equivocarse/);
+        assert.match(rendered, /id="faq-notice" hidden/);
+        assert.doesNotMatch(rendered, /Todo claro|Las respuestas cortas, aquí/);
+        assert.match(rendered, /<p>Si te queda una duda, pregúntanos abajo\.<\/p>/);
+        assert.doesNotMatch(rendered, /Cómo se usa tu pregunta|faq-privacy|faq-human|faq-answer-label/);
         assert.equal((rendered.match(/id="faq-title"/g) || []).length, 1);
+    }
+});
+
+test('AI disclosure lives in the terms and remains part of the sourced knowledge', async () => {
+    const terms = readFileSync(new URL('../foco/terminos/index.html', import.meta.url), 'utf8');
+    assert.match(terms, /href="#asistente-ia"/);
+    const disclosure = (await buildKnowledge()).find(doc => doc.id === 'terminos-asistente-ia');
+    assert.equal(disclosure.url, '/terminos/#asistente-ia');
+    for (const text of ['Vercel AI Gateway e Inception', 'fuera de Colombia', 'No incluyas datos personales',
+        'No guardamos una conversación', 'identificador seudónimo', 'team@getfoco.co']) {
+        assert.ok(disclosure.text.includes(text));
     }
 });
 
