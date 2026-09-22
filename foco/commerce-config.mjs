@@ -1,12 +1,12 @@
 // Public seller details only: no RUT documents, bank accounts or private credentials.
 // Commercial terms approved by the owner on 2026-09-21. Unconfirmed facts stay empty.
 export const FOCO_COMMERCE = Object.freeze({
-    termsVersion: '2026-09-21.4',
-    privacyVersion: '2026-09-21.4',
+    termsVersion: '2026-09-22.1',
+    privacyVersion: '2026-09-22.1',
     termsUrl: '/foco/compra/',
     privacyUrl: '/foco/compra/privacidad/',
     seller: Object.freeze({ name: 'Juan Felipe Gaviria Campo', nit: '1001368555', noticeAddress: 'Transversal 1 Este #68-50, Bogotá D.C., Colombia', returnsAddress: 'Transversal 1 Este #68-50, Bogotá D.C., Colombia' }),
-    product: Object.freeze({ material: 'PVC · Chip NFC NTAG215', dimensions: '86 × 54 mm' }),
+    product: Object.freeze({ material: 'PVC', dimensions: '86 × 54 mm' }),
     dispatchCity: 'Bogotá D.C.',
     carrier: '',
     availableCards: 30,

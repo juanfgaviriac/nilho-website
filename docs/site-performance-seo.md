@@ -1,5 +1,10 @@
 # Fast first paint and Google metadata
 
+The homepage title is "Foco — Vuelve a lo tuyo". Use the slogan and describe the
+product as "tarjeta Foco" in public copy, metadata, FAQ answers, and receipts;
+do not introduce NFC or chip names as marketing language. Accepted historical
+policy snapshots remain unchanged.
+
 Build the public site with `npm run build:vercel` (`npm run build` retains the
 legacy `/foco/` layout). Serve `dist/` for UI checks; raw source HTML intentionally
 contains build-time placeholders for prices and FAQ answers.

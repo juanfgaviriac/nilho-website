@@ -14,7 +14,7 @@ export function structuredData(path, config = FOCO_CHECKOUT) {
     if (path === 'comprar/') {
         const offer = getOffer(1, config);
         graph.push({ '@type': 'Product', '@id': `${origin}/comprar/#tarjeta-foco`, name: 'Tarjeta Foco',
-            description: 'Tarjeta NFC para pausar apps y sitios en iPhone con iOS 17.6 o posterior. Pago único, sin suscripción. Sin batería ni Bluetooth.',
+            description: 'Tarjeta Foco para pausar apps y sitios en iPhone con iOS 17.6 o posterior. Pago único, sin suscripción. Sin batería ni Bluetooth.',
             image: [image], sku: offer.sku, brand: { '@type': 'Brand', name: 'Foco' },
             material: config.commerce.product.material,
             offers: { '@type': 'Offer', url: `${origin}/comprar/`, priceCurrency: config.currency,

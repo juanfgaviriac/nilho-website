@@ -9,7 +9,7 @@ Este formato confirma el pedido; no es una factura electrónica ni sustituye la 
 - Contacto: team@getfoco.co · +57 302 773 8407
 - Dirección del vendedor: [dirección de commerce-config.mjs]
 - Comprador: [nombre]
-- Producto: [cantidad] tarjetas Foco NFC NTAG215
+- Producto: [cantidad] tarjetas Foco
 - Subtotal: [valor]
 - Descuento: [solo si aplica]
 - Envío: [valor o gratis]

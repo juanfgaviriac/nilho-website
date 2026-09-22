@@ -46,7 +46,7 @@ export function orderReceipt({ order, transaction }) {
     if (!validEmail(transaction.customer_email)) throw new Error('Receipt requires a valid customer email.');
     const { offer, seller } = order;
     const reference = `FOCO-${order.id}`;
-    const product = `${offer.quantity} ${offer.quantity === 1 ? 'tarjeta Foco' : 'tarjetas Foco'} NFC`;
+    const product = `${offer.quantity} ${offer.quantity === 1 ? 'tarjeta Foco' : 'tarjetas Foco'}`;
     const rows = [ ['Producto', product], ['Subtotal', `${formatCOP(offer.subtotal)} COP`],
         ...(offer.discount ? [['Descuento del pack', `−${formatCOP(offer.discount)} COP`]] : []),
         ...(offer.promoDiscount ? [[`Descuento por código (${offer.promoCode})`, `−${formatCOP(offer.promoDiscount)} COP`]] : []),
