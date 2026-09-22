@@ -57,9 +57,8 @@
 .cart-details p { margin: 0 0 14px; }
 .cart-details a { text-underline-offset: 4px; }
 .cart-page .order-summary { position: sticky; top: 28px; padding: 30px; border-radius: 25px; box-shadow: var(--cart-shadow); }
+.cart-page .summary-heading { margin-bottom: 22px; }
 .cart-page .summary-heading h2 { font-size: 1.15rem; letter-spacing: -.04em; margin: 0; }
-.cart-page .summary-count { color: var(--cart-muted); font-size: .6rem; }
-.cart-page .summary-product { font-size: .8rem; margin: 10px 0 22px; }
 .cart-page .summary-compatibility { padding-left: 10px; margin-bottom: 26px; font-size: .72rem; }
 .cart-page .summary-lines { font-size: .8rem; gap: 15px; margin-bottom: 24px; }
 .cart-page .summary-lines dt { color: var(--cart-muted); }
