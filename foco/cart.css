@@ -16,9 +16,7 @@
 .cart-intro h1 { margin: 0; font-size: clamp(38px, 4.5vw, 58px); line-height: 1.1; letter-spacing: -.065em; font-weight: 600; }
 .cart-page .checkout-layout { grid-template-columns: minmax(0, 1.25fr) minmax(360px, .85fr); gap: var(--cart-gap); }
 .cart-product { min-height: 158px; display: grid; grid-template-columns: minmax(150px, 1fr) 1fr; gap: 24px; align-items: center; margin-bottom: 26px; padding: 14px 28px; background: var(--surface); border-radius: 24px; }
-.cart-product-copy h2 { margin: 0 0 7px; font-size: 1.12rem; letter-spacing: -.04em; }
-.cart-product-copy p { margin: 0; color: var(--cart-muted); font-size: .8rem; line-height: 1.6; }
-.cart-product-detail { display: inline-block; margin-top: 16px; color: var(--cart-muted); font: 500 .55rem/1.5 var(--font-mono); letter-spacing: .06em; }
+.cart-product-copy h2 { margin: 0; font-size: 1.12rem; letter-spacing: -.04em; }
 .cart-art { position: relative; height: 132px; width: 100%; max-width: 230px; isolation: isolate; }
 .cart-card { position: absolute; left: 10%; top: 25%; width: 78%; aspect-ratio: 1.593; display: grid; place-items: center; border-radius: 9px; background: linear-gradient(145deg, #272928, #090a09 75%); color: white; border: 1px solid #41433f; box-shadow: 0 2px 0 #4b4c49, 0 12px 18px #11171423; transition: transform 380ms var(--ease-out), opacity 260ms var(--ease-out); }
 .cart-card .foco-mark { width: 29px; height: 29px; }
@@ -45,6 +43,13 @@
 .cart-page .offer-total-label { grid-column: 3; grid-row: 2; margin: 0; font-size: .5rem; }
 .cart-page .offer-shipping { grid-column: 2; grid-row: 2; min-height: 0; margin: 0; font-size: .72rem; color: var(--cart-muted); line-height: 1.5; }
 .cart-page .offer-saving { grid-column: 2 / -1; grid-row: 3; min-height: 0; margin: 5px 0 0; font-size: .68rem; color: var(--cart-accent); }
+.cart-benefits { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 23px; }
+.cart-benefits li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 15px; align-items: start; }
+.cart-benefits svg { width: 24px; height: 24px; margin-top: 1px; color: var(--cart-accent); }
+.cart-benefits h3 { margin: 0 0 6px; font-size: .85rem; font-weight: 650; letter-spacing: -.02em; }
+.cart-benefits p { margin: 0; color: var(--cart-muted); font-size: .77rem; line-height: 1.65; max-width: 440px; }
+.cart-benefits .cart-benefit-note { margin-top: 7px; font-size: .7rem; }
+.cart-benefit-note a { text-underline-offset: 3px; }
 .cart-details { margin-top: 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .cart-details summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 54px; font-size: .77rem; font-weight: 600; cursor: pointer; list-style: none; }
 .cart-details summary::-webkit-details-marker { display: none; }
@@ -102,8 +107,6 @@
     .cart-art { height: 118px; max-width: 170px; }
     .cart-card { top: 24%; }
     .cart-product-copy h2 { font-size: 1rem; }
-    .cart-product-copy p { font-size: .73rem; }
-    .cart-product-detail { font-size: .5rem; margin-top: 11px; }
     .cart-page .offer-option { min-height: 95px; padding: 16px; }
     .cart-page .offer-title-line { flex-direction: row; align-items: center; }
     .cart-page .offer-price { font-size: 1.2rem; }

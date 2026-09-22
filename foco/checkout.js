@@ -102,7 +102,7 @@ function select(value, announce = true, animate = false) {
         button.tabIndex = selected ? 0 : -1;
     }
     setText('summary-count', offerName(quantity));
-    setText('summary-product', `${offerName(quantity)} Foco NFC`);
+    setText('summary-product', `${offerName(quantity)} Foco`);
     setText('summary-subtotal', formatCOP(offer.subtotal));
     discountRow.hidden = offer.discount === 0;
     setText('summary-discount', offer.discount ? `−${formatCOP(offer.discount)}` : '');

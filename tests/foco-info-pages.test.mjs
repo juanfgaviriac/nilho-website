@@ -61,6 +61,9 @@ test('commercial HTML contains current seller and prices without JavaScript and 
 
 test('production build publishes complete canonical pages and preserves earlier accepted policies byte-for-byte', () => {
     const historical = {
+        '2026-09-21.3/privacy': '74d908728b1b265314ebad6f51e2d213362dd8cbc442833ef140855cb9ba8d78',
+        '2026-09-21.3/terms': '19e1741029b4f987d4985a8888375b9c51aa988d3d6220aa2365a4d34a22ad87',
+
         '2026-09-21.1/privacy': '85ba5d5bd50e4d8d290d8b900eebc5102b79626ec96a382e43e604346156d763',
         '2026-09-21.1/terms': 'c6a9ad6c9314d1745957461691368c40dff0ce783dd1a6ab57e1fa248ab3b767',
         '2026-09-21.2/privacy': '70d282b21f8a4e8f16a6d3989762e4beaa9b0170aedf09bdc13f2f33d4c758c1',
