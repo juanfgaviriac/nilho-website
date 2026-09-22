@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=cart-1">
     <link rel="stylesheet" href="/foco/checkout.css?v=cart-1">
-    <link rel="stylesheet" href="/foco/cart.css?v=3">
+    <link rel="stylesheet" href="/foco/cart.css?v=4">
     <script type="module" src="/foco/checkout.js?v=cart-3"></script>
 </head>
 <body class="cart-page">
@@ -24,17 +24,14 @@
     <main class="checkout-section cart-main" id="comprar" aria-labelledby="checkout-title" tabindex="-1" data-quantity="2">
         <div class="cart-intro">
             <h1 id="checkout-title">Elige tu Foco.</h1>
+            <div class="cart-art" aria-hidden="true">
+                <div class="cart-card cart-card--third"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+                <div class="cart-card cart-card--second"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+                <div class="cart-card cart-card--first"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+            </div>
         </div>
         <div class="checkout-layout">
             <div class="checkout-selection">
-                <div class="cart-product">
-                    <div class="cart-art" aria-hidden="true">
-                        <div class="cart-card cart-card--third"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
-                        <div class="cart-card cart-card--second"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
-                        <div class="cart-card cart-card--first"><span class="foco-mark foco-mark--small" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
-                    </div>
-                    <div class="cart-product-copy"><h2>Tarjeta Foco</h2></div>
-                </div>
                 <div class="cart-selection-heading"><h2 id="offer-legend">¿Cuántas tarjetas?</h2><span>Sin suscripciones. Un solo pago.</span></div>
                 <div class="offer-options" role="radiogroup" aria-labelledby="offer-legend" id="offer-options"></div>
                 <ul class="cart-benefits" aria-label="Tu tarjeta Foco">
