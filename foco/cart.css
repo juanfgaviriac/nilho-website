@@ -63,7 +63,7 @@
 .cart-page .summary-lines dt { color: var(--cart-muted); }
 .cart-page .summary-lines dd { font-weight: 600; }
 .cart-page #summary-shipping[data-free="true"], .cart-page #summary-discount-row { color: var(--cart-accent); }
-.cart-page .summary-total { padding-top: 22px; }
+.cart-page .summary-total { border-top: 0; padding-top: 12px; }
 .cart-page .summary-total strong { font-size: 2.1rem; }
 .cart-page .summary-total > span { display: inline-flex; align-items: baseline; gap: 7px; font-size: .94rem; }
 .cart-page .summary-total small { display: inline; margin: 0; }
