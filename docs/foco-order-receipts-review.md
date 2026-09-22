@@ -66,3 +66,25 @@ Netlify CLI 27.8.0 is available through npx. It was not previously authenticated
 - A bulk env context update omitted encrypted values and cleared the Resend values. Repaired using equivalent sending-only nilho.co keys: Production `Foco Comprobantes Netlify` (`87f90992-dac3-4d0d-a314-f21ac5fcdfd0`), sandbox branch `Foco Sandbox Netlify` (`23a12081-b3af-4ccd-be48-2ee2401c687a`). Single-value PATCH readback verified secrets and production preservation. Old Resend keys have not been revoked; they are superseded, not used by this checkout.
 - Netlify checkout/email project switches remain false. This task did not publish production. During testing a separate production deployment appeared: `6ab1cad36324ac0008f3e62b`, main commit `a7cd435415b29307991b274e65087001f33d0b4b`, title “Refine Foco steps and add glass app-blocking overlay”. Its production checkout config paths return 404; reconcile current main before any final checkout publication to preserve those visual changes.
 - 54 tests passed. Remaining: Wompi sign-in, branch-scoped sandbox keys, redeploy, sandbox webhook, approved transaction, stored consent/policy and one delivered receipt, duplicate callback evidence.
+
+## Hosted sandbox end-to-end verification — completed 2026-09-21
+
+- Candidate code `52232f1` deployed as `6ab1cd3cdd2f9d2012689b5c` to `https://foco-checkout-sandbox--nilho.netlify.app`. Netlify runtime is branch-deploy; sandbox keys were added specifically to branch `foco-checkout-sandbox` using single-value PATCH. Each masked suffix and unchanged production value was verified. No production publication.
+- Wompi sandbox callback saved, then read back after reopening developer settings: `https://foco-checkout-sandbox--nilho.netlify.app/api/foco/wompi`. Production callback was not changed. Invalid checkout returns 400 and invalid webhook returns 401.
+- Three orders created through the hosted function. Independent authenticated Wompi readback verified exact amounts, COP, merchant, single use, shipping collection, SKU/order link, preview redirect and expiry. Hosted Blobs contains accepted-at timestamps and exact policy archives with matching SHA256. Repeating the same creation attempt reused the existing link.
+
+| Cards | Hosted order | Wompi sandbox link | Centavos |
+| --- | --- | --- | --- |
+| 1 | `f16f71a1-b203-4f27-812b-1e27d07591ea` | `test_huyJYa` | 11000000 |
+| 2 | `aa2479b2-20bb-429c-9aa0-262999745a9d` | `test_MlINgb` | 20000000 |
+| 3 | `9255c56b-10fe-48b1-99cd-7deeb7a353af` | `test_Rftb8q` | 25000000 |
+
+- Browser purchase used Wompi's fictitious approved Visa card, synthetic buyer/shipping details and the approved recipient `team@nilho.co`. Owner confirmed the two Wompi legal/data checkboxes at action time. Transaction `12196418-1790037562-26612` was **APPROVED**, COP 200000. No real money moved.
+- Wompi's actual callback created the paid record and sent the receipt before any manual replay. Blobs receipt state is `sent`, message `01a0c68d-ab53-7688-80c6-53f810857525`, sent at `2026-09-22T00:39:28.443Z`. Resend independently shows **Delivered**. Subject and body conspicuously identify a test; order, prices, shipping terms, iPhone compatibility and policy version/timestamp match. Delivery is provider-confirmed, not evidence of recipient opening.
+- Two concurrent reconstructed signed callbacks for that real sandbox transaction returned HTTP 200, preserving the entire original receipt, message ID and sent timestamp. Resend's refreshed list still showed one Foco receipt for this order. Wompi sends its own processor receipt separately; this deduplication concerns the Foco/Resend receipt.
+- Decline scenario used Wompi's documented test Nequi number. Transaction `12196418-1790037857-11246` showed **RECHAZADA** for COP 110000. Strong Blobs reads found no paid marker and no Foco receipt; the order remains awaiting payment. No goods should be dispatched.
+- Return URL included the real sandbox transaction ID. Once its module loaded, the page displayed that reference and WhatsApp support while preserving “Estamos verificando tu pago”; it did not trust an approval claim in the URL.
+- One-hour expiry was verified in Wompi's returned link fields. Expired-attempt rejection is covered by the existing clock-controlled unit test; this run did not wait one hour for the provider's expired-link screen.
+- Current 54 automated tests remain passing (no application-code changes in this verification). Wompi emitted provider-side JS errors on leaving its payment summary; return-page reference rendering and delivery succeeded. No Foco code error was observed.
+
+Non-secret evidence: ignored `.artifacts/wompi-verification/hosted.json`, `replay.json`, `declined.json`. Production still needs a final approved release, reconciliation with newer main-site design changes, callback activation, retirement of legacy reusable links and merchant withdrawal-status confirmation. Physical-iPhone payment/VoiceOver acceptance and production settlement/refund behavior remain unverified.
