@@ -11,6 +11,7 @@ Condiciones aprobadas el 21 de septiembre de 2026. Stock inicial confirmado: 30 
 
 ## Por cada pedido
 
+- El aviso automático **“Nueva compra Foco”** llega directamente a **team@nilho.co**, desde **team@getfoco.co**, después de verificar el pago APPROVED con Wompi. Incluye cantidad, total, referencia e ID de transacción, y un botón para abrir Wompi. No depende del reenvío de soporte. La dirección del comprador se consulta en Wompi.
 - Verificar APPROVED, COP, link/SKU, cantidad e importe en Wompi. Comprobar por ID completo que no existe despacho previo ni reembolso/reversión.
 - Usar la referencia `FOCO-[UUID pedido]` generada por el servidor, vinculada al SKU del enlace y al ID Wompi aprobado. Consultar en el registro privado la fecha/versiones de aceptación y sus copias archivadas.
 - Verificar que Resend haya entregado el comprobante automático. Si requiere atención manual, usar la [plantilla de comprobante](templates/confirmacion-pedido.md) solo después de descartar un envío anterior; resolver dentro del día calendario siguiente a recibir el pedido. Adjuntar factura cuando proceda. No confundir el mensaje neutro de retorno con este comprobante.
@@ -37,9 +38,11 @@ Estas plantillas son borradores de operación: la tarea no envía mensajes al co
 
 ## Comprobantes y reintentos
 
-Revisar a diario Wompi APPROVED frente a `paid/` y `receipts/` del almacén privado Vercel Blob `foco-orders-production` (prefijo `prod/`). Un ID de Resend guardado significa que Resend aceptó el correo, no que llegó al buzón: consultar entrega/rebote en Resend. El servidor no guarda dirección postal ni datos del instrumento de pago; esos se consultan en Wompi.
+Revisar a diario Wompi APPROVED frente a `paid/`, `receipts/` (comprador) y `alerts/` (aviso interno) del almacén privado Vercel Blob `foco-orders-production` (prefijo `prod/`). Un ID de Resend guardado significa que Resend aceptó el correo, no que llegó al buzón: consultar entrega/rebote en Resend. El servidor no guarda dirección postal ni datos del instrumento de pago; esos se consultan en Wompi.
 
-Ante `pending`, `sending` vencido o `manual_review`, comprobar el ID de transacción y los registros de Resend antes de reenviar. Dentro de la ventana segura, reenviar el evento original desde Wompi conserva el mismo payload y clave idempotente. Pasadas 23 horas se exige revisión manual para evitar duplicados; no borrar el registro de envío como mecanismo de reintento. Rebotes o direcciones erróneas requieren contactar al titular por el canal de soporte y verificar la corrección; no redirigir el recibo a un email recibido sin verificar.
+Ante `pending`, `sending` vencido o `manual_review`, comprobar el ID de transacción y los registros de Resend antes de reenviar. Dentro de la ventana segura, reenviar el evento original desde Wompi conserva el mismo payload y clave idempotente. Los correos se reintentan por separado: un fallo del aviso interno no vuelve a enviar el comprobante, ni viceversa. Pasadas 23 horas se exige revisión manual para evitar duplicados; no borrar el registro de envío como mecanismo de reintento. Rebotes o direcciones erróneas requieren contactar al titular por el canal de soporte y verificar la corrección; no redirigir el recibo a un email recibido sin verificar.
+
+El despliegue no recorre pedidos antiguos ni envía avisos retroactivos en lote. Si Wompi reenvía un evento antiguo que solo tenía comprobante, se genera su aviso interno una vez; comprobar la fecha en Wompi antes de tratarlo como un pedido nuevo. La conciliación diaria sigue siendo necesaria ante rebotes, fallos de webhook o correos que requieran revisión manual.
 
 Los enlaces vencen en una hora, pero un pago ya iniciado puede seguir pendiente y aprobarse más tarde. Conciliarlo antes de liberar stock. Los pedidos `creating` sin enlace retornado son intentos ambiguos: buscar el UUID en Wompi antes de recrearlos. El margen de cinco tarjetas y el vencimiento no constituyen reservas ni eliminan sobreventa.
 

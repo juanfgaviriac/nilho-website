@@ -1,5 +1,6 @@
 // Server-only preparation/sending. Never import this module in a browser.
 import { formatCOP, FOCO_WHATSAPP_URL } from '../../foco/checkout-config.mjs';
+import { sendPreparedEmail } from './email.mjs';
 
 const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const boundedID = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(value);
@@ -7,10 +8,10 @@ const validEmail = value => typeof value === 'string' && value.length <= 254 && 
 
 // Only call after the payment has been independently fetched from Wompi on the
 // server and matched to the persisted order/consent. A redirect is never evidence.
-export function orderReceipt({ order, transaction }) {
+export function assertApprovedOrder({ order, transaction }) {
     if (!order || !transaction || !boundedID(order.id) || !boundedID(transaction.id) ||
         order.transactionId !== transaction.id || transaction.status !== 'APPROVED' ||
-        transaction.currency !== 'COP' || !validEmail(transaction.customer_email)) {
+        transaction.currency !== 'COP') {
         throw new Error('Receipt requires a verified approved order.');
     }
     const offer = order.offer;
@@ -31,6 +32,12 @@ export function orderReceipt({ order, transaction }) {
     if (!seller || !['name','nit','noticeAddress'].every(key => typeof seller[key] === 'string' && seller[key].trim())) {
         throw new Error('Receipt requires the original seller.');
     }
+}
+
+export function orderReceipt({ order, transaction }) {
+    assertApprovedOrder({ order, transaction });
+    if (!validEmail(transaction.customer_email)) throw new Error('Receipt requires a valid customer email.');
+    const { offer, seller } = order;
     const reference = `FOCO-${order.id}`;
     const product = `${offer.quantity} ${offer.quantity === 1 ? 'tarjeta Foco' : 'tarjetas Foco'} NFC`;
     const rows = [ ['Producto', product], ['Subtotal', `${formatCOP(offer.subtotal)} COP`],
@@ -81,21 +88,6 @@ export async function sendOrderReceipt({ order, transaction, apiKey, from = 'Foc
 
 // The durable receipt record freezes this payload before the first send so retries
 // use identical content, even if a deployment changes the template or prices.
-export async function sendPreparedReceipt({ receipt, transactionId, apiKey, from = 'Foco <team@getfoco.co>', fetchImpl = fetch }) {
-    if (!boundedID(transactionId) || !validEmail(receipt?.to) || typeof receipt.html !== 'string' ||
-        typeof receipt.text !== 'string' || typeof receipt.subject !== 'string') throw new Error('Invalid stored receipt.');
-    if (typeof apiKey !== 'string' || !apiKey.startsWith('re_')) throw new Error('Resend is not configured.');
-    if (!/^Foco <[A-Za-z0-9._+-]+@getfoco\.co>$/.test(from)) throw new Error('Unapproved sender.');
-    const response = await fetchImpl('https://api.resend.com/emails', {
-        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(10000),
-        headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json',
-            'Idempotency-Key': `foco-receipt-v1/${transactionId}` },
-        body: JSON.stringify({ from, to: [receipt.to], reply_to: 'team@getfoco.co', subject: receipt.subject,
-            html: receipt.html, text: receipt.text }),
-    });
-    // Never surface provider error bodies: they can contain addresses or request data.
-    if (!response.ok) throw new Error(`Resend request failed (${response.status}).`);
-    const result = await response.json();
-    if (typeof result.id !== 'string' || !/^[A-Za-z0-9-]{1,120}$/.test(result.id)) throw new Error('Resend did not confirm acceptance.');
-    return { emailId: result.id }; // Accepted by Resend, not proof of inbox delivery.
+export async function sendPreparedReceipt({ receipt, ...options }) {
+    return sendPreparedEmail({ ...options, message: receipt, kind: 'receipt' });
 }

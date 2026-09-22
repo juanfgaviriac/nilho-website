@@ -1,7 +1,9 @@
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { FOCO_CHECKOUT, getOffer } from '../../foco/checkout-config.mjs';
 import { stockAvailable } from '../../foco/commerce-config.mjs';
-import { orderReceipt, sendPreparedReceipt } from './receipt.mjs';
+import { orderReceipt } from './receipt.mjs';
+import { merchantNotification } from './merchant-notification.mjs';
+import { sendPreparedEmail } from './email.mjs';
 
 export class CommerceError extends Error {
     constructor(status, code) { super(code); this.status = status; this.code = code; }
@@ -109,6 +111,45 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         return { checkoutURL: order.checkoutURL, orderId };
     }
 
+    async function deliverRecordedEmail({ key, kind, orderId, transactionId, prepare }) {
+        const label = kind === 'receipt' ? 'receipt' : 'alert';
+        let current = await store.getWithMetadata(key, { type: 'json' });
+        if (!current) {
+            // Freeze content before sending. Existing sends keep their original
+            // recipient/content across deploys and changes to provider data.
+            await store.setJSON(key, { state: 'pending', createdAt: now().toISOString(),
+                orderId, transactionId, payload: prepare() }, { onlyIfNew: true });
+            current = await store.getWithMetadata(key, { type: 'json' });
+        }
+        if (!current) fail(503, `${label}_unavailable`);
+        if (current.data.state === 'sent') return { reviewRequired: false };
+        if (current.data.state === 'manual_review') return { reviewRequired: true };
+        if (env.FOCO_EMAIL_ENABLED !== 'true') fail(503, 'email_disabled');
+        const age = now().getTime() - Date.parse(current.data.createdAt);
+        // Both emails have separate durable claims and provider keys. Never
+        // automatically resend an ambiguous request beyond the dedupe window.
+        if (!Number.isFinite(age) || age >= 23 * 60 * 60 * 1000) {
+            const saved = await store.setJSON(key, { ...current.data, state: 'manual_review' }, { onlyIfMatch: current.etag });
+            if (!saved.modified) fail(503, `${label}_retry_required`);
+            return { reviewRequired: true };
+        }
+        if (Date.parse(current.data.leaseUntil || '') > now().getTime()) fail(503, `${label}_in_progress`);
+        const lease = await store.setJSON(key, { ...current.data, state: 'sending', leaseUntil: new Date(now().getTime()+120000).toISOString() }, { onlyIfMatch: current.etag });
+        if (!lease.modified) fail(503, `${label}_in_progress`);
+        let sent;
+        try {
+            sent = await sendPreparedEmail({ message: current.data.payload, transactionId: current.data.transactionId,
+                kind, apiKey: env.RESEND_API_KEY, fetchImpl });
+        } catch {
+            await store.setJSON(key, { ...current.data, state: 'pending', leaseUntil: null }, { onlyIfMatch: lease.etag });
+            fail(503, `${label}_retry_required`);
+        }
+        const saved = await store.setJSON(key, { ...current.data, state: 'sent', emailId: sent.emailId,
+            sentAt: now().toISOString(), leaseUntil: null }, { onlyIfMatch: lease.etag });
+        if (!saved.modified) fail(503, `${label}_retry_required`);
+        return { reviewRequired: false };
+    }
+
     async function handleEvent(event) {
         const { mode } = environment(env);
         if (!verifyWompiEvent(event, env.WOMPI_EVENTS_SECRET, mode)) fail(401, 'invalid_event');
@@ -138,36 +179,18 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         }
         const paid = await store.setJSON(`paid/${order.id}`, { transactionId: tx.id, approvedAt: now().toISOString() }, { onlyIfNew: true });
         if (!paid.modified && (await store.get(`paid/${order.id}`, { type: 'json' })).transactionId !== tx.id) fail(409, 'order_already_paid');
-        // Shipping/address/payment instrument stay in Wompi. Retain only delivery
-        // email and the receipt payload necessary for reliable retries.
-        await store.setJSON(receiptKey, { state: 'pending', createdAt: now().toISOString(),
-            orderId: order.id, transactionId: tx.id,
-            payload: orderReceipt({ order: { ...order, transactionId: tx.id }, transaction: tx }) }, { onlyIfNew: true });
-        if (env.FOCO_EMAIL_ENABLED !== 'true') fail(503, 'email_disabled');
-        const current = await store.getWithMetadata(receiptKey, { type: 'json' });
-        if (!current) fail(503, 'receipt_unavailable');
-        if (current.data.state === 'sent') return { received: true };
-        const age = now().getTime() - Date.parse(current.data.createdAt);
-        // Never risk an automatic duplicate after Resend's 24-hour dedupe window.
-        if (age >= 23 * 60 * 60 * 1000) {
-            await store.setJSON(receiptKey, { ...current.data, state: 'manual_review' }, { onlyIfMatch: current.etag });
-            return { received: true, reviewRequired: true };
-        }
-        if (Date.parse(current.data.leaseUntil || '') > now().getTime()) fail(503, 'receipt_in_progress');
-        const lease = await store.setJSON(receiptKey, { ...current.data, state: 'sending', leaseUntil: new Date(now().getTime()+120000).toISOString() }, { onlyIfMatch: current.etag });
-        if (!lease.modified) fail(503, 'receipt_in_progress');
-        let sent;
-        try {
-            sent = await sendPreparedReceipt({ receipt: current.data.payload, transactionId: current.data.transactionId,
-                apiKey: env.RESEND_API_KEY, fetchImpl });
-        } catch {
-            await store.setJSON(receiptKey, { ...current.data, state: 'pending', leaseUntil: null }, { onlyIfMatch: lease.etag });
-            fail(503, 'receipt_retry_required');
-        }
-        const saved = await store.setJSON(receiptKey, { ...current.data, state: 'sent', emailId: sent.emailId,
-            sentAt: now().toISOString(), leaseUntil: null }, { onlyIfMatch: lease.etag });
-        if (!saved.modified) fail(503, 'receipt_retry_required');
-        return { received: true };
+        const verified = { order: { ...order, transactionId: tx.id }, transaction: tx };
+        // Attempt both independently: buyer delivery must not suppress the sales
+        // alert, and a failed alert must never cause a second buyer receipt.
+        const results = await Promise.allSettled([
+            deliverRecordedEmail({ key: receiptKey, kind: 'receipt', orderId: order.id, transactionId: tx.id,
+                prepare: () => orderReceipt(verified) }),
+            deliverRecordedEmail({ key: `alerts/${tx.id}`, kind: 'merchant', orderId: order.id, transactionId: tx.id,
+                prepare: () => merchantNotification(verified) }),
+        ]);
+        const failure = results.find(result => result.status === 'rejected');
+        if (failure) throw failure.reason; // Non-2xx lets Wompi retry either unsent email.
+        return { received: true, ...(results.some(result => result.value.reviewRequired) ? { reviewRequired: true } : {}) };
     }
     return { createCheckout, handleEvent };
 }
