@@ -32,15 +32,19 @@ Set these in **Netlify → nilho → Environment variables**, with separate prod
 | `WOMPI_PRIVATE_KEY` | **Configured secret**: production key in Production, sandbox key in Deploy Previews; other contexts empty |
 | `WOMPI_PUBLIC_KEY` | **Configured secret** in the same two contexts; verifies link merchant ownership |
 | `WOMPI_EVENTS_SECRET` | **Configured secret** in the same two contexts; verifies callback checksum |
-| `RESEND_API_KEY` | **Configured**: dedicated sending-only key scoped to `nilho.co`, production secret |
+| `RESEND_API_KEY` | **Configured**: separate production and preview sending-only keys, both scoped to `nilho.co` |
 | `FOCO_CHECKOUT_ENABLED` | `false` until reviewed; server kill switch |
 | `FOCO_EMAIL_ENABLED` | `false` until an authorized send test succeeds |
+| `FOCO_TEST_EMAIL_TO` | Sandbox-only allowlist recipient; use `team@nilho.co` for the approved integration test |
+| `FOCO_SANDBOX_ORIGIN` | Sandbox-only draft origin; `https://foco-checkout-sandbox--nilho.netlify.app` |
 
 Netlify Blobs authenticates automatically in hosted functions. Do not create or publish a storage token. Private stores are separated: `foco-orders-test` and `foco-orders-prod`. Runtime values must be available to Functions, not just Builds.
 
 Wompi credentials were connected on 2026-09-21. The real sandbox API created and independently returned all three exact-amount, single-use links with shipping collection and one-hour expiry. Retrying each order reused its link. This validates the provider contract, not a completed payment or hosted Netlify storage.
 
-Before launch: authorize a sandbox preview and its separate Resend sending key; configure callbacks to the deployed preview and, at launch, `https://nilho.co/api/foco/wompi`; verify actual sandbox transaction → stored consent → one delivered test receipt, including duplicate webhook replay; review the archived policies and fulfilment operation; retire the old reusable links; obtain final publication approval. Then set the client readiness flags and server flags together. Production keys cannot run in deploy previews. No paid plan should be purchased automatically.
+The owner authorized the sandbox preview and a separate Resend key. `Foco Pruebas` is now stored only in the Deploy Previews context; the production key remains unchanged. Before launch: complete CLI authorization and deploy the sandbox; configure callbacks to the deployed preview and, at launch, `https://nilho.co/api/foco/wompi`; verify actual sandbox transaction → stored consent → one delivered test receipt, including duplicate webhook replay; review the archived policies and fulfilment operation; retire the old reusable links; obtain final publication approval. Then set the client readiness flags and server flags together. Production keys cannot run in deploy previews. No paid plan should be purchased automatically.
+
+For the approved sandbox, `node scripts/build-sandbox.mjs` prepares a clearly labelled draft in `dist/` without changing production source gates. Deploy only to alias `foco-checkout-sandbox`, context `deploy-preview`, with deploy-only email/checkout switches enabled and the two test settings above. Never use `--prod` with that artifact. Sandbox receipts are marked `[PRUEBA]` and restricted to the configured recipient.
 
 The final redirect is `https://nilho.co/foco/pago/`. It stays neutral and must be published with the checkout. [Launch runbook](docs/foco-checkout-launch.md) · [Order operations](docs/foco-order-operations.md).
 

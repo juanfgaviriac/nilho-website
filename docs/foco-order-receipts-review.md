@@ -49,3 +49,11 @@ Netlify project `nilho` now has `WOMPI_ENVIRONMENT=prod` for Production and `tes
 - Existing production and sandbox event URL fields were blank. They remain blank until corresponding endpoints are deployed and checked. Never direct events to a currently missing endpoint.
 - Both public launch gates and server switches stay off. No deployment/publication or production link creation occurred; legacy reusable links remain unchanged.
 - Sandbox preview delivery needs a separate Resend key because the production secret is non-readable and production-only. Prepared, but did not submit, a `Foco Pruebas` key with Sending access restricted to nilho.co. Preview deployment and that new credential await confirmation.
+
+## Approved sandbox preparation — 2026-09-21
+
+The owner approved the sandbox deployment, callback setup, restricted Resend key and test receipt. Created `Foco Pruebas` (`97c3bfab-d1ad-4289-a1b9-b1fe68980ade`), Sending access limited to nilho.co, and saved it only in Netlify's Deploy Previews context. Readback matched the masked suffix; the production key was preserved. No email has yet been sent with this key.
+
+Added a sandbox recipient allowlist, conspicuous test receipt labels, a draft-only static build and a return URL restricted to the project's sandbox alias. **54 tests and the sandbox build passed.** Production source flags remain disabled. Candidate commit: `5e67111`.
+
+Netlify CLI 27.8.0 is available through npx. It was not previously authenticated. Its official authorization page requests permission to create/manage projects in the user's teams; this additional access is awaiting explicit confirmation. No sandbox deployment, callback change or test transaction has happened yet.
