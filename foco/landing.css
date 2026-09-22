@@ -294,10 +294,24 @@ h1 span {
     letter-spacing: 0.02em;
 }
 
+.hero-app-store {
+    display: inline-flex;
+    margin-top: var(--space-3);
+    border-radius: 7px;
+    vertical-align: top;
+}
+
+.hero-app-store img {
+    display: block;
+    width: auto;
+    height: 44px;
+}
+
 .button:focus-visible,
 .site-nav a:focus-visible,
 .brand:focus-visible,
 .text-link:focus-visible,
+.hero-app-store:focus-visible,
 .site-footer a:focus-visible {
     outline: 3px solid var(--forest);
     outline-offset: 4px;
