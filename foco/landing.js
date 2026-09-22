@@ -91,3 +91,62 @@ if (film && filmToolbar) {
         }
     });
 }
+
+const featureCarousel = document.querySelector(".feature-carousel");
+if (featureCarousel) {
+    const track = featureCarousel.querySelector(".feature-track");
+    const cards = [...track.querySelectorAll(".feature-card")];
+    const toolbar = featureCarousel.querySelector(".feature-toolbar");
+    const dots = [...toolbar.querySelectorAll("[data-feature]")];
+    const previous = toolbar.querySelector('[data-direction="-1"]');
+    const next = toolbar.querySelector('[data-direction="1"]');
+    const announcement = featureCarousel.querySelector(".feature-announcement");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const labels = ["Modos", "Rutinas", "Mi tiempo"];
+    let current = 0;
+    let scheduled = false;
+
+    function targets() {
+        const max = track.scrollWidth - track.clientWidth;
+        return cards.map((card) => Math.min(max, card.offsetLeft - cards[0].offsetLeft));
+    }
+
+    function update() {
+        scheduled = false;
+        const overflow = track.scrollWidth > track.clientWidth + 2;
+        toolbar.hidden = !overflow;
+        track.tabIndex = overflow ? 0 : -1;
+        const positions = targets();
+        current = positions.reduce((best, value, index) =>
+            Math.abs(value - track.scrollLeft) < Math.abs(positions[best] - track.scrollLeft) ? index : best, 0);
+        dots.forEach((dot, index) => {
+            if (index === current) dot.setAttribute("aria-current", "true");
+            else dot.removeAttribute("aria-current");
+        });
+        previous.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+    }
+
+    function goTo(index, keyboard = false) {
+        const destination = Math.max(0, Math.min(cards.length - 1, index));
+        track.scrollTo({ left: targets()[destination], behavior: keyboard || reducedMotion.matches ? "instant" : "smooth" });
+        if (keyboard || reducedMotion.matches) update();
+        announcement.textContent = `${labels[destination]}, ${destination + 1} de ${cards.length}`;
+    }
+
+    dots.forEach((dot) => dot.addEventListener("click", (event) => goTo(Number(dot.dataset.feature), event.detail === 0)));
+    [previous, next].forEach((button) => button.addEventListener("click", (event) => goTo(current + Number(button.dataset.direction), event.detail === 0)));
+    track.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        goTo(event.key === "Home" ? 0 : event.key === "End" ? cards.length - 1 : current + (event.key === "ArrowRight" ? 1 : -1), true);
+    });
+    track.addEventListener("scroll", () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(update);
+    }, { passive: true });
+    if ("ResizeObserver" in window) new ResizeObserver(update).observe(track);
+    else window.addEventListener("resize", update);
+    update();
+}

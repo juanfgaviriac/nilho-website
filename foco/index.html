@@ -14,9 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="/foco/assets/film/foco-tap-in-v1.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="/foco/landing.css?v=glass-1">
+    <link rel="stylesheet" href="/foco/landing.css?v=features-1">
     <link rel="stylesheet" href="/foco/checkout.css?v=4">
-    <script src="/foco/landing.js?v=film-2" defer></script>
+    <script src="/foco/landing.js?v=features-1" defer></script>
     <script type="module" src="/foco/checkout.js?v=3"></script>
 </head>
 <body>
@@ -111,33 +111,72 @@
         </section>
 
         <section class="app-section" id="la-app" aria-labelledby="app-title">
-            <div class="time-visual reveal">
-                <div class="time-frame">
-                    <div class="phone-preview">
-                        <img src="/foco/assets/foco-mi-tiempo-1-0-5.webp" alt="Mi tiempo en Foco: gráfica de los últimos 30 días, barras apiladas por modo y acceso al historial de sesiones" width="786" height="1704" loading="lazy" decoding="async">
+            <div class="app-heading reveal">
+                <div>
+                    <p class="eyebrow">Un lugar para lo que importa</p>
+                    <h2 id="app-title">Tu foco.<br><span>A tu manera.</span></h2>
+                </div>
+                <p>Elige cómo desconectarte. <br>Encuentra tu ritmo. <br>Ve todo el tiempo que vuelve a ti.</p>
+            </div>
+            <div class="feature-carousel" role="region" aria-label="Funciones de la app Foco">
+                <div class="feature-track" id="feature-track" tabindex="0" aria-label="Modos, Rutinas y Mi tiempo. Desliza para explorar.">
+                    <article class="feature-card feature-card--modos" id="feature-modos" aria-labelledby="feature-modos-title">
+                        <div class="feature-scene">
+                            <img src="/foco/assets/features/modos-1200-v1.webp"
+                                srcset="/foco/assets/features/modos-600-v1.webp 600w, /foco/assets/features/modos-1200-v1.webp 1200w"
+                                sizes="(max-width: 720px) 86vw, (max-width: 1100px) 46vw, 411px"
+                                alt="Primer plano frontal del iPhone con los Modos de Foco y un fondo verde salvia pastel" width="1200" height="1600" loading="lazy" decoding="async">
+                            <span class="feature-label">Modos</span>
+                        </div>
+                        <div class="feature-copy">
+                            <h3 id="feature-modos-title">Un foco para cada momento.</h3>
+                            <p>Bloquea lo que te distrae o permite solo lo que necesitas. Para trabajar, crear o simplemente estar.</p>
+                            <span class="feature-detail"><span aria-hidden="true">＋</span> Tú eliges las apps</span>
+                        </div>
+                    </article>
+                    <article class="feature-card feature-card--rutinas" id="feature-rutinas" aria-labelledby="feature-rutinas-title">
+                        <div class="feature-scene">
+                            <img src="/foco/assets/features/rutinas-1200-v1.webp"
+                                srcset="/foco/assets/features/rutinas-600-v1.webp 600w, /foco/assets/features/rutinas-1200-v1.webp 1200w"
+                                sizes="(max-width: 720px) 86vw, (max-width: 1100px) 46vw, 411px"
+                                alt="Primer plano frontal del iPhone con las Rutinas de Foco y un fondo azul pastel" width="1200" height="1600" loading="lazy" decoding="async">
+                            <span class="feature-label">Rutinas</span>
+                        </div>
+                        <div class="feature-copy">
+                            <h3 id="feature-rutinas-title">Haz espacio. Cada día.</h3>
+                            <p>Elige los días y las horas. Tu rutina empieza sola; para terminar antes, necesitas tu tarjeta Foco.</p>
+                            <span class="feature-detail"><span aria-hidden="true">＋</span> Tu horario, tu ritmo</span>
+                        </div>
+                    </article>
+                    <article class="feature-card feature-card--analytics" id="feature-analytics" aria-labelledby="feature-analytics-title">
+                        <div class="feature-scene">
+                            <img src="/foco/assets/features/analytics-1200-v1.webp"
+                                srcset="/foco/assets/features/analytics-600-v1.webp 600w, /foco/assets/features/analytics-1200-v1.webp 1200w"
+                                sizes="(max-width: 720px) 86vw, (max-width: 1100px) 46vw, 411px"
+                                alt="Primer plano frontal del iPhone con las gráficas de Mi tiempo de Foco y un fondo melocotón pastel" width="1200" height="1600" loading="lazy" decoding="async">
+                            <span class="feature-label">Mi tiempo</span>
+                        </div>
+                        <div class="feature-copy">
+                            <h3 id="feature-analytics-title">Mira lo que recuperas.</h3>
+                            <p>Explora tu semana, mes o año. Descubre el tiempo en cada modo y vuelve al historial de tus sesiones.</p>
+                            <span class="feature-detail"><span aria-hidden="true">＋</span> Cada sesión cuenta</span>
+                        </div>
+                    </article>
+                </div>
+                <div class="feature-toolbar" hidden>
+                    <div class="feature-pagination" aria-label="Ir a una función">
+                        <button type="button" aria-label="Ver Modos" aria-controls="feature-track" aria-current="true" data-feature="0"><span></span></button>
+                        <button type="button" aria-label="Ver Rutinas" aria-controls="feature-track" data-feature="1"><span></span></button>
+                        <button type="button" aria-label="Ver Mi tiempo" aria-controls="feature-track" data-feature="2"><span></span></button>
+                    </div>
+                    <div class="feature-arrows">
+                        <button type="button" data-direction="-1" aria-label="Función anterior" aria-controls="feature-track" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                        <button type="button" data-direction="1" aria-label="Siguiente función" aria-controls="feature-track"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 6 6 6-6 6M16 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                     </div>
                 </div>
-                <p class="screenshot-caption">Capturas de la app con datos de ejemplo.</p>
+                <p class="sr-only feature-announcement" aria-live="polite" aria-atomic="true"></p>
             </div>
-            <div class="app-copy reveal">
-                <p class="eyebrow">Mi tiempo</p>
-                <h2 id="app-title">Tu progreso,<br>a tu ritmo.</h2>
-                <p class="app-lede">Mira cuándo encuentras tu foco, cómo repartes el tiempo entre tus modos y las sesiones que has hecho.</p>
-                <dl class="feature-list">
-                    <div>
-                        <dt>Cada modo</dt>
-                        <dd>Gráficas apiladas para ver cuánto tiempo dedicas a trabajar, leer o descansar.</dd>
-                    </div>
-                    <div>
-                        <dt>A tu escala</dt>
-                        <dd>Explora tu semana, los últimos 30 días o el promedio diario de cada mes del año.</dd>
-                    </div>
-                    <div>
-                        <dt>Cada sesión</dt>
-                        <dd>Vuelve a períodos anteriores y consulta todo el historial guardado en tu iPhone.</dd>
-                    </div>
-                </dl>
-            </div>
+            <p class="screenshot-caption">Pantallas reales de Foco. Datos de ejemplo.</p>
         </section>
 
         <section class="checkout-section" id="comprar" aria-labelledby="checkout-title" tabindex="-1">
