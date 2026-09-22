@@ -22,6 +22,7 @@ for (const phone of document.querySelectorAll('[data-phone]')) {
 }
 const list = document.querySelector('[data-offer-list]');
 if (list) {
+    list.replaceChildren();
     for (const quantity of [1, 2, 3]) {
         const offer = getOffer(quantity);
         const row = document.createElement('div');

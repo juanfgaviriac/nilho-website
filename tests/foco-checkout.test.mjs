@@ -159,7 +159,7 @@ test('commercial pages separate seller, app and purchase privacy and retain neut
     assert.match(purchase, /cinco días hábiles/);
     assert.match(purchase, /15 días calendario/);
     assert.match(purchase, /data-offer-list/);
-    assert.match(purchase, /https:\/\/www.sic.gov.co/);
+    assert.match(purchase, /https:\/\/sedeelectronica.sic.gov.co\/temas\/proteccion-al-consumidor/);
     assert.match(privacy, /No cruzamos los pedidos con la analítica/);
     for (const name of ['soporte', 'privacidad', 'terminos']) {
         const html = readFileSync(new URL(`../foco/${name}/index.html`, import.meta.url), 'utf8');

@@ -1,5 +1,5 @@
 import { cp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
-import { snapshotPolicies } from './policies.mjs';
+import { renderCommercePage, snapshotPolicies } from './policies.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
 const out = new URL('dist/', root);
@@ -15,8 +15,10 @@ const iconLinks = `    <link rel="icon" href="/foco/assets/favicon/favicon.ico" 
 `;
 await cp(new URL('foco/assets/favicon/favicon.ico',root),new URL('favicon.ico',out));
 for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
-    let html = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
+    const source = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
+    let html = path === 'compra/' || path === 'compra/privacidad/' ? renderCommercePage(source) : source;
     if (!html.includes('/foco/assets/favicon/')) html = html.replace('</head>',iconLinks+'</head>');
+    await writeFile(new URL(`foco/${path}index.html`,out),html);
     await mkdir(new URL(path,out),{recursive:true});
     // Archives remain byte-for-byte original. Only current pages get clean links.
     await writeFile(new URL(`${path}index.html`,out),html.replaceAll('href="/foco/#comprar"', 'href="/comprar/"').replace(/href="\/foco\/(?=[#"]|(?:comprar|pago|privacidad|terminos|soporte|compra)\/)/g,'href="/'));
