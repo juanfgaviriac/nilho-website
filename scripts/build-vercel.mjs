@@ -7,8 +7,16 @@ await rm(out, {recursive:true,force:true});
 await mkdir(out);
 // Foco only. No corporate site, server source, order data or secrets are public.
 await cp(new URL('foco/',root),new URL('foco/',out),{recursive:true});
+// Add branding at publication time without changing signed policy archives.
+const iconLinks = `    <link rel="icon" href="/foco/assets/favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/foco/assets/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/foco/assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/foco/assets/favicon/site.webmanifest">
+`;
+await cp(new URL('foco/assets/favicon/favicon.ico',root),new URL('favicon.ico',out));
 for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
-    const html = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
+    let html = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
+    if (!html.includes('/foco/assets/favicon/')) html = html.replace('</head>',iconLinks+'</head>');
     await mkdir(new URL(path,out),{recursive:true});
     // Archives remain byte-for-byte original. Only current pages get clean links.
     await writeFile(new URL(`${path}index.html`,out),html.replaceAll('href="/foco/#comprar"', 'href="/comprar/"').replace(/href="\/foco\/(?=[#"]|(?:comprar|pago|privacidad|terminos|soporte|compra)\/)/g,'href="/'));
