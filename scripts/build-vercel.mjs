@@ -3,11 +3,15 @@ import { renderCommercePage, snapshotPolicies } from './policies.mjs';
 import { renderSharedFooter } from './shared-footer.mjs';
 import { renderFAQ, writeKnowledge } from './faq.mjs';
 import { renderArrowFreePage } from './page-presentation.mjs';
+import { renderCheckoutPage } from './checkout-page.mjs';
+import { renderSEO } from './seo.mjs';
+import { pageOptimizer } from './optimize-page.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
 const knowledge = await writeKnowledge();
 const homepage = await readFile(new URL('foco/index.html', root), 'utf8');
 const out = new URL('dist/', root);
+const optimize = pageOptimizer(out);
 await rm(out, {recursive:true,force:true});
 await mkdir(out);
 // Foco only. No corporate site, server source, order data or secrets are public.
@@ -22,9 +26,10 @@ await cp(new URL('foco/assets/favicon/favicon.ico',root),new URL('favicon.ico',o
 for (const path of ['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
     const source = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
     let html = path === 'compra/' || path === 'compra/privacidad/' ? renderCommercePage(source) : source;
-    html = renderSharedFooter(html, homepage);
+    html = renderSEO(renderCheckoutPage(renderSharedFooter(html, homepage)), path);
     html = renderArrowFreePage(renderFAQ(html, knowledge.instantAnswers));
     if (!html.includes('/foco/assets/favicon/')) html = html.replace('</head>',iconLinks+'</head>');
+    html = await optimize(html);
     await writeFile(new URL(`foco/${path}index.html`,out),html);
     await mkdir(new URL(path,out),{recursive:true});
     // Archives remain byte-for-byte original. Only current pages get clean links.

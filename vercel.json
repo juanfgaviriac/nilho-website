@@ -29,6 +29,91 @@
       "permanent": true
     },
     {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/compra/privacidad/index.html",
+      "destination": "/compra/privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/compra/privacidad/index.html",
+      "destination": "/compra/privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/compra/index.html",
+      "destination": "/compra/",
+      "permanent": true
+    },
+    {
+      "source": "/compra/index.html",
+      "destination": "/compra/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/terminos/index.html",
+      "destination": "/terminos/",
+      "permanent": true
+    },
+    {
+      "source": "/terminos/index.html",
+      "destination": "/terminos/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/privacidad/index.html",
+      "destination": "/privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/privacidad/index.html",
+      "destination": "/privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/soporte/index.html",
+      "destination": "/soporte/",
+      "permanent": true
+    },
+    {
+      "source": "/soporte/index.html",
+      "destination": "/soporte/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/pago/index.html",
+      "destination": "/pago/",
+      "permanent": true
+    },
+    {
+      "source": "/pago/index.html",
+      "destination": "/pago/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/comprar/index.html",
+      "destination": "/comprar/",
+      "permanent": true
+    },
+    {
+      "source": "/comprar/index.html",
+      "destination": "/comprar/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/blog/index.html",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/blog/index.html",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
       "source": "/foco",
       "destination": "/",
       "permanent": true
@@ -120,6 +205,42 @@
     }
   ],
   "headers": [
+    {
+      "source": "/foco/_assets/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/foco/assets/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/compra/versiones/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    },
+    {
+      "source": "/foco/compra/versiones/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    },
     {
       "source": "/api/:path*",
       "headers": [

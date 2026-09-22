@@ -69,21 +69,8 @@ let checkoutError = '';
 const quantities = Object.keys(FOCO_CHECKOUT.offers).map(Number);
 const setText = (id, text) => { document.getElementById(id).textContent = text; };
 
-for (const value of quantities) {
-    const offer = getOffer(value);
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'offer-option';
-    button.setAttribute('role', 'radio');
-    button.dataset.quantity = value;
-    // All content is static product configuration, never customer/URL input.
-    button.innerHTML = `<span class="offer-radio" aria-hidden="true"></span>
-        <span class="offer-title-line"><span class="offer-name">${offerName(value)}</span>${offer.badge ? `<span class="offer-badge">${offer.badge}</span>` : ''}</span>
-        <span class="offer-price">${formatCOP(offer.subtotal - offer.discount)}</span>
-        <span class="offer-total-label">COP</span>
-        <span class="offer-shipping">${offer.shipping ? `+ ${formatCOP(offer.shipping)} de envío` : 'Envío gratis'}</span>
-        ${offer.discount ? `<span class="offer-saving">Ahorras ${formatCOP(offer.discount)}</span>` : ''}`;
-    button.setAttribute('aria-label', `${offerName(value)}. Total ${formatCOP(offer.total)} COP. ${offer.shipping ? `Incluye ${formatCOP(offer.shipping)} de envío` : 'Envío gratis'}.${offer.discount ? ` Ahorras ${formatCOP(offer.discount)}.` : ''}${offer.badge ? ` ${offer.badge}.` : ''}`);
+for (const button of options.querySelectorAll('[data-quantity]')) {
+    const value = Number(button.dataset.quantity);
     button.addEventListener('click', event => select(value, true, event.detail > 0));
     button.addEventListener('keydown', event => {
         const index = quantities.indexOf(quantity);
@@ -95,7 +82,6 @@ for (const value of quantities) {
         select(next);
         options.querySelector(`[data-quantity="${next}"]`).focus();
     });
-    options.append(button);
 }
 
 function select(value, announce = true, animate = false) {

@@ -29,6 +29,12 @@ if (film && filmToolbar) {
     const saveData = navigator.connection?.saveData === true;
     let wantsPlayback = !reducedMotion.matches && !saveData;
     let visible = false;
+    // Let the poster and type paint before starting the video decoder/download.
+    // Reuse the preloaded poster; no timer or delay on later play/pause actions.
+    const poster = new Image();
+    poster.src = film.poster;
+    const firstPaint = Promise.all([poster.decode().catch(() => {}), document.fonts.ready])
+        .then(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
     function updatePlaybackControl() {
         const playing = !film.paused && !film.ended;
@@ -37,6 +43,7 @@ if (film && filmToolbar) {
     }
 
     async function playIfWanted() {
+        await firstPaint;
         if (!wantsPlayback || !visible || document.hidden) return;
         try {
             await film.play();
@@ -48,7 +55,7 @@ if (film && filmToolbar) {
 
     film.muted = true;
     film.controls = false;
-    film.preload = wantsPlayback ? "metadata" : "none";
+    film.preload = "none";
     filmToolbar.hidden = false;
     film.addEventListener("play", updatePlaybackControl);
     film.addEventListener("pause", updatePlaybackControl);

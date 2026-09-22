@@ -37,7 +37,7 @@
 .cart-page .offer-badge { font-size: .57rem; line-height: 1.5; padding: 3px 7px; color: var(--cart-accent); background: #e4eae3; white-space: nowrap; }
 .cart-page .offer-option[data-quantity="2"] .offer-badge { color: white; background: var(--cart-accent); }
 .cart-page .offer-price { grid-column: 3; grid-row: 1; font-size: 1.25rem; align-self: start; margin-top: 1px; }
-.cart-page .offer-total-label { grid-column: 3; grid-row: 2; margin: 0; font-size: .5rem; }
+.cart-page .offer-total-label { grid-column: 3; grid-row: 2; margin: 0; font-size: .5rem; color: var(--cart-muted); }
 .cart-page .offer-shipping { grid-column: 2; grid-row: 2; min-height: 0; margin: 0; font-size: .72rem; color: var(--cart-muted); line-height: 1.5; }
 .cart-page .offer-saving { grid-column: 2 / -1; grid-row: 3; min-height: 0; margin: 5px 0 0; font-size: .68rem; color: var(--cart-accent); }
 .cart-benefits { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 23px; }
