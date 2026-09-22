@@ -16,16 +16,78 @@ if ("IntersectionObserver" in window) {
     revealItems.forEach((item) => item.classList.add("is-visible"));
 }
 
-const card = document.querySelector(".foco-card");
-const cardStatus = document.querySelector(".card-status");
+const film = document.querySelector("#foco-film");
+const filmToolbar = document.querySelector(".film-toolbar");
 
-if (card && cardStatus) {
-    card.addEventListener("click", () => {
-        const isActive = card.getAttribute("aria-pressed") === "true";
-        card.setAttribute("aria-pressed", String(!isActive));
-        card.classList.remove("is-active");
-        void card.offsetWidth;
-        card.classList.add("is-active");
-        cardStatus.textContent = isActive ? "Toca la tarjeta" : "Foco activo";
+if (film && filmToolbar) {
+    const playback = filmToolbar.querySelector(".film-playback");
+    const errorMessage = document.querySelector(".film-error");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = navigator.connection?.saveData === true;
+    let wantsPlayback = !reducedMotion.matches && !saveData;
+    let visible = false;
+
+    function updatePlaybackControl() {
+        const playing = !film.paused && !film.ended;
+        playback.dataset.playing = String(playing);
+        playback.setAttribute("aria-label", playing ? "Pausar demostración" : "Reproducir demostración");
+    }
+
+    async function playIfWanted() {
+        if (!wantsPlayback || !visible || document.hidden) return;
+        try {
+            await film.play();
+        } catch {
+            // Autoplay can be blocked by the browser. The poster and play button remain usable.
+            updatePlaybackControl();
+        }
+    }
+
+    film.muted = true;
+    film.controls = false;
+    film.preload = wantsPlayback ? "metadata" : "none";
+    filmToolbar.hidden = false;
+    film.addEventListener("play", updatePlaybackControl);
+    film.addEventListener("pause", updatePlaybackControl);
+    film.addEventListener("error", () => {
+        wantsPlayback = false;
+        errorMessage.hidden = false;
+        updatePlaybackControl();
+    });
+
+    playback.addEventListener("click", () => {
+        wantsPlayback = film.paused;
+        if (wantsPlayback) {
+            if (film.error) {
+                errorMessage.hidden = true;
+                film.load();
+            }
+            playIfWanted();
+        } else {
+            film.pause();
+        }
+    });
+
+    if ("IntersectionObserver" in window) {
+        const visibilityObserver = new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting && entry.intersectionRatio >= 0.2;
+            if (visible) playIfWanted();
+            else film.pause();
+        }, { threshold: [0, 0.2] });
+        visibilityObserver.observe(film);
+    } else {
+        visible = true;
+        playIfWanted();
+    }
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) film.pause();
+        else playIfWanted();
+    });
+    reducedMotion.addEventListener("change", () => {
+        if (reducedMotion.matches) {
+            wantsPlayback = false;
+            film.pause();
+        }
     });
 }

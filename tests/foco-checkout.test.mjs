@@ -16,11 +16,13 @@ for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
     });
 }
 
-test('default is two and website payments remain gated before launch', () => {
+test('approved launch defaults to two and requires explicit consent for every offer', () => {
     assert.equal(FOCO_CHECKOUT.defaultQuantity, 2);
-    assert.equal(FOCO_CHECKOUT.productionEnabled, false);
+    assert.equal(FOCO_CHECKOUT.productionEnabled, true);
     for (const quantity of [1, 2, 3]) {
-        assert.equal(checkoutCanStart(quantity, true), false);
+        assert.equal(checkoutCanStart(quantity, true), true);
+        assert.equal(checkoutCanStart(quantity, false), false);
+        assert.equal(checkoutCanStart(quantity, true, { ...FOCO_CHECKOUT, productionEnabled: false }), false);
     }
 });
 
@@ -96,8 +98,9 @@ test('result has neutral copy and no automatic fulfilment or trust in URL status
 
 
 test('turning on the publication flag alone cannot bypass missing merchant facts', () => {
-    assert.equal(commerceReady(), false);
-    assert.equal(checkoutAvailable({ ...FOCO_CHECKOUT, productionEnabled: true }), false);
+    assert.equal(commerceReady(), true);
+    assert.equal(checkoutAvailable({ ...FOCO_CHECKOUT, productionEnabled: true,
+        commerce: { ...FOCO_COMMERCE, consentEvidenceVerified: false } }), false);
     const ready = configuredCheckout();
     for (const key of ['noticeAddress', 'nit', 'returnsAddress', 'name']) {
         const commerce = { ...ready.commerce, seller: { ...ready.commerce.seller, [key]: ' ' } };

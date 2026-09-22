@@ -7,7 +7,7 @@ export const FOCO_WHATSAPP_URL = 'https://wa.me/573027738407';
 export const FOCO_CHECKOUT = Object.freeze({
     defaultQuantity: 2,
     // Final publication gate; merchant facts and consent evidence are checked separately.
-    productionEnabled: false,
+    productionEnabled: true,
     endpoint: '/api/foco/checkout',
     redirectUrl: 'https://nilho.co/foco/pago/', // Configured in Wompi; publish this page with checkout.
     shippingReturnsUrl: FOCO_COMMERCE.termsUrl,

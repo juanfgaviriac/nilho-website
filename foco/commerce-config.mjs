@@ -13,7 +13,7 @@ export const FOCO_COMMERCE = Object.freeze({
     pauseAt: 5,
     // Set only after verifying the merchant's billing treatment and Wompi evidence.
     billingConfirmed: true, // Owner confirmed no added IVA; receipt is not a DIAN invoice.
-    consentEvidenceVerified: false,
+    consentEvidenceVerified: true, // Hosted Wompi/Blobs/Resend sandbox verified before approved launch.
 });
 
 // A manual inventory snapshot, not a reservation system. Operators must also pause
