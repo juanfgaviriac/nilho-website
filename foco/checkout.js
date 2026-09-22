@@ -20,14 +20,15 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const summaryAnimations = new Set();
 const motionStyle = getComputedStyle(checkout);
 const motionTiming = { duration: parseFloat(motionStyle.getPropertyValue('--motion-layout')), easing: motionStyle.getPropertyValue('--ease-out').trim() };
+const feedbackTiming = { ...motionTiming, duration: parseFloat(motionStyle.getPropertyValue('--motion-press')) };
 
 function settleSummaryMotion() {
     for (const animation of summaryAnimations) animation.cancel();
     summaryAnimations.clear();
 }
 
-function animateSummary(element, keyframes) {
-    const animation = element.animate(keyframes, motionTiming);
+function animateSummary(element, keyframes, timing = motionTiming) {
+    const animation = element.animate(keyframes, timing);
     summaryAnimations.add(animation);
     animation.onfinish = () => { summaryAnimations.delete(animation); };
 }
@@ -162,6 +163,8 @@ function applyPromo() {
         promoInput.focus();
         return false;
     }
+    const animate = checkout.dataset.motion !== 'instant' && typeof summary.animate === 'function';
+    const frame = animate && !reducedMotion.matches ? captureSummary() : null;
     if (code !== appliedCode) attemptId = null;
     appliedCode = code;
     promoInput.value = code;
@@ -171,6 +174,14 @@ function applyPromo() {
     promoApplied.hidden = false;
     promoFeedback(`Descuento aplicado: ahorras ${formatCOP(getCheckoutOffer(quantity, code).promoDiscount)}.`);
     select(quantity);
+    // Apply the actual price immediately, then ease the new summary into place.
+    if (frame) transitionSummary(frame, false);
+    if (animate) {
+        for (const element of [promoRow, promoApplied, promoMessage]) {
+            animateSummary(element, [{ opacity: 0 }, { opacity: 1 }], feedbackTiming);
+        }
+        animateSummary(document.getElementById('summary-total'), [{ opacity: 0.6 }, { opacity: 1 }], feedbackTiming);
+    }
     return true;
 }
 
