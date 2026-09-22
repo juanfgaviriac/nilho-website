@@ -55,7 +55,16 @@
 .checkout-promo { margin: -12px 0 14px; font-size: .75rem; }
 .promo-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: var(--muted); font: inherit; text-align: left; cursor: pointer; }
 .promo-toggle span { font-size: 1rem; }
+.promo-editor { height: 0; opacity: 0; overflow: clip; visibility: hidden; transition: height var(--motion-layout) var(--ease-out), opacity var(--motion-press) var(--ease-out), visibility 0s var(--motion-layout); }
+.promo-editor[data-open="true"] { opacity: 1; visibility: visible; transition-delay: 0s; }
+.promo-editor[data-instant="true"], .checkout-section[data-motion="instant"] .promo-editor { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+    .promo-editor { transition: opacity var(--motion-press) ease; }
+}
 .promo-input-row { display: flex; align-items: center; gap: 8px; padding: 3px 5px 3px 11px; border-radius: 10px; background: #f5f5f2; }
+.promo-input-row:focus-within { box-shadow: inset 0 0 0 1px var(--forest); }
+.promo-input-row input:focus-visible { outline: none; }
+.promo-input-row button:focus-visible { outline-width: 2px; outline-offset: 2px; }
 .promo-input-row input { width: 100%; min-width: 0; height: 34px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; }
 .promo-input-row input::placeholder { color: var(--muted); font-size: .82rem; }
 .promo-input-row input[aria-invalid="true"] { box-shadow: inset 0 -1px #9b403b; }

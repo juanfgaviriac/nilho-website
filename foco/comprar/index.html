@@ -11,9 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=cart-1">
-    <link rel="stylesheet" href="/foco/checkout.css?v=promo-2">
+    <link rel="stylesheet" href="/foco/checkout.css?v=promo-3">
     <link rel="stylesheet" href="/foco/cart.css?v=7">
-    <script type="module" src="/foco/checkout.js?v=promo-2"></script>
+    <script type="module" src="/foco/checkout.js?v=promo-3"></script>
 </head>
 <body class="cart-page">
     <a class="skip-link" href="#comprar">Ir a tu pedido</a>
@@ -65,7 +65,7 @@
                     </dl>
                     <div class="checkout-promo">
                         <button type="button" class="promo-toggle" id="promo-toggle" aria-expanded="false" aria-controls="promo-editor">¿Tienes un código? <span aria-hidden="true">+</span></button>
-                        <form id="promo-editor" class="promo-editor" hidden novalidate>
+                        <form id="promo-editor" class="promo-editor" data-open="false" aria-hidden="true" inert novalidate>
                             <label class="sr-only" for="promo-code">Código de descuento</label>
                             <div class="promo-input-row">
                                 <input id="promo-code" name="promoCode" type="text" placeholder="Tu código" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="promo-message">

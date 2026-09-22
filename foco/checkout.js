@@ -8,6 +8,7 @@ const discountRow = document.querySelector('#summary-discount-row');
 const promoRow = document.querySelector('#summary-promo-row');
 const promoToggle = document.querySelector('#promo-toggle');
 const promoEditor = document.querySelector('#promo-editor');
+const promoContent = document.querySelector('.promo-input-row');
 const promoInput = document.querySelector('#promo-code');
 const promoApply = document.querySelector('#promo-apply');
 const promoApplied = document.querySelector('#promo-applied');
@@ -136,6 +137,19 @@ function promoFeedback(message, error = false) {
     promoInput.setAttribute('aria-invalid', String(error));
 }
 
+function setPromoOpen(open, animate = true) {
+    // A measured accordion height lets CSS reverse from the current position.
+    // Closed controls leave the focus order immediately, even during the fade.
+    if (!open && promoEditor.contains(document.activeElement)) promoToggle.focus({ preventScroll: true });
+    promoEditor.dataset.instant = String(!animate);
+    promoEditor.style.height = open ? `${promoContent.offsetHeight}px` : '0px';
+    promoEditor.dataset.open = String(open);
+    promoEditor.inert = !open;
+    promoEditor.setAttribute('aria-hidden', String(!open));
+    promoToggle.setAttribute('aria-expanded', String(open));
+    promoToggle.querySelector('span').textContent = open ? '−' : '+';
+}
+
 function applyPromo() {
     if (busy) return false;
     let code;
@@ -143,6 +157,7 @@ function applyPromo() {
         code = normalizePromoCode(promoInput.value);
         if (!code) throw new RangeError('empty_code');
     } catch {
+        setPromoOpen(true, false);
         promoFeedback('Código inválido.', true);
         promoInput.focus();
         return false;
@@ -151,9 +166,8 @@ function applyPromo() {
     appliedCode = code;
     promoInput.value = code;
     setText('promo-applied-code', code);
+    setPromoOpen(false, false);
     promoToggle.hidden = true;
-    promoEditor.hidden = true;
-    promoToggle.setAttribute('aria-expanded', 'false');
     promoApplied.hidden = false;
     promoFeedback(`Descuento aplicado: ahorras ${formatCOP(getCheckoutOffer(quantity, code).promoDiscount)}.`);
     select(quantity);
@@ -162,10 +176,9 @@ function applyPromo() {
 
 promoToggle.addEventListener('click', () => {
     if (busy) return;
-    promoEditor.hidden = !promoEditor.hidden;
-    promoToggle.setAttribute('aria-expanded', String(!promoEditor.hidden));
-    promoToggle.querySelector('span').textContent = promoEditor.hidden ? '+' : '−';
-    if (!promoEditor.hidden) promoInput.focus();
+    const open = promoEditor.dataset.open !== 'true';
+    setPromoOpen(open);
+    if (open) promoInput.focus({ preventScroll: true });
 });
 promoEditor.addEventListener('submit', event => {
     event.preventDefault();
@@ -179,9 +192,7 @@ promoRemove.addEventListener('click', () => {
     promoInput.value = '';
     promoApplied.hidden = true;
     promoToggle.hidden = false;
-    promoEditor.hidden = false;
-    promoToggle.setAttribute('aria-expanded', 'true');
-    promoToggle.querySelector('span').textContent = '−';
+    setPromoOpen(true, false);
     promoFeedback('');
     select(quantity);
     promoInput.focus();

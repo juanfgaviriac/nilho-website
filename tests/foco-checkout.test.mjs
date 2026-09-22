@@ -86,7 +86,7 @@ test('landing links to the dedicated cart without loading checkout controls', ()
     assert.match(page, /role="radiogroup"/);
     assert.match(page, /role="status" aria-live="polite"/);
     assert.doesNotMatch(page, /100000|200000|250000/);
-    assert.match(page, /<form id="promo-editor"[^>]*hidden/);
+    assert.match(page, /<form id="promo-editor"[^>]*aria-hidden="true"[^>]*inert/);
 });
 
 test('any code with at least five letters earns one extra COP 15,000 discount on every pack', () => {
