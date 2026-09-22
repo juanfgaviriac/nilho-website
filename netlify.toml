@@ -6,6 +6,9 @@
 [build.environment]
   NODE_VERSION = "22"
 
+[context.foco-checkout-sandbox]
+  command = "node scripts/build-sandbox.mjs"
+
 [functions]
   node_bundler = "esbuild"
   included_files = ["foco/compra/versiones/**/*.html"]

@@ -2,7 +2,7 @@
 
 ## Current architecture
 
-Owner approved single-use links per order on 21 September 2026. This supersedes the former three-reusable-links implementation. The page stays static; server code runs in Netlify Functions using a private Netlify Blobs ledger. Do not deploy before final approval.
+Owner approved single-use links per order on 21 September 2026. This supersedes the former three-reusable-links implementation. The page stays static; server code runs in Netlify Functions using a private Netlify Blobs ledger. Production publication still requires final approval; the sandbox draft is authorized.
 
 1. Browser sends quantity, explicit acceptance, policy versions and a random attempt ID to `/api/foco/checkout`. It never supplies prices, buyer email or a redirect.
 2. Server stores order, exact offer/seller snapshot, accepted-at timestamp, policy versions and SHA256 hashes; archives fully rendered policies. Same attempt ID returns the existing link when safe. Ambiguous Wompi creation failures require review, not a second blind POST.
@@ -13,9 +13,10 @@ Owner approved single-use links per order on 21 September 2026. This supersedes 
 
 ## External setup still required
 
-- **Completed 2026-09-21:** dedicated `Foco Comprobantes` send-only key scoped to `nilho.co`, saved as a production secret on the existing `nilho` Netlify project. Functions-only scope requires an upgrade on this account; the secret uses the plan's Builds/Functions/Runtime scope, with every non-production context empty. No paid upgrade was made. `Foco <team@nilho.co>` is the sender and reply-to is `team@nilho.co`.
+- **Completed 2026-09-21:** dedicated `Foco Comprobantes Netlify` replacement send-only key scoped to `nilho.co`, saved as a production secret on the existing `nilho` Netlify project. Functions-only scope requires an upgrade on this account; the secret uses the plan's Builds/Functions/Runtime scope, with a different `Foco Sandbox Netlify` key only on the `foco-checkout-sandbox` branch; generic preview/branch/agent/local contexts are empty. No paid upgrade was made. `Foco <team@nilho.co>` is the sender and reply-to is `team@nilho.co`.
 - **Completed 2026-09-21:** Wompi private/public/events keys saved as secrets: production values only in Production, sandbox values only in Deploy Previews. Branch/agent/local key values remain empty. Each saved masked suffix and context was verified. `WOMPI_ENVIRONMENT` is `prod` in Production and `test` elsewhere; both checkout/email switches remain explicitly false. See `.env.example`.
-- Sandbox webhook points to the authorized sandbox preview `/api/foco/wompi`; production webhook points to `https://nilho.co/api/foco/wompi`. Inspect existing event destinations before modifying; do not break unrelated commerce.
+- **Pending:** copy Wompi test keys from Deploy Previews to the specific `foco-checkout-sandbox` branch, then redeploy. A CLI alias uses `branch-deploy` at runtime regardless of its build context.
+- **Pending:** set the sandbox webhook to `https://foco-checkout-sandbox--nilho.netlify.app/api/foco/wompi`; set production webhook to `https://nilho.co/api/foco/wompi` only at launch. Inspect existing event destinations before modifying; do not break unrelated commerce.
 - Verify Netlify Functions can read the included policy archives and strongly consistent Blobs store. Check existing plan limits before enabling; do not buy a plan without permission.
 - Public client flags stay off and server flags default false until end-to-end readback and final approval. Enabling only the checkout server flag cannot bypass missing email configuration.
 
