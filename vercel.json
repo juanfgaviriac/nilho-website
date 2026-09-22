@@ -104,6 +104,16 @@
       "permanent": true
     },
     {
+      "source": "/foco/blog",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/blog/",
+      "destination": "/blog/",
+      "permanent": true
+    },
+    {
       "source": "/foco/blog/:path*",
       "destination": "/blog/:path*",
       "permanent": true
