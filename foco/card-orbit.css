@@ -1,0 +1,39 @@
+.card-orbit {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    width: min(calc(100% - 48px), 1280px);
+    min-height: 620px;
+    margin: 0 auto 40px;
+    padding: clamp(32px, 5vw, 72px);
+    border-radius: var(--radius-md);
+    background: #f5f4f0;
+}
+.card-orbit-copy { position: relative; z-index: 1; width: 46%; }
+.card-orbit h2 { margin: 0 0 36px; font-size: clamp(3rem, 6vw, 5.3rem); font-weight: 500; letter-spacing: -.065em; line-height: 1.02; }
+.card-orbit-copy .button { gap: 2.2rem; }
+.card-orbit-copy .button::after { content: "↗"; }
+.card-orbit-film { position: absolute; width: 64%; right: -2%; top: 50%; transform: translateY(-50%); }
+.card-orbit video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    /* Blend only the empty studio margin; the complete card remains opaque. */
+    mask-image: linear-gradient(transparent, #000 6%, #000 94%, transparent), linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-composite: intersect;
+}
+.orbit-playback { position: absolute; right: 24px; bottom: 24px; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; padding: 12px; color: var(--ink); background: #ffffffaa; border: 1px solid #08080814; border-radius: 50%; cursor: pointer; }
+.orbit-playback[hidden], .orbit-playback[data-playing="false"] .icon-pause, .orbit-playback[data-playing="true"] .icon-play { display: none; }
+.orbit-playback svg { width: 20px; height: 20px; }
+.orbit-playback:focus-visible { outline: 3px solid var(--forest); outline-offset: 4px; }
+.orbit-fallback { position: absolute; bottom: 8%; right: 10%; min-height: 44px; display: inline-flex; align-items: center; }
+@media (max-width: 760px) {
+    .card-orbit { width: calc(100% - 30px); min-height: 0; display: block; padding: 40px 28px 0; border-radius: 28px; }
+    .card-orbit-copy { width: 100%; }
+    .card-orbit h2 { font-size: clamp(2.35rem, 11vw, 4.8rem); margin-bottom: 24px; }
+    .card-orbit-film { position: relative; top: auto; right: auto; width: calc(100% + 56px); margin: -8px -28px 0; transform: none; }
+    .orbit-playback { right: 20px; bottom: 20px; }
+}
