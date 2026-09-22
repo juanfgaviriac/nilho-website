@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="/foco/assets/film/foco-tap-in-v1.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="/foco/landing.css?v=features-3">
+    <link rel="stylesheet" href="/foco/landing.css?v=features-4">
     <link rel="stylesheet" href="/foco/checkout.css?v=4">
     <script src="/foco/landing.js?v=features-1" defer></script>
     <script type="module" src="/foco/checkout.js?v=3"></script>
@@ -225,15 +225,34 @@
             <p class="sr-only" id="checkout-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
         </section>
 
-        <section class="closing" aria-labelledby="closing-title">
-            <div class="closing-mark" aria-hidden="true">
-                <span class="foco-mark"><i></i><i></i><i></i><i></i></span>
+        <section class="faq-section" id="faq" aria-labelledby="faq-title">
+            <div class="faq-heading">
+                <p class="eyebrow">Respuestas rápidas</p>
+                <h2 id="faq-title">Preguntas frecuentes</h2>
             </div>
-            <div>
-                <p class="eyebrow">Tu tiempo es tuyo</p>
-                <h2 id="closing-title">Una cosa física para recuperar tiempo real.</h2>
+            <div class="faq-list">
+                <details>
+                    <summary>¿Qué hace distinto a Foco?</summary>
+                    <p>El Tiempo en Pantalla te muestra tus hábitos. Foco añade una señal física: acercas la tarjeta, empiezas tu sesión y dejas el teléfono a un lado.</p>
+                </details>
+                <details>
+                    <summary>¿Puedo borrar la app o buscar un atajo?</summary>
+                    <p>Foco está diseñado para añadir una pequeña fricción cuando quieres concentrarte. No pretende ser una barrera imposible de saltar: funciona mejor cuando eliges respetar tu propia sesión.</p>
+                </details>
+                <details>
+                    <summary>¿Puedo usar una tarjeta con varios iPhone?</summary>
+                    <p>La tarjeta se configura desde la app en el iPhone que vas a usar. Si necesitas varios teléfonos, escríbenos antes de comprar para confirmar la configuración adecuada.</p>
+                </details>
+                <details>
+                    <summary>¿Qué hago si pierdo mi tarjeta?</summary>
+                    <p>Escríbenos desde <a href="mailto:team@nilho.co">team@nilho.co</a> y te ayudamos a revisar tu configuración y los siguientes pasos.</p>
+                </details>
+                <details>
+                    <summary>¿Mi iPhone es compatible?</summary>
+                    <p>Foco funciona con iPhone con iOS 17.6 o posterior y permiso de Tiempo en Pantalla. No es compatible con Android.</p>
+                </details>
             </div>
-            <a class="button button--light" href="#comprar" data-checkout-open>Comprar Foco</a>
+            <a class="faq-cta button button--dark" href="#comprar" data-checkout-open>Comprar Foco</a>
         </section>
     </main>
 

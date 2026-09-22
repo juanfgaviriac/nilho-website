@@ -586,6 +586,81 @@ h1 span {
     white-space: nowrap;
 }
 
+.faq-section {
+    width: min(calc(100% - 48px), 1000px);
+    margin: 0 auto var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--line);
+}
+
+.faq-heading {
+    margin-bottom: 2rem;
+}
+
+.faq-heading h2 {
+    margin: 0;
+    font-size: clamp(2.4rem, 5vw, 4.8rem);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.98;
+}
+
+.faq-list {
+    border-top: 1px solid var(--line);
+}
+
+.faq-list details {
+    border-bottom: 1px solid var(--line);
+}
+
+.faq-list summary {
+    padding: 1.2rem 2rem 1.2rem 0;
+    position: relative;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: clamp(1rem, 1.7vw, 1.2rem);
+    font-weight: 600;
+    list-style: none;
+}
+
+.faq-list summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-list summary::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    color: var(--muted);
+    font-size: 1.35rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.faq-list details[open] summary::after {
+    content: "−";
+}
+
+.faq-list summary:focus-visible {
+    outline: 3px solid var(--forest);
+    outline-offset: 4px;
+}
+
+.faq-list details p {
+    max-width: 700px;
+    margin: -0.2rem 0 1.25rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.faq-list a {
+    text-underline-offset: 3px;
+}
+
+.faq-cta {
+    margin-top: 2rem;
+}
+
 .site-footer {
     width: min(calc(100% - 48px), 1280px);
     min-height: 120px;
@@ -684,6 +759,7 @@ h1 span {
     .hero,
     .app-section,
     .closing,
+    .faq-section,
     .site-footer {
         width: min(calc(100% - 30px), 1280px);
     }
