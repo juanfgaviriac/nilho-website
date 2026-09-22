@@ -52,6 +52,21 @@
 .summary-lines > div { display: flex; justify-content: space-between; gap: 12px; }
 .summary-lines dt { color: var(--muted); }
 .summary-lines dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.checkout-promo { margin: -10px 0 16px; font-size: .8rem; }
+.promo-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-soft); font: inherit; text-align: left; cursor: pointer; }
+.promo-toggle span { font-size: 1.2rem; }
+.promo-input-row { display: flex; gap: 8px; margin-top: 4px; }
+.promo-input-row input { width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; }
+.promo-input-row input[aria-invalid="true"] { border-color: #9b403b; }
+.promo-input-row button { min-height: 46px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--ink); color: white; font: inherit; font-weight: 600; cursor: pointer; }
+.promo-applied { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 44px; }
+.promo-applied > span { min-width: 0; overflow-wrap: anywhere; color: var(--forest); font-weight: 600; }
+.promo-applied button { flex-shrink: 0; min-height: 44px; padding: 0; border: 0; background: none; color: var(--muted); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.promo-message { margin: 4px 0 0; color: var(--forest); font-size: .74rem; line-height: 1.5; }
+.promo-message:empty { display: none; }
+.promo-message[data-error="true"] { color: #9b403b; }
+#summary-promo-row { color: var(--forest); }
+.checkout-promo button:disabled { opacity: .5; cursor: wait; }
 .summary-total { border-top: 1px solid var(--line); padding-top: 1.3rem; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .summary-total > span { font-weight: 600; }
 .summary-total small { display: block; font-family: var(--font-mono); font-size: 0.6rem; font-weight: 500; color: var(--muted); margin-top: 4px; }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, formatCOP, checkoutAvailable, checkoutCanStart, safeCheckoutURL, transactionId } from '../foco/checkout-config.mjs';
+import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, getCheckoutOffer, normalizePromoCode, formatCOP, checkoutAvailable, checkoutCanStart, safeCheckoutURL, transactionId } from '../foco/checkout-config.mjs';
 import { FOCO_COMMERCE, commerceReady, stockAvailable } from '../foco/commerce-config.mjs';
 
 for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
@@ -85,7 +85,35 @@ test('landing links to the dedicated cart without loading checkout controls', ()
     assert.match(page, /id="purchase-consent"/);
     assert.match(page, /role="radiogroup"/);
     assert.match(page, /role="status" aria-live="polite"/);
-    assert.doesNotMatch(page, /<form|100000|200000|250000/);
+    assert.doesNotMatch(page, /100000|200000|250000/);
+    assert.match(page, /<form id="promo-editor"[^>]*hidden/);
+});
+
+test('any code with at least five letters earns one extra COP 15,000 discount on every pack', () => {
+    for (const code of ['abcde', 'NEVERISSUED', 'verano-26', 'mañana', 'man\u0303ana']) {
+        for (const [quantity, total] of [[1,95000],[2,185000],[3,235000]]) {
+            const offer = getCheckoutOffer(quantity, code);
+            assert.equal(offer.promoDiscount, 15000);
+            assert.equal(offer.discount, quantity === 3 ? 50000 : 0);
+            assert.equal(offer.shipping, quantity === 1 ? 10000 : 0);
+            assert.equal(offer.total, total);
+            assert.equal(offer.amountInCents, total * 100);
+        }
+    }
+    assert.equal(normalizePromoCode('  verano  '), 'VERANO');
+    assert.equal(normalizePromoCode('man\u0303ana'), 'MAÑANA');
+});
+
+test('empty codes keep normal prices and invalid code input cannot create a discount', () => {
+    for (const code of ['', '   ', undefined]) {
+        for (const quantity of [1,2,3]) {
+            assert.equal(getCheckoutOffer(quantity, code).total, getOffer(quantity).total);
+            assert.equal(getCheckoutOffer(quantity, code).promoDiscount, 0);
+        }
+    }
+    for (const code of ['FOCO', 'FOCO123', '12345', '     x', '🎁🎁🎁🎁🎁', 'abcde\ncode', 'abcde\u200b', 'a'.repeat(65), null, [], 12345]) {
+        assert.throws(() => getCheckoutOffer(2, code), RangeError);
+    }
 });
 
 test('shared cart anchors preserve campaign parameters and lead to the new page', () => {

@@ -14,7 +14,9 @@ export function merchantNotification({ order, transaction }) {
     const test = order.environment === 'test';
     const subject = `${test ? '[PRUEBA] ' : ''}Nueva compra Foco · ${quantity} · ${total}`;
     const notice = test ? 'PRUEBA DE INTEGRACIÓN · NO ES UNA COMPRA. No hubo dinero real. No despachar tarjetas.' : '';
-    const rows = [['Pedido', reference], ['Cantidad', quantity], ['Total pagado', total],
+    const rows = [['Pedido', reference], ['Cantidad', quantity],
+        ...(order.offer.promoDiscount ? [['Código', order.offer.promoCode], ['Descuento por código', `−${formatCOP(order.offer.promoDiscount)} COP`]] : []),
+        ['Total pagado', total],
         ['Transacción Wompi', transaction.id], ['Estado verificado', 'APPROVED']];
     const next = 'Abre Wompi y busca el ID de la transacción para consultar los datos de envío y preparar el pedido. Antes de despachar, comprueba que no haya un despacho previo, reembolso o reversión. Descuenta las tarjetas del inventario y envía la guía por WhatsApp después del despacho.';
     const text = `${notice ? `${notice}\n\n` : ''}Nueva compra Foco\n\n${rows.map(([label, value]) => `${label}: ${value}`).join('\n')}\n\n${next}\n\nAbrir Wompi: ${WOMPI_DASHBOARD}\n\nAviso interno. El comprobante del comprador se envía por separado.\n`;

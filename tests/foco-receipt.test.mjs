@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { orderReceipt, sendOrderReceipt } from '../server/foco/receipt.mjs';
-import { getOffer, FOCO_CHECKOUT } from '../foco/checkout-config.mjs';
+import { getOffer, getCheckoutOffer, FOCO_CHECKOUT } from '../foco/checkout-config.mjs';
 const fixture = (quantity = 2) => ({
     order: { id: 'test-order', quantity, offer: getOffer(quantity), seller: FOCO_CHECKOUT.commerce.seller, transactionId: 'test-transaction', amountInCents: getOffer(quantity).amountInCents,
         consent: { acceptedAt: '2026-09-21T22:00:00.000Z', termsVersion: '2026-09-21.1', privacyVersion: '2026-09-21.1' } },
@@ -31,6 +31,24 @@ test('rejects unapproved, mismatched and unconsented receipts', () => {
 test('customer text is escaped and cannot inject receipt markup',()=>{
     const data=fixture(); data.transaction.customer_data.full_name='<img src=x onerror="bad()">';
     const receipt=orderReceipt(data); assert.doesNotMatch(receipt.html,/<img src=x/); assert.match(receipt.html,/&lt;img/);
+});
+test('promo breakdown stays separate, escapes customer input and rejects inconsistent stored discounts', () => {
+    const data = fixture(3);
+    data.order.offer = getCheckoutOffer(3, '<b>verano</b>');
+    data.order.amountInCents = data.transaction.amount_in_cents = data.order.offer.amountInCents;
+    const receipt = orderReceipt(data);
+    assert.match(receipt.text, /Descuento del pack: −\$\s?50\.000/);
+    assert.match(receipt.text, /Descuento por código.*15\.000/);
+    assert.match(receipt.text, /235\.000/);
+    assert.doesNotMatch(receipt.html, /<B>VERANO<\/B>/);
+    assert.match(receipt.html, /&lt;B&gt;VERANO/);
+    for (const value of [-1, 15001, null, '15000', NaN]) {
+        const changed = structuredClone(data);
+        changed.order.offer.promoDiscount = value;
+        assert.throws(() => orderReceipt(changed));
+    }
+    delete data.order.offer.promoCode;
+    assert.throws(() => orderReceipt(data));
 });
 test('uses a deterministic Resend key and fixed sender; test makes no network request',async()=>{
     const requests=[];

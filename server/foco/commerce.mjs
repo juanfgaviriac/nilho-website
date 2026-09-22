@@ -1,5 +1,5 @@
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
-import { FOCO_CHECKOUT, getOffer } from '../../foco/checkout-config.mjs';
+import { FOCO_CHECKOUT, getCheckoutOffer } from '../../foco/checkout-config.mjs';
 import { stockAvailable } from '../../foco/commerce-config.mjs';
 import { orderReceipt } from './receipt.mjs';
 import { merchantNotification } from './merchant-notification.mjs';
@@ -64,13 +64,19 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
             fail(400, 'invalid_checkout');
         }
         if (!policies?.terms || !policies?.privacy) fail(503, 'policies_unavailable');
-        const offer = getOffer(input.quantity, config);
+        let offer;
+        try { offer = getCheckoutOffer(input.quantity, input.promoCode, config); }
+        catch { fail(400, 'invalid_promo_code'); }
         const previous = await store.get(`attempts/${input.attemptId}`, { type: 'json' });
         if (previous) {
             const order = await store.get(`orders/${previous.orderId}`, { type: 'json' });
             if (!order || order.quantity !== input.quantity || order.consent.termsVersion !== input.termsVersion ||
-                order.consent.privacyVersion !== input.privacyVersion) fail(409, 'checkout_conflict');
-            if (order.checkoutURL && Date.parse(order.expiresAt) > now().getTime()) return { checkoutURL: order.checkoutURL, orderId: order.id };
+                order.consent.privacyVersion !== input.privacyVersion ||
+                (order.offer.promoCode || '') !== offer.promoCode) fail(409, 'checkout_conflict');
+            if (order.checkoutURL && Date.parse(order.expiresAt) > now().getTime()) return {
+                checkoutURL: order.checkoutURL, orderId: order.id,
+                amountInCents: order.amountInCents, promoCode: order.offer.promoCode || '',
+            };
             fail(409, 'checkout_needs_review');
         }
         const orderId = id();
@@ -78,7 +84,9 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         const order = { id: orderId, environment: mode, quantity: offer.quantity, sku: offer.sku,
             amountInCents: offer.amountInCents, currency: 'COP', createdAt: timestamp,
             expiresAt: new Date(now().getTime() + 60 * 60 * 1000).toISOString(), state: 'creating',
-            offer: { quantity: offer.quantity, subtotal: offer.subtotal, discount: offer.discount, shipping: offer.shipping, total: offer.total, amountInCents: offer.amountInCents },
+            offer: { quantity: offer.quantity, subtotal: offer.subtotal, discount: offer.discount,
+                promoCode: offer.promoCode, promoDiscount: offer.promoDiscount,
+                shipping: offer.shipping, total: offer.total, amountInCents: offer.amountInCents },
             seller: config.commerce.seller,
             consent: { acceptedAt: timestamp, termsVersion: input.termsVersion, privacyVersion: input.privacyVersion,
                 termsSHA256: digest(policies.terms), privacySHA256: digest(policies.privacy) } };
@@ -108,7 +116,7 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         const mapping = await store.setJSON(`links/${link.id}`, { orderId }, { onlyIfNew: true });
         if (!mapping.modified) fail(409, 'payment_link_conflict');
         await store.setJSON(`orders/${orderId}`, order);
-        return { checkoutURL: order.checkoutURL, orderId };
+        return { checkoutURL: order.checkoutURL, orderId, amountInCents: order.amountInCents, promoCode: offer.promoCode };
     }
 
     async function deliverRecordedEmail({ key, kind, orderId, transactionId, prepare }) {

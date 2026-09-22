@@ -11,9 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/foco/landing.css?v=cart-1">
-    <link rel="stylesheet" href="/foco/checkout.css?v=cart-1">
+    <link rel="stylesheet" href="/foco/checkout.css?v=promo-1">
     <link rel="stylesheet" href="/foco/cart.css?v=6">
-    <script type="module" src="/foco/checkout.js?v=cart-4"></script>
+    <script type="module" src="/foco/checkout.js?v=promo-1"></script>
 </head>
 <body class="cart-page">
     <a class="skip-link" href="#comprar">Ir a tu pedido</a>
@@ -60,8 +60,21 @@
                     <dl class="summary-lines">
                         <div><dt>Subtotal</dt><dd id="summary-subtotal">—</dd></div>
                         <div id="summary-discount-row" hidden><dt>Descuento del pack</dt><dd id="summary-discount"></dd></div>
+                        <div id="summary-promo-row" hidden><dt>Descuento por código</dt><dd id="summary-promo"></dd></div>
                         <div id="summary-shipping-row"><dt>Envío</dt><dd id="summary-shipping">—</dd></div>
                     </dl>
+                    <div class="checkout-promo">
+                        <button type="button" class="promo-toggle" id="promo-toggle" aria-expanded="false" aria-controls="promo-editor">¿Tienes un código? <span aria-hidden="true">+</span></button>
+                        <form id="promo-editor" class="promo-editor" hidden novalidate>
+                            <label class="sr-only" for="promo-code">Código de descuento</label>
+                            <div class="promo-input-row">
+                                <input id="promo-code" name="promoCode" type="text" placeholder="Tu código" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="promo-message">
+                                <button type="submit" id="promo-apply">Aplicar</button>
+                            </div>
+                        </form>
+                        <div class="promo-applied" id="promo-applied" hidden><span id="promo-applied-code"></span><button type="button" id="promo-remove" aria-label="Quitar código de descuento">Quitar</button></div>
+                        <p id="promo-message" class="promo-message" role="status" aria-live="polite" aria-atomic="true"></p>
+                    </div>
                     <div class="summary-footer">
                         <div class="summary-total"><span>Total <small>COP</small></span><strong id="summary-total">—</strong></div>
                         <p class="checkout-availability" id="checkout-availability"></p><p class="cart-delivery">En tus manos en <strong>3–10 días hábiles</strong>.<br>Te enviamos la guía por WhatsApp al despachar.</p>

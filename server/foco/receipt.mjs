@@ -15,9 +15,16 @@ export function assertApprovedOrder({ order, transaction }) {
         throw new Error('Receipt requires a verified approved order.');
     }
     const offer = order.offer;
+    // Older orders have no promo fields. Validate the frozen breakdown rather
+    // than today's promotion so retries remain valid after a campaign changes.
+    const promoDiscount = offer?.promoDiscount === undefined ? 0 : offer.promoDiscount;
     if (!offer || ![1,2,3].includes(offer.quantity) || order.quantity !== offer.quantity ||
         !['subtotal','discount','shipping','total','amountInCents'].every(key => Number.isSafeInteger(offer[key]) && offer[key] >= 0) ||
-        offer.total !== offer.subtotal - offer.discount + offer.shipping || offer.total <= 0 || offer.amountInCents !== offer.total * 100) {
+        !Number.isSafeInteger(promoDiscount) || promoDiscount < 0 ||
+        (promoDiscount > 0 && (typeof offer.promoCode !== 'string' || !offer.promoCode.trim())) ||
+        (promoDiscount === 0 && Boolean(offer.promoCode)) ||
+        offer.discount + promoDiscount > offer.subtotal ||
+        offer.total !== offer.subtotal - offer.discount - promoDiscount + offer.shipping || offer.total <= 0 || offer.amountInCents !== offer.total * 100) {
         throw new Error('Receipt requires the original stored offer.');
     }
     if (transaction.amount_in_cents !== offer.amountInCents || order.amountInCents !== offer.amountInCents) {
@@ -42,6 +49,7 @@ export function orderReceipt({ order, transaction }) {
     const product = `${offer.quantity} ${offer.quantity === 1 ? 'tarjeta Foco' : 'tarjetas Foco'} NFC`;
     const rows = [ ['Producto', product], ['Subtotal', `${formatCOP(offer.subtotal)} COP`],
         ...(offer.discount ? [['Descuento del pack', `−${formatCOP(offer.discount)} COP`]] : []),
+        ...(offer.promoDiscount ? [[`Descuento por código (${offer.promoCode})`, `−${formatCOP(offer.promoDiscount)} COP`]] : []),
         ['Envío', offer.shipping ? `${formatCOP(offer.shipping)} COP` : 'Gratis'],
         ['Total pagado', `${formatCOP(offer.total)} COP`] ];
     const name = typeof transaction.customer_data?.full_name === 'string' ? transaction.customer_data.full_name.trim().slice(0, 120) : '';

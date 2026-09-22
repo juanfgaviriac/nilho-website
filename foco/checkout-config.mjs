@@ -30,6 +30,26 @@ export function getOffer(quantity, config = FOCO_CHECKOUT) {
     return { ...offer, total, amountInCents: total * 100 };
 }
 
+// This is an open promotion, not a lookup against a list of issued codes.
+// Share the rule with the UI; the server always recalculates the payable amount.
+export function normalizePromoCode(value = '') {
+    if (typeof value !== 'string') throw new RangeError('Código no válido');
+    const code = value.trim().normalize('NFC');
+    if (!code) return '';
+    if (code.toUpperCase().length > 64 || /[\p{Cc}\p{Cf}]/u.test(code) || (code.match(/\p{L}/gu) || []).length < 5) {
+        throw new RangeError('Escribe un código con al menos 5 letras.');
+    }
+    return code.toUpperCase();
+}
+
+export function getCheckoutOffer(quantity, promoCode = '', config = FOCO_CHECKOUT) {
+    const offer = getOffer(quantity, config);
+    const code = normalizePromoCode(promoCode);
+    const promoDiscount = code ? 15000 : 0;
+    const total = offer.total - promoDiscount;
+    return { ...offer, promoCode: code, promoDiscount, total, amountInCents: total * 100 };
+}
+
 export function offerName(quantity) { return `${quantity} ${quantity === 1 ? 'tarjeta' : 'tarjetas'}`; }
 
 // The browser never chooses a reusable link or sends an amount. The server creates

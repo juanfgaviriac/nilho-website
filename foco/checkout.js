@@ -1,12 +1,20 @@
-import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, offerName, formatCOP, checkoutAvailable, checkoutCanStart, safeCheckoutURL } from './checkout-config.mjs';
+import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, getCheckoutOffer, normalizePromoCode, offerName, formatCOP, checkoutAvailable, checkoutCanStart, safeCheckoutURL } from './checkout-config.mjs';
 
 const checkout = document.querySelector('#comprar');
 const options = document.querySelector('#offer-options');
 const pay = document.querySelector('#wompi-pay');
 const consent = document.querySelector('#purchase-consent');
 const discountRow = document.querySelector('#summary-discount-row');
+const promoRow = document.querySelector('#summary-promo-row');
+const promoToggle = document.querySelector('#promo-toggle');
+const promoEditor = document.querySelector('#promo-editor');
+const promoInput = document.querySelector('#promo-code');
+const promoApply = document.querySelector('#promo-apply');
+const promoApplied = document.querySelector('#promo-applied');
+const promoRemove = document.querySelector('#promo-remove');
+const promoMessage = document.querySelector('#promo-message');
 const summary = document.querySelector('.order-summary');
-const summaryMovingRows = [document.querySelector('#summary-shipping-row'), document.querySelector('.summary-footer')];
+const summaryMovingRows = [promoRow, document.querySelector('#summary-shipping-row'), document.querySelector('.checkout-promo'), document.querySelector('.summary-footer')];
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const summaryAnimations = new Set();
 const motionStyle = getComputedStyle(checkout);
@@ -27,7 +35,7 @@ function animateSummary(element, keyframes) {
 // transitions continue smoothly. Only the expanding summary surface changes height.
 function captureSummary() {
     const frame = { height: summary.getBoundingClientRect().height,
-        tops: summaryMovingRows.map(row => row.getBoundingClientRect().top) };
+        tops: summaryMovingRows.map(row => row.hidden ? null : row.getBoundingClientRect().top) };
     settleSummaryMotion();
     return frame;
 }
@@ -38,6 +46,7 @@ function transitionSummary(frame, showDiscount) {
         animateSummary(summary, [{ height: `${frame.height}px` }, { height: `${height}px` }]);
     }
     summaryMovingRows.forEach((row, index) => {
+        if (row.hidden || frame.tops[index] === null) return;
         const delta = frame.tops[index] - row.getBoundingClientRect().top;
         if (Math.abs(delta) > 0.5) animateSummary(row, [{ transform: `translateY(${delta}px)` }, { transform: 'translateY(0)' }]);
     });
@@ -53,6 +62,7 @@ reducedMotion.addEventListener('change', event => { if (event.matches) settleSum
 let quantity = FOCO_CHECKOUT.defaultQuantity;
 let busy = false;
 let attemptId = null;
+let appliedCode = '';
 let checkoutError = '';
 const quantities = Object.keys(FOCO_CHECKOUT.offers).map(Number);
 const setText = (id, text) => { document.getElementById(id).textContent = text; };
@@ -95,7 +105,7 @@ function select(value, announce = true, animate = false) {
     if (!canAnimate) settleSummaryMotion();
     quantity = value;
     checkout.dataset.quantity = String(quantity);
-    const offer = getOffer(quantity);
+    const offer = getCheckoutOffer(quantity, appliedCode);
     for (const button of options.children) {
         const selected = Number(button.dataset.quantity) === quantity;
         button.setAttribute('aria-checked', String(selected));
@@ -104,6 +114,8 @@ function select(value, announce = true, animate = false) {
     setText('summary-subtotal', formatCOP(offer.subtotal));
     discountRow.hidden = offer.discount === 0;
     setText('summary-discount', offer.discount ? `−${formatCOP(offer.discount)}` : '');
+    promoRow.hidden = offer.promoDiscount === 0;
+    setText('summary-promo', offer.promoDiscount ? `−${formatCOP(offer.promoDiscount)}` : '');
     setText('summary-shipping', offer.shipping ? formatCOP(offer.shipping) : 'Envío gratis');
     document.getElementById('summary-shipping').dataset.free = String(offer.shipping === 0);
     setText('summary-total', formatCOP(offer.total));
@@ -114,11 +126,71 @@ function select(value, announce = true, animate = false) {
     whatsapp.href = url.href;
     whatsapp.hidden = false;
     if (frame) transitionSummary(frame, offer.discount > 0);
-    if (announce) setText('checkout-announcement', `${offerName(quantity)}. Total ${formatCOP(offer.total)} COP.${offer.shipping ? ' Envío incluido.' : ' Envío gratis.'}${offer.discount ? ` Ahorras ${formatCOP(offer.discount)}.` : ''}`);
+    const savings = offer.discount + offer.promoDiscount;
+    if (announce) setText('checkout-announcement', `${offerName(quantity)}. Total ${formatCOP(offer.total)} COP.${offer.shipping ? ' Envío incluido.' : ' Envío gratis.'}${savings ? ` Ahorras ${formatCOP(savings)}.` : ''}`);
 }
+
+function promoFeedback(message, error = false) {
+    promoMessage.textContent = message;
+    promoMessage.dataset.error = String(error);
+    promoInput.setAttribute('aria-invalid', String(error));
+}
+
+function applyPromo() {
+    if (busy) return false;
+    let code;
+    try {
+        code = normalizePromoCode(promoInput.value);
+        if (!code) throw new RangeError('empty_code');
+    } catch {
+        promoFeedback('Escribe un código con al menos 5 letras.', true);
+        promoInput.focus();
+        return false;
+    }
+    if (code !== appliedCode) attemptId = null;
+    appliedCode = code;
+    promoInput.value = code;
+    setText('promo-applied-code', code);
+    promoToggle.hidden = true;
+    promoEditor.hidden = true;
+    promoToggle.setAttribute('aria-expanded', 'false');
+    promoApplied.hidden = false;
+    promoFeedback(`Descuento aplicado: ahorras ${formatCOP(getCheckoutOffer(quantity, code).promoDiscount)}.`);
+    select(quantity);
+    return true;
+}
+
+promoToggle.addEventListener('click', () => {
+    if (busy) return;
+    promoEditor.hidden = !promoEditor.hidden;
+    promoToggle.setAttribute('aria-expanded', String(!promoEditor.hidden));
+    promoToggle.querySelector('span').textContent = promoEditor.hidden ? '+' : '−';
+    if (!promoEditor.hidden) promoInput.focus();
+});
+promoEditor.addEventListener('submit', event => {
+    event.preventDefault();
+    if (applyPromo()) promoRemove.focus();
+});
+promoInput.addEventListener('input', () => { promoFeedback(''); });
+promoRemove.addEventListener('click', () => {
+    if (busy) return;
+    appliedCode = '';
+    attemptId = null;
+    promoInput.value = '';
+    promoApplied.hidden = true;
+    promoToggle.hidden = false;
+    promoEditor.hidden = false;
+    promoToggle.setAttribute('aria-expanded', 'true');
+    promoToggle.querySelector('span').textContent = '−';
+    promoFeedback('');
+    select(quantity);
+    promoInput.focus();
+});
 
 pay.addEventListener('click', async () => {
     if (busy || !checkoutCanStart(quantity, consent.checked)) return;
+    // Do not silently charge full price when someone typed a code but skipped Apply.
+    if (!appliedCode && promoInput.value.trim() && !applyPromo()) return;
     busy = true;
     checkoutError = '';
     attemptId ||= crypto.randomUUID();
@@ -127,18 +199,23 @@ pay.addEventListener('click', async () => {
         const response = await fetch(FOCO_CHECKOUT.endpoint, {
             method: 'POST', credentials: 'same-origin', redirect: 'error',
             headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(20000),
-            body: JSON.stringify({ attemptId, quantity, accepted: true,
+            body: JSON.stringify({ attemptId, quantity, promoCode: appliedCode, accepted: true,
                 termsVersion: FOCO_CHECKOUT.commerce.termsVersion,
                 privacyVersion: FOCO_CHECKOUT.commerce.privacyVersion }),
         });
         if (!response.ok) throw new Error('checkout_unavailable');
         const result = await response.json();
+        const offer = getCheckoutOffer(quantity, appliedCode);
+        if (result.amountInCents !== offer.amountInCents || result.promoCode !== appliedCode) throw new Error('checkout_price_changed');
         const url = safeCheckoutURL(result.checkoutURL);
         if (!url) throw new Error('invalid_checkout');
         window.location.assign(url);
-    } catch {
+    } catch (error) {
         busy = false;
-        checkoutError = 'No pudimos abrir el pago. Intenta de nuevo o escríbenos por WhatsApp.';
+        if (error.message === 'checkout_price_changed') attemptId = null;
+        checkoutError = error.message === 'checkout_price_changed'
+            ? 'El total cambió. Actualiza esta página antes de pagar.'
+            : 'No pudimos abrir el pago. Intenta de nuevo o escríbenos por WhatsApp.';
         updatePayment();
     }
 });
@@ -149,6 +226,7 @@ function updatePayment() {
     pay.setAttribute('aria-busy', String(busy));
     pay.textContent = busy ? 'Preparando tu pago…' : 'Pagar con Wompi';
     consent.disabled = busy;
+    for (const control of [promoToggle, promoInput, promoApply, promoRemove]) control.disabled = busy;
     for (const button of options.children) button.disabled = busy;
     setText('checkout-availability', available ? 'Disponible para envío' : 'Próximamente disponible');
     setText('payment-notice', checkoutError || (busy ? 'Estamos preparando tu enlace seguro.' :

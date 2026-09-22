@@ -91,6 +91,62 @@ test('same request retry returns the existing link, not a second order or link',
     await assert.rejects(h.core.createCheckout({...input,quantity:3}),{code:'checkout_conflict'});
     h.advance(3600001); await assert.rejects(h.core.createCheckout(input),{code:'checkout_needs_review'});
 });
+
+for (const [quantity, amount] of [[1,9500000],[2,18500000],[3,23500000]]) {
+    test(`promo for ${quantity} cards: server-priced payment, frozen receipt and merchant alert`, async () => {
+        const h = harness(), input = { ...h.input(quantity), promoCode: '  anycode  ', promoDiscount: 999999, amountInCents: 1 };
+        const result = await h.core.createCheckout(input);
+        assert.equal(JSON.parse(h.requests[0].init.body).amount_in_cents, amount);
+        assert.equal(result.amountInCents, amount);
+        assert.equal(result.promoCode, 'ANYCODE');
+        const order = await h.store.get(`orders/${result.orderId}`);
+        assert.equal(order.offer.promoCode, 'ANYCODE');
+        assert.equal(order.offer.promoDiscount, 15000);
+        assert.equal(order.offer.discount, quantity === 3 ? 50000 : 0);
+        await h.approve(result);
+        await h.core.handleEvent(h.signed());
+        await h.core.handleEvent(h.signed());
+        for (const kind of ['receipt', 'merchant']) {
+            assert.equal(h.emailCalls(kind).length, 1);
+            const message = JSON.parse(h.emailCalls(kind)[0].init.body);
+            assert.match(message.text, /ANYCODE/);
+            assert.match(message.text, /15\.000/);
+        }
+    });
+}
+
+test('promo retries normalize case and spaces but cannot reuse an attempt with a changed code', async () => {
+    const h = harness(), input = { ...h.input(2), promoCode: 'VERANO' };
+    const result = await h.core.createCheckout(input);
+    assert.deepEqual(await h.core.createCheckout({ ...input, promoCode: ' verano ' }), result);
+    for (const promoCode of ['', 'OTROCODIGO']) {
+        await assert.rejects(h.core.createCheckout({ ...input, promoCode }), { code: 'checkout_conflict' });
+    }
+    assert.equal(h.requests.length, 1);
+    const plain = h.input(1);
+    await h.core.createCheckout(plain);
+    await assert.rejects(h.core.createCheckout({ ...plain, promoCode: 'VERANO' }), { code: 'checkout_conflict' });
+});
+
+test('legacy orders without promo fields still retry and send their original full-price receipt', async () => {
+    const h = harness(), input = h.input(2);
+    const result = await h.core.createCheckout(input);
+    const order = await h.store.get(`orders/${result.orderId}`);
+    delete order.offer.promoCode; delete order.offer.promoDiscount;
+    await h.store.setJSON(`orders/${result.orderId}`, order);
+    assert.deepEqual(await h.core.createCheckout(input), result);
+    await h.approve(result); await h.core.handleEvent(h.signed());
+    assert.match(JSON.parse(h.emailCalls()[0].init.body).text, /200\.000/);
+});
+
+test('malformed and short codes fail before creating an order or calling Wompi', async () => {
+    const h = harness();
+    for (const promoCode of ['FOCO', '12345', 'a'.repeat(65), null, {}, ['VERANO'], 'abcde\ncode']) {
+        await assert.rejects(h.core.createCheckout({ ...h.input(2), promoCode }), { code: 'invalid_promo_code' });
+    }
+    assert.equal(h.requests.length, 0);
+    assert.equal(h.store.records.size, 0);
+});
 test('concurrent checkout attempts with the same id create at most one provider link',async()=>{
     const h=harness(), input=h.input(2);
     const results=await Promise.allSettled([h.core.createCheckout(input),h.core.createCheckout(input)]);
