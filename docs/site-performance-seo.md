@@ -28,6 +28,9 @@ requests are used to make prices appear faster.
   5,924,287 bytes for v2; measured full-video SSIM is 0.996175. The source and app
   assets are unchanged. The poster and fonts paint before autoplay begins;
   reduced motion, data saving, manual pause, and offscreen pausing are preserved.
+- The unchanged video posters are delivered as WebP (12.8 KB for the hero and
+  6.6 KB for the orbit). The App Store badge is sized for its rendered width and
+  served at 384 pixels / 6.2 KB instead of the 3840-pixel / 48.2 KB source.
 
 ## Search
 
