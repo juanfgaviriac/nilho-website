@@ -57,3 +57,9 @@ test('a receipt uses its stored price and seller even when the catalog changes',
     assert.match(receipt.text,/180\.000/); assert.match(receipt.text,/Vendedor original/);
     assert.match(receipt.html,/versiones\/2026-09-21\.1\/terms.html/);
 });
+test('sandbox receipts are clearly identified in subject, HTML and plain text',()=>{
+    const data=fixture(); data.order.environment='test'; const receipt=orderReceipt(data);
+    assert.match(receipt.subject,/^\[PRUEBA\]/);
+    assert.match(receipt.html,/NO ES UNA COMPRA/); assert.match(receipt.text,/No hubo dinero real/);
+    data.order.environment='prod'; assert.doesNotMatch(orderReceipt(data).subject,/\[PRUEBA\]/);
+});

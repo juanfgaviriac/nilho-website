@@ -63,6 +63,12 @@ export function orderReceipt({ order, transaction }) {
 <tr><td style="padding:20px 0 28px;font-size:14px;line-height:1.8;">¿Necesitas ayuda? Responde a este correo o <a href="${escapeHTML(FOCO_WHATSAPP_URL)}" style="color:#245e59;">escríbenos por WhatsApp</a>.</td></tr>
 <tr><td style="border-top:1px solid #deded8;padding-top:20px;font-size:11px;line-height:1.8;color:#55564f;overflow-wrap:anywhere;">Pago aprobado en Wompi: ${escapeHTML(transaction.id)}<br>Condiciones aceptadas: ${escapeHTML(order.consent.termsVersion)} · Privacidad: ${escapeHTML(order.consent.privacyVersion)}<br>Aceptación registrada: ${escapeHTML(order.consent.acceptedAt)}<br><a href="${escapeHTML(termsURL)}" style="color:#55564f;">Compra, envíos y garantía</a> · <a href="${escapeHTML(privacyURL)}" style="color:#55564f;">Privacidad de compras</a><br><br>Vendido por ${escapeHTML(seller.name)} · NIT ${escapeHTML(seller.nit)}<br>${escapeHTML(seller.noticeAddress)}<br><a href="mailto:team@nilho.co" style="color:#55564f;">team@nilho.co</a><br><br>Comprobante de compra. Este correo no es una factura electrónica.</td></tr>
 </table></td></tr></table></body></html>`;
+    if (order.environment === 'test') {
+        const notice = 'PRUEBA DE INTEGRACIÓN · NO ES UNA COMPRA. No hubo dinero real ni se enviarán tarjetas. Los datos siguientes simulan un pedido.';
+        return { to: transaction.customer_email, subject: `[PRUEBA] ${subject}`,
+            text: `${notice}\n\n${text}`,
+            html: html.replace('<table role="presentation"', `<p style="margin:0;padding:18px;background:#101110;color:#fff;text-align:center;font:13px Arial;line-height:1.7">${notice}</p><table role="presentation"`) };
+    }
     return { to: transaction.customer_email, subject, html, text };
 }
 

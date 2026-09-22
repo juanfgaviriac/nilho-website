@@ -22,7 +22,7 @@ class MemoryStore {
 }
 const fixtureEnv = () => ({ WOMPI_ENVIRONMENT: 'test', WOMPI_PRIVATE_KEY: 'prv_test_fixture',
     WOMPI_PUBLIC_KEY: 'pub_test_fixture', WOMPI_EVENTS_SECRET: 'test_events_fixture',
-    FOCO_CHECKOUT_ENABLED: 'true', FOCO_EMAIL_ENABLED: 'true', RESEND_API_KEY: 're_fixture' });
+    FOCO_CHECKOUT_ENABLED: 'true', FOCO_EMAIL_ENABLED: 'true', RESEND_API_KEY: 're_fixture', FOCO_TEST_EMAIL_TO: 'buyer@example.com' });
 function harness(options = {}) {
     const store = new MemoryStore(), env = fixtureEnv(), requests = [];
     let clock = new Date('2026-09-21T22:00:00Z'), tx, failEmail = false, linkCounter = 0;
@@ -192,4 +192,12 @@ test('checkout cannot accept money while email delivery is unconfigured',async()
         await assert.rejects(h.core.createCheckout(h.input(2)),{code:'email_not_configured'});
         assert.equal(h.requests.length,0);
     }
+});
+test('sandbox only sends to its explicitly configured test recipient',async()=>{
+    const h=harness(); const tx=await h.approve(await h.core.createCheckout(h.input(2)));
+    tx.customer_email='unexpected@example.com';
+    assert.deepEqual(await h.core.handleEvent(h.signed()),{received:true,ignored:'sandbox_recipient'});
+    assert.equal(h.emailCalls().length,0);
+    delete h.env.FOCO_TEST_EMAIL_TO;
+    await assert.rejects(h.core.createCheckout(h.input(2)),{code:'test_recipient_not_configured'});
 });

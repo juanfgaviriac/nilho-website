@@ -55,6 +55,7 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         const { mode } = environment(env);
         if (env.FOCO_CHECKOUT_ENABLED !== 'true') fail(503, 'checkout_unavailable');
         if (env.FOCO_EMAIL_ENABLED !== 'true' || !env.RESEND_API_KEY?.startsWith('re_')) fail(503, 'email_not_configured');
+        if (mode === 'test' && !env.FOCO_TEST_EMAIL_TO) fail(503, 'test_recipient_not_configured');
         if (!stockAvailable(config.commerce)) fail(409, 'stock_unavailable');
         if (!input || !uuid(input.attemptId) || ![1,2,3].includes(input.quantity) || input.accepted !== true ||
             input.termsVersion !== config.commerce.termsVersion || input.privacyVersion !== config.commerce.privacyVersion) {
@@ -125,11 +126,20 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         if (!order || order.environment !== mode || order.paymentLinkId !== tx.payment_link_id ||
             tx.currency !== order.currency || tx.amount_in_cents !== order.amountInCents ||
             !order.consent?.acceptedAt) fail(409, 'order_payment_mismatch');
+        const receiptKey = `receipts/${tx.id}`;
+        // Public sandbox checkout must not become an arbitrary-email sender.
+        // A retry still uses the frozen original recipient, not mutable provider data.
+        if (mode === 'test') {
+            const existingReceipt = await store.get(receiptKey, { type: 'json' });
+            const recipient = existingReceipt?.payload?.to || tx.customer_email;
+            if (!env.FOCO_TEST_EMAIL_TO || recipient?.toLowerCase() !== env.FOCO_TEST_EMAIL_TO.toLowerCase()) {
+                return { received: true, ignored: 'sandbox_recipient' };
+            }
+        }
         const paid = await store.setJSON(`paid/${order.id}`, { transactionId: tx.id, approvedAt: now().toISOString() }, { onlyIfNew: true });
         if (!paid.modified && (await store.get(`paid/${order.id}`, { type: 'json' })).transactionId !== tx.id) fail(409, 'order_already_paid');
         // Shipping/address/payment instrument stay in Wompi. Retain only delivery
         // email and the receipt payload necessary for reliable retries.
-        const receiptKey = `receipts/${tx.id}`;
         await store.setJSON(receiptKey, { state: 'pending', createdAt: now().toISOString(),
             orderId: order.id, transactionId: tx.id,
             payload: orderReceipt({ order: { ...order, transactionId: tx.id }, transaction: tx }) }, { onlyIfNew: true });
