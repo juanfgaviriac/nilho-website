@@ -153,6 +153,9 @@ function setPromoOpen(open, animate = true) {
 
 function applyPromo() {
     if (busy) return false;
+    const animate = checkout.dataset.motion !== 'instant' && typeof summary.animate === 'function';
+    const errorOpacity = promoMessage.textContent ? getComputedStyle(promoMessage).opacity : 0;
+    const frame = animate && !reducedMotion.matches ? captureSummary() : null;
     let code;
     try {
         code = normalizePromoCode(promoInput.value);
@@ -161,10 +164,10 @@ function applyPromo() {
         setPromoOpen(true, false);
         promoFeedback('Código inválido.', true);
         promoInput.focus();
+        if (frame) transitionSummary(frame, false);
+        if (animate) animateSummary(promoMessage, [{ opacity: errorOpacity }, { opacity: 1 }], feedbackTiming);
         return false;
     }
-    const animate = checkout.dataset.motion !== 'instant' && typeof summary.animate === 'function';
-    const frame = animate && !reducedMotion.matches ? captureSummary() : null;
     if (code !== appliedCode) attemptId = null;
     appliedCode = code;
     promoInput.value = code;
@@ -172,12 +175,12 @@ function applyPromo() {
     setPromoOpen(false, false);
     promoToggle.hidden = true;
     promoApplied.hidden = false;
-    promoFeedback(`Descuento aplicado: ahorras ${formatCOP(getCheckoutOffer(quantity, code).promoDiscount)}.`);
+    promoFeedback('');
     select(quantity);
     // Apply the actual price immediately, then ease the new summary into place.
     if (frame) transitionSummary(frame, false);
     if (animate) {
-        for (const element of [promoRow, promoApplied, promoMessage]) {
+        for (const element of [promoRow, promoApplied]) {
             animateSummary(element, [{ opacity: 0 }, { opacity: 1 }], feedbackTiming);
         }
         animateSummary(document.getElementById('summary-total'), [{ opacity: 0.6 }, { opacity: 1 }], feedbackTiming);
@@ -198,6 +201,8 @@ promoEditor.addEventListener('submit', event => {
 promoInput.addEventListener('input', () => { promoFeedback(''); });
 promoRemove.addEventListener('click', () => {
     if (busy) return;
+    const animate = checkout.dataset.motion !== 'instant' && typeof summary.animate === 'function';
+    const frame = animate && !reducedMotion.matches ? captureSummary() : null;
     appliedCode = '';
     attemptId = null;
     promoInput.value = '';
@@ -207,6 +212,13 @@ promoRemove.addEventListener('click', () => {
     promoFeedback('');
     select(quantity);
     promoInput.focus();
+    if (frame) transitionSummary(frame, false);
+    if (animate) {
+        for (const element of [promoToggle, promoEditor]) {
+            animateSummary(element, [{ opacity: 0 }, { opacity: 1 }], feedbackTiming);
+        }
+        animateSummary(document.getElementById('summary-total'), [{ opacity: 0.6 }, { opacity: 1 }], feedbackTiming);
+    }
 });
 
 pay.addEventListener('click', async () => {
