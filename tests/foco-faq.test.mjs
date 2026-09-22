@@ -114,8 +114,7 @@ test('a successful request uses one capped, non-logging model call with only cur
     assert.equal(captured.model, FAQ_MODEL);
     assert.equal(captured.maxRetries,0); assert.equal(captured.maxOutputTokens,500);
     assert.equal(captured.timeout,20000); assert.equal(captured.telemetry.isEnabled,false);
-    assert.deepEqual(captured.providerOptions.gateway.only, ['openai']);
-    assert.equal(captured.providerOptions.openai.store,false);
+    assert.deepEqual(captured.providerOptions.gateway.only, ['inception']);
     assert.equal(captured.tools,undefined);
     assert.ok(captured.system.includes(docs[0].text));
     assert.equal(result.sources[0].url, docs[0].url);
@@ -131,6 +130,8 @@ test('unknowns are handed off; invented sources, invalid answers and provider fa
     const unavailable = fixture({generate:async () => {throw new Error('private provider content');}});
     const response = await unavailable.handler(request());
     assert.equal(response.status,503); assert.doesNotMatch(await response.text(), /private provider content/);
+    const limited = fixture({generate:async () => {throw Object.assign(new Error('provider limit'), {statusCode:429});}});
+    assert.equal((await limited.handler(request())).status,429);
     const outage = fixture({makeStore:() => {throw new Error('storage down');}});
     assert.equal((await outage.handler(request())).status,503); assert.equal(outage.calls(),0);
 });

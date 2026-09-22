@@ -18,10 +18,14 @@ Do not add private operational documents, customer records, credentials or raw l
 
 ## Model and activation
 
-- Model: `openai/gpt-5.6-luna` through Vercel AI Gateway, routing only to OpenAI.
+- Model: `inception/mercury-2.5` through Vercel AI Gateway, routing only to Inception.
 - Model availability/pricing checked on 2026-09-21 at
-  https://vercel.com/ai-gateway/models/gpt-5.6-luna ($0.20/M input, $1.20/M output).
-- Gateway requires paid credits for this model; the free tier alone was rejected.
+  https://vercel.com/ai-gateway/models/mercury-2.5 ($0.04/M input, $0.15/M output
+  under the current 80% discount; promotional prices can change).
+- Verified against the team's existing free credits. GPT-5.6 Luna, GPT-5.4 Mini
+  and Gemini 3.5 Flash Lite were rejected with a free-tier model restriction,
+  not a depleted balance. The team retains its existing $5/month Gateway budget.
+  No credit purchase or automatic top-up was configured for this feature.
 - Authenticate with Vercel OIDC. Never place a Gateway/provider key in browser code.
 - Production requires `FOCO_FAQ_ENABLED=true`, a separate random
   `FOCO_FAQ_RATE_SECRET`, and the existing private Blob configuration.
@@ -48,11 +52,13 @@ IP headers need a trusted-proxy equivalent, not arbitrary client-supplied header
 The single counter object stores daily HMAC identifiers and counts, not raw IPs or
 question text. Its map is replaced on the first request of the next UTC day; it is
 not a background deletion job. SDK telemetry is disabled, model errors are not
-logged, and OpenAI `store` is false. These settings do not claim universal zero
-retention: Vercel/OpenAI service security/retention policies still apply. Review
+logged. These settings do not claim universal zero
+retention: Vercel/Inception service security/retention policies still apply. Review
 Gateway content-logging configuration before changing those guarantees.
 
-The model selects allowlisted source IDs; URLs come from the server. Responses are
+The model returns JSON (this endpoint does not support strict JSON Schema through
+the SDK); server validation enforces types, response length and allowlisted source
+IDs. URLs come from the server. Responses are
 rendered as plain text. Unsupported questions hand off to a person. This reduces
 hallucination risk but does not guarantee factual accuracy; source and disclaimer
 links remain visible. A small PII guard catches common emails, long numbers and

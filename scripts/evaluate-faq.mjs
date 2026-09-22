@@ -16,7 +16,11 @@ const cases = [
 ];
 const knowledge = await buildKnowledge();
 let failed = 0;
-for (const [question, expected] of cases) {
+const offset = Number(process.argv.find(arg => arg.startsWith('--offset='))?.split('=')[1] || 0);
+for (const [index, [question, expected]] of cases.entries()) {
+    if (index < offset) continue;
+    // The Gateway free tier has a separate per-model request rate limit.
+    if (index > offset) await new Promise(resolve => setTimeout(resolve, 15000));
     const start = Date.now();
     try {
         const result = await answerQuestion(question, knowledge);
