@@ -1,8 +1,10 @@
 import { cp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { renderCommercePage, snapshotPolicies } from './policies.mjs';
 import { renderSharedFooter } from './shared-footer.mjs';
+import { renderFAQ, writeKnowledge } from './faq.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
+await writeKnowledge();
 const homepage = await readFile(new URL('foco/index.html', root), 'utf8');
 const out = new URL('dist/', root);
 await rm(out, {recursive:true,force:true});
@@ -20,6 +22,7 @@ for (const path of ['', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soport
     const source = await readFile(new URL(`foco/${path}index.html`,root),'utf8');
     let html = path === 'compra/' || path === 'compra/privacidad/' ? renderCommercePage(source) : source;
     html = renderSharedFooter(html, homepage);
+    html = renderFAQ(html);
     if (!html.includes('/foco/assets/favicon/')) html = html.replace('</head>',iconLinks+'</head>');
     await writeFile(new URL(`foco/${path}index.html`,out),html);
     await mkdir(new URL(path,out),{recursive:true});

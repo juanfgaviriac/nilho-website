@@ -7,6 +7,10 @@
     "iad1"
   ],
   "functions": {
+    "api/foco/faq.mjs": {
+      "includeFiles": "server/foco/faq-knowledge.json",
+      "maxDuration": 30
+    },
     "api/foco/*.mjs": {
       "includeFiles": "foco/compra/versiones/**",
       "maxDuration": 60
