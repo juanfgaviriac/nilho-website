@@ -1,6 +1,6 @@
 # Nilho website
 
-Plain HTML/CSS/JS on Netlify. Foco: `/foco/`. The static design, NFC demo and storytelling remain intact. A small Node build copies public assets to `dist/`; two Netlify Functions handle order creation and Wompi callbacks. No frontend framework or marketing SDK was added.
+Plain HTML/CSS/JS. Foco is hosted on Vercel at getfoco.co; Nilho remains on Netlify. The static design, NFC demo and storytelling remain intact. Two Vercel Functions handle orders and Wompi callbacks, with a private Vercel Blob ledger. No frontend framework or marketing SDK was added.
 
 ## Local checks
 
@@ -18,43 +18,15 @@ Checkout: `http://127.0.0.1:8766/foco/#comprar`. Synthetic email preview: `http:
 
 The owner approved **one server-created, single-use Wompi link per order**, replacing three reusable links. Amounts still come from `foco/checkout-config.mjs`: 11000000, 20000000 and 25000000 centavos. Wompi collects the address once. Links expire after one hour; their SKU is the order UUID, while the stored order and link description retain FOCO-01/02/03.
 
-The server records accepted policy versions, timestamp, archived HTML and hashes with the order before creating the link. It verifies Wompi's callback signature and independently retrieves the transaction using the private API. Only an APPROVED transaction matching the saved link, environment, COP amount and order can generate a Resend receipt. Redirect parameters never confirm payment. Netlify Blobs contains a minimal private order/consent/receipt ledger; there is no customer-account database or duplicated shipping form.
+The server records accepted policy versions, timestamp, archived HTML and hashes with the order before creating the link. It verifies Wompi's callback signature and independently retrieves the transaction using the private API. Only an APPROVED transaction matching the saved link, environment, COP amount and order can generate a Resend receipt. Redirect parameters never confirm payment. Private Vercel Blob storage contains a minimal order/consent/receipt ledger; there is no customer-account database or duplicated shipping form.
 
 **Published with owner approval on 2026-09-21:** production checkout and email switches are enabled, with production-only Wompi and Resend credentials. The live site preserves the latest film, desk scene and glass overlay. Sandbox approved/declined payments, consent archives, delivered receipt and duplicate callback protection passed. Production routes, pricing and invalid-request rejection passed; no real-money purchase, settlement or refund has been performed by this task. See the dated release evidence in `docs/foco-order-receipts-review.md`.
 
 The owner confirmed the commercial terms and authorized launch after being informed that Wompi still displays merchant review for withdrawals. The carrier remains deferred; send its name with tracking. No IVA is added to the agreed prices. The email is a purchase receipt, not a DIAN invoice or a finding of tax exemption.
 
-## Production and sandbox configuration
+## Hosting and runtime configuration
 
-Set these in **Netlify → nilho → Environment variables**, with separate production and sandbox-branch values. Prefer Functions-only scope when available. The current plan locks scope selection; marking a variable secret limits its available scopes to Builds, Functions and Runtime (not post processing). Resend has separate production and `foco-checkout-sandbox` branch values; generic preview/branch, agent and local values are empty. No plan upgrade was purchased. Never put secrets in client code, git, chat or logs. `.env.example` contains names only.
-
-| Variable | Purpose |
-| --- | --- |
-| `WOMPI_ENVIRONMENT` | **Configured**: `prod` in Production, `test` in other contexts |
-| `WOMPI_PRIVATE_KEY` | **Configured secret**: production key in Production, sandbox key in Deploy Previews and the specific `foco-checkout-sandbox` branch; generic branch/agent/local contexts empty |
-| `WOMPI_PUBLIC_KEY` | **Configured secret** in the same isolated contexts; verifies link merchant ownership |
-| `WOMPI_EVENTS_SECRET` | **Configured secret** in the same isolated contexts; verifies callback checksum |
-| `RESEND_API_KEY` | **Configured**: separate production and `foco-checkout-sandbox` sending-only keys, both scoped to `nilho.co` |
-| `FOCO_CHECKOUT_ENABLED` | `true` in Production; `false` in generic preview/branch/dev contexts. Server kill switch. |
-| `FOCO_EMAIL_ENABLED` | `true` in Production; sandbox uses an isolated deploy override and recipient allowlist. |
-| `FOCO_TEST_EMAIL_TO` | Sandbox-only allowlist recipient; use `team@nilho.co` for the approved integration test |
-| `FOCO_SANDBOX_ORIGIN` | Sandbox-only draft origin; `https://foco-checkout-sandbox--nilho.netlify.app` |
-
-Netlify Blobs authenticates automatically in hosted functions. Do not create or publish a storage token. Private stores are separated: `foco-orders-test` and `foco-orders-prod`. Runtime values must be available to Functions, not just Builds.
-
-Wompi credentials were connected on 2026-09-21. The real sandbox API created and independently returned all three exact-amount, single-use links with shipping collection and one-hour expiry. Retrying each order reused its link. This validates the provider contract, not a completed payment or hosted Netlify storage.
-
-The owner authorized the sandbox preview, a separate Resend key, test email to `team@nilho.co`, and the official Netlify CLI. The draft is at `https://foco-checkout-sandbox--nilho.netlify.app/foco/#comprar`. Wompi keys are now also saved specifically for the `foco-checkout-sandbox` branch; production values were preserved. A CLI alias deploy has runtime context `branch-deploy`; `--context deploy-preview` controls build variables only and does not change that runtime context.
-
-Resend is now restored with `Foco Comprobantes Netlify` in Production and `Foco Sandbox Netlify` only on the sandbox branch. An attempted bulk context edit cleared the previous stored values; replacement keys with the same sending-only/domain scopes were saved and read back. Server production switches remained false during that credential repair; they were enabled separately for the approved launch. Use a single-value PATCH (`setEnvVarValue`) for future context updates; never omit secret values in a bulk replacement.
-
-Sandbox verification completed: all three exact amounts and provider fields, hosted order/consent/policy hashes, approved payment, delivered test receipt and two concurrent signed callback replays with no duplicate email. Wompi sandbox webhook is `https://foco-checkout-sandbox--nilho.netlify.app/api/foco/wompi`; production webhook is `https://nilho.co/api/foco/wompi`, saved and read back in Wompi. See the dated evidence in `docs/foco-order-receipts-review.md`.
-
-The approved release merged the latest main-site visual changes. Wompi withdrawal eligibility remains provider-controlled: its dashboard still shows merchant review pending. Complete a real buyer payment and verify its production receipt/settlement before claiming those production outcomes tested.
-
-For the sandbox, the `foco-checkout-sandbox` build context runs `scripts/build-sandbox.mjs`, producing a labelled draft without changing production source gates. Deploy only to alias `foco-checkout-sandbox` with deploy-only email/checkout switches enabled and the two test settings above. Never use `--prod` with that artifact. Sandbox receipts are marked `[PRUEBA]` and restricted to the configured recipient.
-
-The final redirect is `https://nilho.co/foco/pago/`. It stays neutral and must be published with the checkout. [Launch runbook](docs/foco-checkout-launch.md) · [Order operations](docs/foco-order-operations.md).
+Foco production runs on Vercel's **getfoco** project in **juanfgaviriacs-projects**, at https://getfoco.co. Nilho's corporate site remains on Netlify. The Vercel migration section below is the current configuration; the original Netlify launch and sandbox evidence is retained in [release notes](docs/foco-order-receipts-review.md). Do not redeploy the historical Netlify sandbox with the new sender: its key is scoped to nilho.co. New sandbox work needs isolated Vercel test credentials, storage and a test recipient.
 
 ## Policy archives and prices
 
@@ -85,10 +57,7 @@ cached reads or unconditional writes for that contract. Checkout requests are
 limited to ten per IP per minute; rate-limit keys use an HMAC, not raw IPs.
 
 Wompi production events go to `https://getfoco.co/api/foco/wompi`; new payment
-links return to `https://getfoco.co/pago/`. Old nilho.co event endpoints must
-remain functional during cutover. Pause old checkout creation, recheck its
-production ledger for new orders, then transfer any records before changing the
-webhook. Never run two independent writers against separate order ledgers.
+links return to `https://getfoco.co/pago/`. The old nilho.co event endpoint proxies POST requests to Vercel and preserves response status. Its checkout endpoint returns 410, and old pages redirect to getfoco.co. The former production ledger was empty at cutover; historical sandbox records stay on Netlify. Never run two independent writers against separate order ledgers.
 Do not delete historical policy archives or sandbox evidence.
 
 `team@getfoco.co` sends receipts through Resend; Namecheap forwards incoming

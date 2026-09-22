@@ -13,6 +13,49 @@
   node_bundler = "esbuild"
   included_files = ["foco/compra/versiones/**/*.html"]
 
+# Only Foco pages move. Nilho's corporate site and public legacy assets stay here.
+# Explicit hosts keep the historical sandbox deployment independent.
+[[redirects]]
+  from = "https://nilho.co/foco"
+  to = "https://getfoco.co/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/"
+  to = "https://getfoco.co/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/index.html"
+  to = "https://getfoco.co/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/privacidad/*"
+  to = "https://getfoco.co/privacidad/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/terminos/*"
+  to = "https://getfoco.co/terminos/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/soporte/*"
+  to = "https://getfoco.co/soporte/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/compra/*"
+  to = "https://getfoco.co/compra/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://nilho.co/foco/pago/*"
+  to = "https://getfoco.co/pago/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/api/foco/*"
   [headers.values]
