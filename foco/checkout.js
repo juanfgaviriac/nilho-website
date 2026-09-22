@@ -143,7 +143,7 @@ function applyPromo() {
         code = normalizePromoCode(promoInput.value);
         if (!code) throw new RangeError('empty_code');
     } catch {
-        promoFeedback('Escribe un código con al menos 5 letras.', true);
+        promoFeedback('Código inválido.', true);
         promoInput.focus();
         return false;
     }

@@ -33,11 +33,11 @@ export function getOffer(quantity, config = FOCO_CHECKOUT) {
 // This is an open promotion, not a lookup against a list of issued codes.
 // Share the rule with the UI; the server always recalculates the payable amount.
 export function normalizePromoCode(value = '') {
-    if (typeof value !== 'string') throw new RangeError('Código no válido');
+    if (typeof value !== 'string') throw new RangeError('Código inválido.');
     const code = value.trim().normalize('NFC');
     if (!code) return '';
     if (code.toUpperCase().length > 64 || /[\p{Cc}\p{Cf}]/u.test(code) || (code.match(/\p{L}/gu) || []).length < 5) {
-        throw new RangeError('Escribe un código con al menos 5 letras.');
+        throw new RangeError('Código inválido.');
     }
     return code.toUpperCase();
 }
