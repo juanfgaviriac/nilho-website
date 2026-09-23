@@ -134,3 +134,51 @@ test('immutable caching is limited to content-addressed assets; APIs remain no-s
     assert.match(headers('/foco/_assets/:path*').find(h => h.key === 'Cache-Control').value, /max-age=31536000, immutable/);
     assert.equal(headers('/api/:path*').find(h => h.key === 'Cache-Control').value, 'no-store');
 });
+
+test('carousel measures after layout, caches targets during scroll and keeps keyboard navigation', async () => {
+    const operations = [], events = {}, frames = [], buttons = [];
+    let resize, left = 0;
+    const write = () => operations.push('write');
+    const readGeometry = value => { operations.push('read'); return value; };
+    const button = dataset => {
+        const listeners = {};
+        const value = { dataset, listeners, setAttribute: write, removeAttribute: write,
+            set disabled(value) { write(); }, addEventListener: (event, fn) => { listeners[event] = fn; } };
+        buttons.push(value);
+        return value;
+    };
+    const dots = [0, 1, 2].map(i => button({ feature: i }));
+    const previous = button({ direction: -1 }), next = button({ direction: 1 });
+    const toolbar = { set hidden(value) { write(); }, querySelectorAll: () => dots,
+        querySelector: selector => selector.includes('-1') ? previous : next };
+    const cards = [0, 320, 640].map(value => ({ get offsetLeft() { return readGeometry(value); } }));
+    const track = { get scrollWidth() { return readGeometry(940); }, get clientWidth() { return readGeometry(300); },
+        get scrollLeft() { return readGeometry(left); }, set tabIndex(value) { write(); },
+        querySelectorAll: () => cards, addEventListener: (name, fn) => { events[name] = fn; },
+        scrollTo(options) { left = options.left; this.lastScroll = options; } };
+    const carousel = { querySelector: selector => ({ '.feature-track': track, '.feature-toolbar': toolbar, '.feature-announcement': {} })[selector] };
+    vm.runInNewContext(await read('foco/landing.js'), {
+        location: { hash: '' },
+        document: { documentElement: { classList: { add() {} } }, querySelectorAll: () => [], querySelector: selector => selector === '.feature-carousel' ? carousel : null },
+        window: { ResizeObserver: true, matchMedia: () => ({ matches: false }) },
+        ResizeObserver: class { constructor(fn) { resize = fn; } observe() {} },
+        requestAnimationFrame: fn => frames.push(fn),
+    });
+    assert.deepEqual(operations, [], 'no synchronous startup layout measurement');
+    resize();
+    assert.ok(operations.includes('read'));
+    assert.equal(operations.slice(operations.indexOf('write')).includes('read'), false, 'no layout read follows a write');
+    operations.length = 0;
+    left = 160;
+    events.scroll(); events.scroll();
+    assert.equal(frames.length, 1, 'scroll events coalesce into one frame');
+    frames.shift()();
+    assert.equal(operations.filter(op => op === 'read').length, 1, 'only scroll position read; card geometry is cached');
+    events.keydown({ key: 'End', preventDefault() {} });
+    assert.equal(track.lastScroll.left, 640);
+    assert.equal(track.lastScroll.behavior, 'instant');
+    events.keydown({ key: 'Home', preventDefault() {} });
+    next.listeners.click({ detail: 1 });
+    assert.equal(track.lastScroll.left, 320);
+    assert.equal(track.lastScroll.behavior, 'smooth');
+});

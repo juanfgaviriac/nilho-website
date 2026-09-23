@@ -53,6 +53,10 @@ requests are used to make prices appear faster.
   412px / 1.75 DPR phone the image needs about 598 pixels, so the existing 600px
   image can be selected instead of downloading the 1200px version. No image
   pixels, typography or layout were changed.
+- Carousel geometry is measured by ResizeObserver after layout and cached until
+  the track resizes. Scroll frames read only scroll position before updating
+  controls; they no longer measure every card after writing DOM styles. Keyboard
+  navigation, reduced-motion behavior and the existing animation remain intact.
 
 ## Performance regression checks
 

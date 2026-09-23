@@ -115,31 +115,39 @@ if (featureCarousel) {
     const labels = ["Modos", "Rutinas", "Mi tiempo"];
     let current = 0;
     let scheduled = false;
+    let positions = [];
+    let maxScroll = 0;
 
-    function targets() {
-        const max = track.scrollWidth - track.clientWidth;
-        return cards.map((card) => Math.min(max, card.offsetLeft - cards[0].offsetLeft));
+    function measure() {
+        // Read layout together, after the browser has sized the track. Reuse it
+        // while scrolling instead of measuring every card on every frame.
+        maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+        const origin = cards[0].offsetLeft;
+        positions = cards.map((card) => Math.min(maxScroll, card.offsetLeft - origin));
+        update();
     }
 
     function update() {
         scheduled = false;
-        const overflow = track.scrollWidth > track.clientWidth + 2;
-        toolbar.hidden = !overflow;
-        track.tabIndex = overflow ? 0 : -1;
-        const positions = targets();
+        if (!positions.length) return;
+        const left = track.scrollLeft;
         current = positions.reduce((best, value, index) =>
-            Math.abs(value - track.scrollLeft) < Math.abs(positions[best] - track.scrollLeft) ? index : best, 0);
+            Math.abs(value - left) < Math.abs(positions[best] - left) ? index : best, 0);
+        // All DOM writes follow geometry reads; no forced write/read reflow.
+        toolbar.hidden = maxScroll <= 2;
+        track.tabIndex = maxScroll > 2 ? 0 : -1;
         dots.forEach((dot, index) => {
             if (index === current) dot.setAttribute("aria-current", "true");
             else dot.removeAttribute("aria-current");
         });
-        previous.disabled = track.scrollLeft <= 2;
-        next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+        previous.disabled = left <= 2;
+        next.disabled = left >= maxScroll - 2;
     }
 
     function goTo(index, keyboard = false) {
         const destination = Math.max(0, Math.min(cards.length - 1, index));
-        track.scrollTo({ left: targets()[destination], behavior: keyboard || reducedMotion.matches ? "instant" : "smooth" });
+        if (!positions.length) return;
+        track.scrollTo({ left: positions[destination], behavior: keyboard || reducedMotion.matches ? "instant" : "smooth" });
         if (keyboard || reducedMotion.matches) update();
         announcement.textContent = `${labels[destination]}, ${destination + 1} de ${cards.length}`;
     }
@@ -156,7 +164,9 @@ if (featureCarousel) {
         scheduled = true;
         requestAnimationFrame(update);
     }, { passive: true });
-    if ("ResizeObserver" in window) new ResizeObserver(update).observe(track);
-    else window.addEventListener("resize", update);
-    update();
+    if ("ResizeObserver" in window) new ResizeObserver(measure).observe(track);
+    else {
+        window.addEventListener("resize", measure);
+        requestAnimationFrame(measure);
+    }
 }
