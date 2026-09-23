@@ -107,7 +107,7 @@
                     <li class="reveal">
                         <h3>Escoge tus apps</h3>
                         <p>Crea modos con las apps y sitios que quieres dejar en pausa.</p>
-                        <div class="app-picker">
+                        <div class="app-picker step-demo" data-demo="selección de apps">
                             <div class="app-picker-window" role="img" aria-label="Demostración: recorre apps como Instagram, TikTok y YouTube y márcalas para dejarlas en pausa.">
                                 <div class="app-picker-track" aria-hidden="true">
                                     <div class="app-picker-row" style="--selection-delay: 12s">
@@ -152,15 +152,33 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="app-picker-playback" type="button" aria-label="Pausar selección de apps" data-playing="true" hidden>
-                                <svg class="app-picker-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                                <svg class="app-picker-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
+                            <button class="step-playback" type="button" aria-label="Pausar selección de apps" data-playing="true" hidden>
+                                <svg class="step-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                <svg class="step-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
                             </button>
                         </div>
                     </li>
                     <li class="reveal">
                         <h3>Toca Foco</h3>
                         <p>Acerca la parte superior del iPhone a tu tarjeta Foco.</p>
+                        <div class="tap-demo step-demo" data-demo="toque de Foco">
+                            <svg class="tap-scene" viewBox="0 0 280 152" fill="none" role="img" aria-label="Demostración: la parte superior de un iPhone se acerca a la tarjeta Foco y un pulso confirma el toque.">
+                                <g stroke="currentColor" stroke-width="1.5">
+                                    <rect x="150" y="20" width="102" height="65" rx="9"/>
+                                    <path d="M199.5 37.5h3v9h-3zm0 21h3v9h-3zM186 51h9v3h-9zm21 0h9v3h-9z" fill="currentColor" stroke="none"/>
+                                    <g class="tap-phone" fill="var(--ink)" stroke-linecap="round">
+                                        <rect x="32" y="12" width="64" height="124" rx="14"/>
+                                        <rect x="53" y="20" width="22" height="5" rx="2.5" fill="currentColor" stroke="none"/>
+                                        <path d="M54 128h20"/>
+                                    </g>
+                                    <circle class="tap-ripple" cx="165" cy="32" r="12" stroke="#d6dfd0"/>
+                                </g>
+                            </svg>
+                            <button class="step-playback" type="button" aria-label="Pausar toque de Foco" data-playing="true" hidden>
+                                <svg class="step-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                <svg class="step-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
+                            </button>
+                        </div>
                     </li>
                     <li class="reveal">
                         <h3>Recupera tu tiempo</h3>
