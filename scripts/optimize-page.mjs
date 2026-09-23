@@ -1,6 +1,6 @@
 import { build } from 'esbuild';
 import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const root = new URL('../', import.meta.url);
@@ -9,6 +9,31 @@ const root = new URL('../', import.meta.url);
 // safe, including when a pricing dependency changes but checkout.js itself does not.
 export function pageOptimizer(out) {
     const cache = new Map();
+    async function publish(name, extension, bytes) {
+        const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 16);
+        const path = `/foco/_assets/${name}.${hash}.${extension}`;
+        await mkdir(new URL('foco/_assets/', out), { recursive: true });
+        await writeFile(new URL('.' + path, out), bytes);
+        return path;
+    }
+
+    // Fonts, posters and videos deserve the same safe immutable caching as code.
+    // Rewrite CSS before hashing it so a changed font also invalidates its stylesheet.
+    // Original public URLs remain available for old pages and signed policy archives.
+    async function fingerprintMedia(text) {
+        const paths = new Set(text.match(/\/foco\/assets\/[-a-zA-Z0-9_/]+\.(?:woff2|webp|mp4|svg|png|ico)\b/g) || []);
+        for (const path of paths) {
+            const key = `media:${path}`;
+            if (!cache.has(key)) {
+                const file = path.split('/').at(-1);
+                const dot = file.lastIndexOf('.');
+                cache.set(key, await publish(file.slice(0, dot), file.slice(dot + 1), await readFile(new URL('.' + path, root))));
+            }
+            text = text.replaceAll(path, cache.get(key));
+        }
+        return text;
+    }
+
     async function asset(paths, kind) {
         const key = `${kind}:${paths.join('|')}`;
         if (cache.has(key)) return cache.get(key);
@@ -18,12 +43,9 @@ export function pageOptimizer(out) {
         const result = await build({ stdin: { contents: input, loader: kind, resolveDir: fileURLToPath(root) },
             bundle: true, minify: true, write: false, format: 'esm', platform: 'browser',
             target: ['safari17', 'chrome109', 'firefox115'], external: ['/foco/assets/*'], legalComments: 'none' });
-        const bytes = result.outputFiles[0].contents;
-        const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 16);
+        const bytes = Buffer.from(await fingerprintMedia(result.outputFiles[0].text));
         const name = kind === 'css' ? 'styles' : files[0].split('/').at(-1).replace(/\.[^.]+$/, '');
-        const path = `/foco/_assets/${name}.${hash}.${kind}`;
-        await mkdir(new URL('foco/_assets/', out), { recursive: true });
-        await writeFile(new URL('.' + path, out), bytes);
+        const path = await publish(name, kind, bytes);
         cache.set(key, path);
         return path;
     }
@@ -43,6 +65,6 @@ export function pageOptimizer(out) {
             const path = await asset([match[1]], 'js');
             html = html.replace(match[0], `<script type="module" src="${path}"></script>`);
         }
-        return html;
+        return fingerprintMedia(html);
     };
 }

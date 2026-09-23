@@ -16,7 +16,10 @@ if (video && control) {
     async function playIfWanted() {
         if (!wantsPlayback || !visible || document.hidden) return;
         // The below-the-fold recording is downloaded only when it can be watched.
-        if (!video.hasAttribute('src')) video.src = video.dataset.src;
+        // Choose once, when first watched. Resizing must not restart the recording
+        // or download a second file. Both encodes retain the original 60 fps.
+        if (!video.hasAttribute('src')) video.src = window.matchMedia('(max-width: 720px)').matches
+            ? video.dataset.srcMobile : video.dataset.src;
         try { await video.play(); } catch { updateControl(); }
     }
 

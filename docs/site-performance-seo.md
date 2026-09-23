@@ -23,7 +23,11 @@ requests are used to make prices appear faster.
 - `scripts/optimize-page.mjs` combines and minifies each page's styles and bundles
   each script with its dependencies. Content hashes invalidate the entire bundle
   when a dependency changes (including pricing configuration). Only hashed
-  bundles receive immutable one-year caching; API responses remain `no-store`.
+  bundles and content-addressed media receive immutable one-year caching; API
+  responses remain `no-store`. Images, videos and fonts are fingerprinted by their
+  bytes, including CSS font URLs, HTML preloads, srcsets and share metadata.
+  Original media URLs remain available for historical pages; never apply
+  immutable caching to mutable filenames or current HTML.
 - The same Manrope and IBM Plex Mono fonts are served locally as WOFF2, with
   Latin/Latin Extended subsets and their OFL licenses. Only the primary Latin
   font is preloaded. Current pages receive this at build time; accepted policy
@@ -36,6 +40,32 @@ requests are used to make prices appear faster.
 - The unchanged video posters are delivered as WebP (12.8 KB for the hero and
   6.6 KB for the orbit). The App Store badge is sized for its rendered width and
   served at 384 pixels / 6.2 KB instead of the 3840-pixel / 48.2 KB source.
+- The 10-second Screen Time comparison retains its original **60 fps**. H.264
+  CRF 22 / slow / YUV420P / faststart versions are 426,231 bytes at 1080×720
+  (mobile) and 1,130,822 bytes at 1920×1280 (desktop), versus 7,225,101 bytes for
+  v1: 94.1% and 84.3% less transfer respectively. Full-video SSIM is 0.997313
+  for desktop, and 0.996429 for mobile against a Lanczos-resized reference.
+  The mobile source is chosen at the first play on viewports up to 720px;
+  resizing never restarts playback or downloads a second encode. Native lazy
+  video loading additionally defers the poster in supporting browsers. The
+  viewport observer remains the fallback for media downloads.
+- Feature image `sizes` match the real card widths, gutters and borders. On a
+  412px / 1.75 DPR phone the image needs about 598 pixels, so the existing 600px
+  image can be selected instead of downloading the 1200px version. No image
+  pixels, typography or layout were changed.
+
+## Performance regression checks
+
+`tests/foco-performance.test.mjs` verifies content hashes, font preload reuse,
+responsive sizes, lazy source selection, explicit playback with reduced motion
+or data saving, offscreen pause, immutable/no-store boundaries and faststart.
+Budgets: homepage JS below 6 KB gzip, CSS below 8 KB gzip, comparison below
+500 KB mobile / 1.3 MB desktop. These guard payloads, not real-user timing.
+
+Baseline public mobile audit on 2026-09-22 (Lighthouse 13.5.0, emulated Moto G
+Power, slow 4G): 100 performance/accessibility/best practices/SEO; FCP 0.9s,
+LCP 1.4s, TBT 0ms, CLS 0.008. No CrUX field data was available.
+https://pagespeed.web.dev/analysis/https-getfoco-co/go10tbzv0e?form_factor=mobile
 
 ## Search
 
