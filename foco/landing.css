@@ -481,7 +481,7 @@ h1 span {
     --motion: app-picker-select 21s var(--ease-out) var(--selection-delay);
 }
 .app-picker:not([data-animated]) [data-initial] .app-picker-choice svg { opacity: 1; transform: none; }
-.step-demo[data-animated] .step-motion { animation: var(--motion) infinite paused; }
+[data-animated] .step-motion { animation: var(--motion) infinite paused; }
 .step-playback {
     position: absolute;
     right: 0;
@@ -494,7 +494,7 @@ h1 span {
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: #b3b3ad;
+    color: inherit;
     cursor: pointer;
 }
 .step-playback[hidden],
@@ -503,7 +503,7 @@ h1 span {
 .step-playback svg { width: 18px; height: 18px; }
 .step-playback:focus-visible { outline: 2px solid #d6dfd0; outline-offset: 0; }
 @media (hover: hover) and (pointer: fine) {
-    .step-playback:hover { color: #fff; background: rgba(255, 255, 255, 0.07); }
+    .step-playback:hover { background: rgba(255, 255, 255, 0.07); }
 }
 /* Seven stops, three seconds each; Mapas and WhatsApp have no selection overlay. */
 @keyframes app-picker-roll {
@@ -549,9 +549,9 @@ h1 span {
     0%, 36%, 88%, 100% { opacity: 0; transform: scale(0.95); }
     48%, 78% { opacity: 1; transform: scale(1); }
 }
-.step-demo[data-running="true"] .step-motion { animation-play-state: running; }
+[data-running="true"] .step-motion { animation-play-state: running; }
 @media (prefers-reduced-motion: reduce) {
-    .step-demo .step-motion { animation: none; }
+    [data-demo] .step-motion { animation: none; }
     .app-picker [data-initial] .app-picker-choice svg { opacity: 1; transform: none; }
     .step-playback { display: none; }
 }
@@ -646,12 +646,14 @@ h1 span {
 }
 
 .app-section {
+    position: relative;
+    isolation: isolate;
     width: min(calc(100% - 48px), 1280px);
     margin: 0 auto;
     padding: var(--space-7) 0;
 }
 
-.app-heading { margin-bottom: 3rem; text-align: center; }
+.app-heading { position: relative; margin-bottom: 3rem; text-align: center; }
 .app-heading h2 span { display: inline-block; }
 .feature-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 40px) / 3); gap: 20px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 0 8px; }
 .feature-track::-webkit-scrollbar { display: none; }
@@ -662,6 +664,9 @@ h1 span {
 .feature-card--analytics { --feature-tint: #e9d6cc; }
 .feature-scene { position: relative; flex: none; background: var(--feature-tint); }
 .feature-scene img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; }
+/* Two continuous, edge-to-edge strands frame the section without crossing the content. */
+.feature-chains { position: absolute; top: 0; left: 50%; width: 100vw; height: var(--space-7); transform: translateX(-50%); z-index: -1; opacity: .14; pointer-events: none; }
+@keyframes chain-flow { to { transform: translateX(-1440px); } }
 .feature-copy { flex: 1; position: relative; margin: 0; padding: 1.5rem; background: #fff; }
 .feature-copy h3 { max-width: 260px; margin: 0 0 .85rem; font-size: clamp(1.5rem, 2.2vw, 1.95rem); font-weight: 600; letter-spacing: -.045em; line-height: 1.1; }
 .feature-copy p { margin: 0; color: #42463f; font-size: .875rem; line-height: 1.65; }

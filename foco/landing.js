@@ -173,7 +173,7 @@ if (featureCarousel) {
 
 
 // CSS owns the demo timelines; JS only gates playback.
-document.querySelectorAll(".step-demo").forEach((demo) => {
+document.querySelectorAll("[data-demo]").forEach((demo) => {
     const playback = demo.querySelector(".step-playback");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const supportsPlayback = "IntersectionObserver" in window;
