@@ -370,7 +370,7 @@ h1 span {
 }
 
 .steps {
-    padding: var(--space-7) max(24px, calc((100vw - 1280px) / 2));
+    padding: var(--space-5) max(24px, calc((100vw - 1280px) / 2));
     background: var(--ink);
     color: var(--white);
 }
@@ -390,9 +390,9 @@ h1 span {
 }
 
 .steps-content {
-    margin-top: var(--space-6);
+    margin-top: var(--space-4);
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr);
     gap: clamp(2rem, 5vw, 4.5rem);
     align-items: center;
 }
@@ -405,30 +405,24 @@ h1 span {
 }
 
 .steps-list li {
-    padding: 1.75rem 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(172px, 1.35fr);
+    gap: 16px;
+    padding: 12px 0;
     border-bottom: 1px solid #333331;
 }
 
 .steps-list h3 {
-    margin: 0 0 0.6rem;
-    font-size: clamp(1.6rem, 2.7vw, 2.7rem);
+    align-self: start;
+    margin: 12px 0 0;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
     letter-spacing: -0.04em;
 }
 
-.steps-list p {
-    max-width: 340px;
-    margin: 0;
-    color: #b3b3ad;
-    line-height: 1.6;
-}
-
-
 /* Small explanatory demos share sizing, easing and playback controls. */
 .step-demo {
-    position: relative;
-    max-width: 320px;
-    margin-top: 16px;
-    padding-right: 40px;
+    min-width: 0;
     --ease-demo: cubic-bezier(0.77, 0, 0.175, 1);
 }
 .app-picker-window {
@@ -450,8 +444,8 @@ h1 span {
     height: 48px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 12px;
+    gap: 10px;
+    padding: 0 10px;
     font-size: 14px;
     font-weight: 600;
     letter-spacing: -0.015em;
@@ -497,6 +491,7 @@ h1 span {
     color: inherit;
     cursor: pointer;
 }
+.step-demo .step-playback { left: 0; right: auto; bottom: 12px; }
 .step-playback[hidden],
 .step-playback[data-playing="true"] .step-play,
 .step-playback[data-playing="false"] .step-pause { display: none; }
@@ -905,26 +900,6 @@ h1 span {
 }
 
 @media (max-width: 980px) {
-    .steps-content {
-        grid-template-columns: 1fr;
-        gap: var(--space-5);
-    }
-
-    .steps-list {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .steps-list li {
-        padding: 1.5rem 1.5rem 0 0;
-        border-bottom: 0;
-    }
-
-    .steps-list li + li {
-        padding-left: 1.5rem;
-        border-left: 1px solid #333331;
-    }
-
     .closing {
         grid-template-columns: auto 1fr;
     }
@@ -990,19 +965,8 @@ h1 span {
     .hero-actions { justify-content: center; flex-wrap: wrap; gap: 1rem; }
     .microcopy { font-size: 0.68rem; }
 
-    .steps-content { margin-top: var(--space-5); gap: var(--space-4); }
-    .steps-list { display: block; }
-
-    .steps-list li,
-    .steps-list li + li {
-        padding: 1.5rem 0;
-        border-left: 0;
-        border-bottom: 1px solid #333331;
-    }
-
-    .steps-list li:last-child {
-        border-bottom: 0;
-    }
+    .steps-content { grid-template-columns: 1fr; gap: var(--space-4); }
+    .steps-list li:last-child { border-bottom: 0; }
 
     .closing {
         grid-template-columns: 1fr;
