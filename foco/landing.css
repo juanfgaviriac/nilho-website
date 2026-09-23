@@ -655,10 +655,10 @@ h1 span {
 
 .app-heading { position: relative; margin-bottom: 3rem; text-align: center; }
 .app-heading h2 span { display: inline-block; }
-.feature-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 40px) / 3); gap: 20px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 0 8px; }
+.feature-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 40px) / 3); gap: 20px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 1.8rem; }
 .feature-track::-webkit-scrollbar { display: none; }
-.feature-track:focus-visible { outline: 2px solid var(--forest); outline-offset: 5px; border-radius: 1.5rem; }
-.feature-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border-radius: 1.8rem; scroll-snap-align: start; background: #fff; border: 1px solid var(--line); }
+.feature-track:focus-visible { outline: 2px solid var(--forest); outline-offset: 5px; }
+.feature-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border-radius: inherit; scroll-snap-align: start; background: #fff; border: 1px solid var(--line); }
 .feature-card--modos { --feature-tint: #d6dfd0; }
 .feature-card--rutinas { --feature-tint: #d5e2ec; }
 .feature-card--analytics { --feature-tint: #e9d6cc; }
@@ -689,7 +689,7 @@ h1 span {
     .app-heading { margin-bottom: 2rem; }
     .app-heading h2 span { display: block; }
     .feature-track { grid-auto-columns: 90%; gap: 12px; }
-    .feature-card { border-radius: 1.5rem; }
+    .feature-track { border-radius: 1.5rem; }
     .feature-copy { min-height: 0; margin: 0; padding: 1.25rem; }
     .feature-copy h3 { font-size: clamp(1.45rem,6vw,1.85rem); }
     .feature-copy p { font-size: .85rem; }
