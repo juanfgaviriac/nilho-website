@@ -170,3 +170,33 @@ if (featureCarousel) {
         requestAnimationFrame(measure);
     }
 }
+
+
+// A decorative demo: CSS owns the timeline; JS only gates playback.
+const appPicker = document.querySelector(".app-picker");
+if (appPicker) {
+    const playback = appPicker.querySelector(".app-picker-playback");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const supportsPlayback = "IntersectionObserver" in window;
+    let visible = false;
+    let paused = false;
+    function updatePicker() {
+        const enabled = supportsPlayback && !reducedMotion.matches;
+        appPicker.toggleAttribute("data-animated", enabled);
+        appPicker.dataset.running = String(enabled && visible && !paused && !document.hidden);
+        playback.hidden = !enabled;
+        playback.dataset.playing = String(!paused);
+        playback.setAttribute("aria-label", paused ? "Reproducir selección de apps" : "Pausar selección de apps");
+    }
+    playback.addEventListener("click", () => { paused = !paused; updatePicker(); });
+    reducedMotion.addEventListener("change", updatePicker);
+    document.addEventListener("visibilitychange", updatePicker);
+    if (supportsPlayback) {
+        new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            updatePicker();
+        }, { threshold: 0 }).observe(appPicker);
+    }
+    updatePicker();
+    // Browsers without visibility observation retain the static selection.
+}
