@@ -49,7 +49,8 @@ test('responsive image sizes follow the actual card gutters and widths', async (
     assert.equal(sizes.length, 3);
     for (const value of sizes) {
         assert.match(value, /calc\(90vw - 29px\)/);
-        assert.match(value, /calc\(60vw - 30\.8px\)/);
+        assert.match(value, /min\(calc\(90vw - 29px\), 322px\)/);
+        assert.match(value, /\(max-width: 1048px\) calc\(\(100vw - 88px\) \/ 3 - 2px\), 318px$/);
     }
     assert.match(html, /<video id="comparison-video"[^>]+preload="none" loading="lazy"/);
     assert.doesNotMatch(html.match(/<video id="comparison-video"[^>]+>/)[0], /\ssrc="/);

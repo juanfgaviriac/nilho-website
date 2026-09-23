@@ -650,6 +650,7 @@ h1 span {
 
 .app-heading { position: relative; margin-bottom: 3rem; text-align: center; }
 .app-heading h2 span { display: inline-block; }
+.feature-carousel { max-width: 1000px; margin-inline: auto; }
 .feature-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 40px) / 3); gap: 20px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 1.8rem; }
 .feature-track::-webkit-scrollbar { display: none; }
 .feature-track:focus-visible { outline: 2px solid var(--forest); outline-offset: 5px; }
@@ -677,14 +678,13 @@ h1 span {
 .feature-toolbar button:focus-visible { outline: 3px solid var(--forest); outline-offset: 2px; }
 @media (hover: hover) and (pointer: fine) { .feature-arrows button:not(:disabled):hover { background: var(--surface); } }
 @media (max-width: 1100px) {
-    .feature-track { grid-auto-columns: 60%; gap: 16px; }
     .feature-copy { padding: 1.3rem; }
 }
 @media (max-width: 720px) {
     .app-heading { margin-bottom: 2rem; }
     .app-heading h2 span { display: block; }
-    .feature-track { grid-auto-columns: 90%; gap: 12px; }
-    .feature-track { border-radius: 1.5rem; }
+    .feature-carousel { max-width: 360px; }
+    .feature-track { grid-auto-columns: 90%; gap: 12px; border-radius: 1.5rem; }
     .feature-copy { min-height: 0; margin: 0; padding: 1.25rem; }
     .feature-copy h3 { font-size: clamp(1.45rem,6vw,1.85rem); }
     .feature-copy p { font-size: .85rem; }
