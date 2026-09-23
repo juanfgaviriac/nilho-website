@@ -88,3 +88,12 @@ Usar Search Console y los reportes GA4 existentes. No se crearon reportes, campa
 - Builds normal y de preview con Node 22 completados en ambos destinos estáticos. Se comprobó que el build normal no contiene rutas de borradores ni sus entradas en el sitemap; el preview resolvió 180 referencias locales y no cargó analítica.
 - Siete páginas comprobadas en cuatro anchos (320, 390, 768 y 1.440 px): sin desbordes ni errores de página. Axe no detectó violaciones en las siete páginas. Se probaron la tabla expandible del gráfico y el desplazamiento horizontal de la tabla de precios. Capturas en `output/playwright/` (artefactos locales, no se publican).
 - En la etapa de borrador no se desplegó a producción ni se modificó la app iOS o el checkout. La publicación posterior se verifica sobre un checkout limpio de la versión más reciente de `origin/main`.
+
+## Comprobación del candidato de publicación · 23 de septiembre de 2026
+
+- Se integró sobre `origin/main` en `2d9f631`, conservando los cambios nuevos de la homepage.
+- 164/164 pruebas pasan en Node 22.23.2; también pasa el límite del CSS de la homepage con esta base actualizada.
+- Build de producción sin el flag de preview: cinco artículos, índice y criterio editorial indexables, con canonical, fechas reales, footer compartido y consentimiento de analítica.
+- Todas las rutas y referencias locales del blog resuelven; el sitemap incluye las siete páginas.
+- El HTML de la homepage y del checkout del candidato coincide byte por byte con producción antes de publicar. La app nativa y la compra no cambian.
+- Revisión en navegador móvil y auditoría de accesibilidad del artículo: sin violaciones detectadas. Las páginas públicas no muestran avisos de borrador.
