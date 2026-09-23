@@ -6,6 +6,7 @@ import { renderArrowFreePage } from './page-presentation.mjs';
 import { renderCheckoutPage } from './checkout-page.mjs';
 import { renderSEO } from './seo.mjs';
 import { pageOptimizer } from './optimize-page.mjs';
+import { blogPages } from './blog.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
 const knowledge = await writeKnowledge();
@@ -20,11 +21,13 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
 for (const dir of ['assets','foco']) await cp(new URL(dir, root), new URL(`dist/${dir}`, root), { recursive: true });
 const homepage = await readFile(new URL('foco/index.html', root), 'utf8');
 const optimize = pageOptimizer(new URL('dist/', root));
-for (const path of ['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/']) {
+const editorialPages = blogPages({ preview: process.env.FOCO_BLOG_PREVIEW === '1' });
+for (const path of new Set(['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
     const file = new URL(`dist/foco/${path}index.html`, root);
-    let html = await readFile(file, 'utf8');
+    let html = editorialPages.get(path) ?? await readFile(file, 'utf8');
     if (path === 'compra/' || path === 'compra/privacidad/') html = renderCommercePage(html);
     html = renderSEO(renderCheckoutPage(renderSharedFooter(html, homepage)), path);
+    await mkdir(new URL(`dist/foco/${path}`, root), { recursive: true });
     await writeFile(file, await optimize(renderArrowFreePage(renderFAQ(html, knowledge.instantAnswers))));
 }
 console.log('Static site built in dist/. Checkout remains gated by configuration.');

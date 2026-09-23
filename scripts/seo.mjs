@@ -40,7 +40,8 @@ export function structuredData(path, config = FOCO_CHECKOUT) {
 }
 
 export function renderSEO(html, path) {
-    if (path === 'pago/' || path === 'blog/') return html; // Private results and an empty blog stay out of Search.
+    // Blog pages own their publication gate, canonical metadata and article schema.
+    if (path === 'pago/' || path.startsWith('blog/')) return html;
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="([^"]+)"/)?.[1];
     if (!title || !description) throw new Error(`Missing search metadata: ${path}`);
