@@ -1,0 +1,4 @@
+Apple Maps app icon, used to identify the app in the selection demonstration.
+Source: https://apps.apple.com/us/app/apple-maps/id915056765
+Artwork: https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d7/9d/37/d79d376c-e1d6-9cb1-70fa-cdee6b6c198e/mapsCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/100x100bb.jpg
+Copyright Apple Inc.
