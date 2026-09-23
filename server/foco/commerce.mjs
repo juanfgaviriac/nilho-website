@@ -4,6 +4,7 @@ import { stockAvailable } from '../../foco/commerce-config.mjs';
 import { orderReceipt } from './receipt.mjs';
 import { merchantNotification } from './merchant-notification.mjs';
 import { sendPreparedEmail } from './email.mjs';
+import { analyticsContext, submitPurchase } from './analytics.mjs';
 
 export class CommerceError extends Error {
     constructor(status, code) { super(code); this.status = status; this.code = code; }
@@ -88,6 +89,7 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
                 promoCode: offer.promoCode, promoDiscount: offer.promoDiscount,
                 shipping: offer.shipping, total: offer.total, amountInCents: offer.amountInCents },
             seller: config.commerce.seller,
+            analytics: mode === 'prod' ? analyticsContext(input.analytics, timestamp) : undefined,
             consent: { acceptedAt: timestamp, termsVersion: input.termsVersion, privacyVersion: input.privacyVersion,
                 termsSHA256: digest(policies.terms), privacySHA256: digest(policies.privacy) } };
         // Archive the exact rendered policies, including public seller/price data.
@@ -188,6 +190,11 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
         const paid = await store.setJSON(`paid/${order.id}`, { transactionId: tx.id, approvedAt: now().toISOString() }, { onlyIfNew: true });
         if (!paid.modified && (await store.get(`paid/${order.id}`, { type: 'json' })).transactionId !== tx.id) fail(409, 'order_already_paid');
         const verified = { order: { ...order, transactionId: tx.id }, transaction: tx };
+        // Never let reporting failure prevent a receipt or change payment status.
+        const analytics = (async () => {
+            try { await submitPurchase({ order, paid: await store.get(`paid/${order.id}`, { type: 'json' }), store, env, fetchImpl, now }); }
+            catch { /* The paid ledger is the retry source; no customer data in logs. */ }
+        })();
         // Attempt both independently: buyer delivery must not suppress the sales
         // alert, and a failed alert must never cause a second buyer receipt.
         const results = await Promise.allSettled([
@@ -197,6 +204,7 @@ export function makeCommerce({ store, env, policies, fetchImpl = fetch, now = ()
                 prepare: () => merchantNotification(verified) }),
         ]);
         const failure = results.find(result => result.status === 'rejected');
+        await analytics;
         if (failure) throw failure.reason; // Non-2xx lets Wompi retry either unsent email.
         return { received: true, ...(results.some(result => result.value.reviewRequired) ? { reviewRequired: true } : {}) };
     }

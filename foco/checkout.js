@@ -1,4 +1,5 @@
 import { FOCO_CHECKOUT, FOCO_WHATSAPP_URL, getOffer, getCheckoutOffer, normalizePromoCode, offerName, formatCOP, checkoutAvailable, checkoutCanStart, safeCheckoutURL } from './checkout-config.mjs';
+import { ecommerceItem } from './analytics-model.mjs';
 
 const checkout = document.querySelector('#comprar');
 const options = document.querySelector('#offer-options');
@@ -92,6 +93,7 @@ function select(value, announce = true, animate = false) {
     const frame = canAnimate ? captureSummary() : null;
     if (!canAnimate) settleSummaryMotion();
     quantity = value;
+    if (announce) window.focoAnalytics?.event('select_item', ecommerceItem(getCheckoutOffer(quantity, appliedCode)));
     checkout.dataset.quantity = String(quantity);
     const offer = getCheckoutOffer(quantity, appliedCode);
     for (const button of options.children) {
@@ -216,10 +218,11 @@ pay.addEventListener('click', async () => {
     attemptId ||= crypto.randomUUID();
     updatePayment();
     try {
+        window.focoAnalytics?.event('begin_checkout', ecommerceItem(getCheckoutOffer(quantity, appliedCode)));
         const response = await fetch(FOCO_CHECKOUT.endpoint, {
             method: 'POST', credentials: 'same-origin', redirect: 'error',
             headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(20000),
-            body: JSON.stringify({ attemptId, quantity, promoCode: appliedCode, accepted: true,
+            body: JSON.stringify({ attemptId, quantity, promoCode: appliedCode, accepted: true, analytics: window.focoAnalytics?.context(),
                 termsVersion: FOCO_CHECKOUT.commerce.termsVersion,
                 privacyVersion: FOCO_CHECKOUT.commerce.privacyVersion }),
         });
@@ -231,6 +234,7 @@ pay.addEventListener('click', async () => {
         if (!url) throw new Error('invalid_checkout');
         window.location.assign(url);
     } catch (error) {
+        window.focoAnalytics?.event('checkout_error', { reason: 'payment_unavailable' });
         busy = false;
         if (error.message === 'checkout_price_changed') attemptId = null;
         checkoutError = error.message === 'checkout_price_changed'
@@ -239,6 +243,14 @@ pay.addEventListener('click', async () => {
         updatePayment();
     }
 });
+
+let itemViewed = false;
+function trackProduct() {
+    if (itemViewed) return;
+    itemViewed = window.focoAnalytics?.event('view_item', ecommerceItem(getCheckoutOffer(quantity, appliedCode))) === true;
+}
+document.addEventListener('foco:analytics-ready', trackProduct, { once: true });
+trackProduct();
 
 function updatePayment() {
     const available = checkoutAvailable();

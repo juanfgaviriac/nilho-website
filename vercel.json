@@ -3,6 +3,7 @@
   "framework": null,
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist",
+  "crons": [{ "path": "/api/foco/analytics-retry", "schedule": "0 * * * *" }],
   "regions": [
     "iad1"
   ],

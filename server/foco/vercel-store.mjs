@@ -1,8 +1,8 @@
-import { get, put, BlobPreconditionFailedError } from '@vercel/blob';
+import { get, put, list, BlobPreconditionFailedError } from '@vercel/blob';
 
 // Preserve the commerce ledger's strong reads and atomic create/CAS contract.
 // Never use CDN-cached reads for leases or payment/email deduplication.
-export function vercelStore({ mode, token, storeId, sdk = { get, put } }) {
+export function vercelStore({ mode, token, storeId, sdk = { get, put, list } }) {
     if (!['prod','test'].includes(mode)) throw new Error('Invalid store environment.');
     const auth = token ? {token} : {storeId};
     const path = key => {
@@ -33,6 +33,20 @@ export function vercelStore({ mode, token, storeId, sdk = { get, put } }) {
             throw error;
         }
     }
-    return {getWithMetadata, get:async(key,options)=>(await getWithMetadata(key,options))?.data ?? null,
+    async function listKeys(prefix) {
+        if (!['orders', 'paid'].includes(prefix)) throw new Error('Invalid report prefix.');
+        const keys = [];
+        let cursor;
+        do {
+            const page = await sdk.list({ ...auth, prefix: `${mode}/${prefix}/`, limit: 1000, cursor });
+            keys.push(...page.blobs.map(blob => blob.pathname.slice(mode.length + 1)));
+            // Fail closed: an incomplete financial report must never look complete.
+            if (keys.length > 5000) throw new Error('Report capacity exceeded.');
+            cursor = page.hasMore ? page.cursor : undefined;
+            if (page.hasMore && !cursor) throw new Error('Invalid ledger pagination.');
+        } while (cursor);
+        return keys;
+    }
+    return {getWithMetadata, listKeys, get:async(key,options)=>(await getWithMetadata(key,options))?.data ?? null,
         set, setJSON:(key,value,options)=>set(key,JSON.stringify(value),options)};
 }

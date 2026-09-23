@@ -5,6 +5,7 @@ import { makeCommerce, environment, verifyWompiEvent } from '../server/foco/comm
 import { runtimeEnvironment } from '../server/foco/runtime.mjs';
 import { readJSON, checkoutOriginAllowed } from '../server/foco/http.mjs';
 import { FOCO_CHECKOUT, getOffer } from '../foco/checkout-config.mjs';
+import { CONSENT_VERSION } from '../foco/analytics-model.mjs';
 
 // An atomic, ETag-aware test double. No provider calls, emails or real orders.
 class MemoryStore {
@@ -27,9 +28,14 @@ function harness(options = {}) {
     const store = new MemoryStore(), env = fixtureEnv(), requests = [], acceptedEmails = new Map();
     if (options.mode === 'prod') Object.assign(env, { WOMPI_ENVIRONMENT: 'prod', CONTEXT: 'production',
         WOMPI_PRIVATE_KEY: 'prv_prod_fixture', WOMPI_PUBLIC_KEY: 'pub_prod_fixture', WOMPI_EVENTS_SECRET: 'prod_events_fixture' });
+    if (options.analytics) Object.assign(env, { GA4_API_SECRET: 'fixture-secret', GA4_PURCHASES_ENABLED: 'true' });
     let clock = new Date('2026-09-21T22:00:00Z'), tx, failEmail = false, linkCounter = 0;
     const fetchImpl = async (url, init) => {
         requests.push({ url, init });
+        if (url.startsWith('https://www.google-analytics.com/mp/collect')) {
+            if (options.analyticsFails) throw Error('analytics outage');
+            return new Response(null, { status: 204 });
+        }
         if (url.endsWith('/payment_links')) {
             const body = JSON.parse(init.body);
             const link = { ...body, id: `${env.WOMPI_ENVIRONMENT === 'test' ? 'test_' : ''}link${++linkCounter}`, active: true, merchant_public_key: env.WOMPI_PUBLIC_KEY };
@@ -68,6 +74,22 @@ function harness(options = {}) {
             customer_data: { full_name: 'Prueba' } }; return tx; },
     };
 }
+test('only verified production payments emit GA purchases, with no duplicate on webhook retry', async () => {
+    const h = harness({ mode: 'prod', analytics: true });
+    const result = await h.core.createCheckout({ ...h.input(1), analytics: { clientId: '123.456', sessionId: '1790100000', consentVersion: CONSENT_VERSION } });
+    assert.equal(h.requests.filter(r => r.url.includes('mp/collect')).length, 0);
+    await h.approve(result); await h.core.handleEvent(h.signed()); await h.core.handleEvent(h.signed());
+    const sent = h.requests.filter(r => r.url.includes('mp/collect'));
+    assert.equal(sent.length, 1); assert.equal(JSON.parse(sent[0].init.body).events[0].name, 'purchase');
+    assert.equal(h.emailCalls().length, 1);
+});
+test('Google failure never fails the approved order or suppresses buyer and merchant emails', async () => {
+    const h = harness({ mode: 'prod', analytics: true, analyticsFails: true });
+    const result = await h.core.createCheckout({ ...h.input(1), analytics: { clientId: '123.456', sessionId: '1790100000', consentVersion: CONSENT_VERSION } });
+    await h.approve(result); assert.equal((await h.core.handleEvent(h.signed())).received, true);
+    assert.equal((await h.store.get(`analytics/${result.orderId}`)).state, 'pending');
+    assert.equal(h.emailCalls().length, 1); assert.equal(h.emailCalls('merchant').length, 1);
+});
 for (const [quantity, amount] of [[1,11000000],[2,20000000],[3,25000000]]) {
     test(`${quantity} cards: fixed amount, single-use link, server consent and approved receipt`, async()=>{
         const h=harness(), input=h.input(quantity); input.amountInCents=1; input.redirectUrl='https://evil.example';

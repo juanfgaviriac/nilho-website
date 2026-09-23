@@ -7,3 +7,4 @@ dist/
 .artifacts/
 .vercel
 server/foco/faq-knowledge.json
+.env*

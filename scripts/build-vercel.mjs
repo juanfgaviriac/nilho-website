@@ -6,6 +6,7 @@ import { renderArrowFreePage } from './page-presentation.mjs';
 import { renderCheckoutPage } from './checkout-page.mjs';
 import { renderSEO } from './seo.mjs';
 import { pageOptimizer } from './optimize-page.mjs';
+import { renderAnalytics } from './analytics.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
 const knowledge = await writeKnowledge();
@@ -29,7 +30,7 @@ for (const path of ['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/'
     html = renderSEO(renderCheckoutPage(renderSharedFooter(html, homepage)), path);
     html = renderArrowFreePage(renderFAQ(html, knowledge.instantAnswers));
     if (!html.includes('/foco/assets/favicon/')) html = html.replace('</head>',iconLinks+'</head>');
-    html = await optimize(html);
+    html = await optimize(renderAnalytics(html));
     await writeFile(new URL(`foco/${path}index.html`,out),html);
     await mkdir(new URL(path,out),{recursive:true});
     // Archives remain byte-for-byte original. Only current pages get clean links.
