@@ -172,7 +172,7 @@ if (featureCarousel) {
 }
 
 
-// CSS owns both demo timelines; JS only gates playback.
+// CSS owns the demo timelines; JS only gates playback.
 document.querySelectorAll(".step-demo").forEach((demo) => {
     const playback = demo.querySelector(".step-playback");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
