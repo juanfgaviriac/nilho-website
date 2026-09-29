@@ -1,4 +1,4 @@
-/* Minimalist / refined: the question field is the final row, not a chat widget. */
+/* The question field reads as a field: a white capsule with its send button. */
 .faq-section--assistant { width: min(calc(100% - 48px), 1280px); display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(40px, 7vw, 110px); }
 .faq-section--assistant .faq-heading h2 { font-size: clamp(2.4rem, 4.2vw, 4rem); line-height: 1.06; }
 .faq-section--assistant .faq-heading > p:not(.eyebrow) { margin: 24px 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
@@ -8,15 +8,16 @@
 .faq-section--assistant .faq-list summary { padding-block: 24px; font-weight: 500; font-size: 1rem; line-height: 1.5; }
 .faq-section--assistant .faq-list details p { color: var(--ink-soft); font-size: 0.93rem; line-height: 1.8; }
 .faq-section--assistant .faq-list details:first-child summary { padding-top: 0; }
-.faq-ask { margin: 0; }
+.faq-ask { margin: 24px 0 0; }
 .faq-ask[hidden], .faq-ask [hidden] { display: none; }
-.faq-input-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-.faq-input-row:focus-within { border-color: var(--forest); box-shadow: 0 1px 0 var(--forest); }
+.faq-input-row { display: flex; align-items: center; gap: 8px; padding: 5px 5px 5px 22px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); }
+.faq-input-row:focus-within { border-color: var(--forest); box-shadow: 0 0 0 1px var(--forest); }
 .faq-input-row input { width: 100%; min-width: 0; min-height: 44px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); font: 500 1rem/1.5 var(--font-display); outline: none; }
-.faq-input-row input::placeholder { color: var(--ink); opacity: 1; }
-.faq-send, .faq-cancel { min-width: 44px; min-height: 44px; flex-shrink: 0; padding: 0; border: 0; background: transparent; color: var(--muted); font: 500 0.75rem/1.5 var(--font-display); cursor: pointer; }
-.faq-input-row:not(:focus-within) input:placeholder-shown ~ .faq-send { visibility: hidden; }
-.faq-send:hover, .faq-cancel:hover { color: var(--ink); }
+.faq-input-row input::placeholder { color: var(--muted); opacity: 1; }
+.faq-send, .faq-cancel { min-width: 44px; min-height: 44px; flex-shrink: 0; padding: 0 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--white); font: 600 0.8rem/1 var(--font-display); cursor: pointer; }
+.faq-cancel { padding: 0 12px; background: transparent; color: var(--muted); }
+.faq-send:hover { background: var(--ink-soft); }
+.faq-cancel:hover { color: var(--ink); }
 .faq-ask button:focus-visible, .faq-ask a:focus-visible { outline: 3px solid var(--forest); outline-offset: 4px; }
 .faq-notice, .faq-status { color: var(--muted); font-size: 0.73rem; line-height: 1.7; }
 .faq-notice { margin: 10px 0 0; }

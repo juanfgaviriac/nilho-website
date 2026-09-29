@@ -103,10 +103,10 @@
                         </ul>
                     </figcaption>
                 </figure>
-                <ol class="steps-list">
+                <ol class="steps-list" data-demo="demostraciones">
                     <li class="reveal">
                         <h3>Escoge tus apps</h3>
-                        <div class="app-picker step-demo" data-demo="selección de apps">
+                        <div class="app-picker step-demo">
                             <div class="app-picker-window" role="img" aria-label="Demostración: selecciona apps como Instagram, TikTok y YouTube para dejarlas en pausa, y deja Mapas y WhatsApp sin seleccionar para seguir usándolas.">
                                 <div class="app-picker-track step-motion" style="--motion: app-picker-roll 21s var(--ease-demo)" aria-hidden="true">
                                     <div class="app-picker-row" style="--selection-delay: 18s">
@@ -161,15 +161,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="step-playback" type="button" aria-label="Pausar selección de apps" data-playing="true" hidden>
-                                <svg class="step-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                                <svg class="step-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
-                            </button>
                         </div>
                     </li>
                     <li class="reveal">
                         <h3>Toca Foco</h3>
-                        <div class="tap-demo step-demo" data-demo="toque de Foco">
+                        <div class="tap-demo step-demo">
                             <svg class="step-scene" viewBox="0 0 280 152" fill="none" role="img" aria-label="Demostración: la parte superior de un iPhone se acerca a la tarjeta Foco y un pulso confirma el toque.">
                                 <g stroke="currentColor" stroke-width="1.5">
                                     <rect x="150" y="20" width="102" height="65" rx="9"/>
@@ -179,42 +175,33 @@
                                         <rect x="53" y="20" width="22" height="5" rx="2.5" fill="currentColor" stroke="none"/>
                                         <path d="M54 128h20"/>
                                     </g>
-                                    <circle class="tap-ripple step-motion" style="--motion: tap-confirm 5s var(--ease-out)" cx="165" cy="32" r="12" stroke="#d6dfd0"/>
+                                    <circle class="tap-ripple step-motion" style="--motion: tap-confirm 5s var(--ease-out)" cx="165" cy="32" r="12" stroke="#2e706b"/>
                                 </g>
                             </svg>
-                            <button class="step-playback" type="button" aria-label="Pausar toque de Foco" data-playing="true" hidden>
-                                <svg class="step-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                                <svg class="step-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
-                            </button>
                         </div>
                     </li>
                     <li class="reveal">
                         <h3>Recupera tu tiempo</h3>
-                        <div class="time-demo step-demo" data-demo="tiempo recuperado">
-                            <svg class="time-scene step-scene" viewBox="0 0 280 152" fill="none" role="img" aria-label="El símbolo de Foco se expande desde su centro y da paso a una pequeña bombilla que se enciende: espacio para tus ideas.">
+                        <div class="time-demo step-demo">
+                            <svg class="time-scene step-scene" viewBox="0 0 280 152" fill="none" role="img" aria-label="El símbolo de Foco se abre y da paso a la gráfica de Mi tiempo: el tiempo que recuperas cada día.">
                                 <defs>
                                     <clipPath id="time-frame"><path d="M0 0h280v152H0z"/></clipPath>
-                                    <radialGradient id="time-glow">
-                                        <stop stop-color="#e3dfbd" stop-opacity=".2"/>
-                                        <stop offset="1" stop-color="#e3dfbd" stop-opacity="0"/>
-                                    </radialGradient>
                                 </defs>
                                 <g clip-path="url(#time-frame)">
                                     <path class="time-mark step-motion" style="--motion: time-expand 5.6s var(--ease-demo)" d="M138 56h4v12h-4zm0 28h4v12h-4zM120 74h12v4h-12zm28 0h12v4h-12z" fill="currentColor"/>
-                                    <g class="step-motion" style="--motion: time-light 5.6s var(--ease-out)">
-                                        <circle cx="140" cy="67" r="52" fill="url(#time-glow)"/>
-                                        <path d="M140 32v8m27 7 6-6m0 26h8m-74 0h-8m14-20-6-6" stroke="#e3dfbd" stroke-width="1.5" stroke-linecap="round"/>
-                                    </g>
-                                    <g class="step-motion" style="--motion: time-idea 5.6s var(--ease-out)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M131 89v-4c0-5-8-8-8-18a17 17 0 0 1 34 0c0 10-8 13-8 18v4zm0 5h18m-15 5h12m-10-17V72l4 3 4-3v10"/>
+                                    <g class="time-bars step-motion" style="--motion: time-bars 5.6s var(--ease-out)">
+                                        <path fill="#a47b2a" d="M61 102h14v10h-14zM85 98h14v14h-14zM109 104h14v8h-14zM133 96h14v16h-14zM157 100h14v12h-14zM181 98h14v14h-14zM205 102h14v10h-14z"/>
+                                        <path fill="#557c9c" d="M61 90h14v12h-14zM85 82h14v16h-14zM109 94h14v10h-14zM133 78h14v18h-14zM157 86h14v14h-14zM181 78h14v20h-14zM205 90h14v12h-14z"/>
+                                        <path fill="#2e706b" d="M61 72h14v18h-14zM85 58h14v24h-14zM109 82h14v12h-14zM133 48h14v30h-14zM157 66h14v20h-14zM181 52h14v26h-14zM205 74h14v16h-14z"/>
+                                        <path d="M52 112.75h176" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                                     </g>
                                 </g>
                             </svg>
-                            <button class="step-playback" type="button" aria-label="Pausar tiempo recuperado" data-playing="true" hidden>
-                                <svg class="step-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                                <svg class="step-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
-                            </button>
                         </div>
+                        <button class="step-playback" type="button" aria-label="Pausar demostraciones" data-playing="true" hidden>
+                            <svg class="icon-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 9 6-9 6Z" fill="currentColor"/></svg>
+                            <svg class="icon-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4h3v12H6zm5 0h3v12h-3z" fill="currentColor"/></svg>
+                        </button>
                     </li>
                 </ol>
             </div>
@@ -398,10 +385,6 @@
             </svg>
             <div class="app-heading reveal">
                 <h2 id="app-title"><span>Tu Foco.</span> <span>Tu Tiempo.</span> <span>Tu Manera</span></h2>
-                <button class="step-playback" type="button" aria-label="Pausar fondos de Foco" data-playing="true" hidden>
-                    <svg class="step-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10m6-10v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                    <svg class="step-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 8 5-8 5Z" fill="currentColor"/></svg>
-                </button>
             </div>
             <div class="feature-carousel" role="region" aria-label="Funciones de la app Foco">
                 <div class="feature-track" id="feature-track" tabindex="0" aria-label="Modos, Rutinas y Mi tiempo. Desliza para explorar.">
@@ -455,6 +438,10 @@
                 </div>
                 <p class="sr-only feature-announcement" aria-live="polite" aria-atomic="true"></p>
             </div>
+            <button class="step-playback" type="button" aria-label="Pausar fondos de Foco" data-playing="true" hidden>
+                <svg class="icon-play" viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 9 6-9 6Z" fill="currentColor"/></svg>
+                <svg class="icon-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4h3v12H6zm5 0h3v12h-3z" fill="currentColor"/></svg>
+            </button>
         </section>
 
         <!-- foco-faq:start -->
