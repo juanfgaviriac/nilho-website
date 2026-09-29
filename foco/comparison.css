@@ -7,7 +7,9 @@
 
 .comparison-inner { width: min(calc(100% - 48px), 1060px); margin: 0 auto; }
 .comparison-heading { text-align: center; }
-.comparison-heading h2 { margin: 0; font-size: clamp(2.45rem, 4.8vw, 4.6rem); font-weight: 600; letter-spacing: -.055em; line-height: 1.04; text-wrap: balance; }
+.comparison-heading h2 { margin: 0; font-size: clamp(2.45rem, 4.8vw, 4.6rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
+/* Each phrase stays whole, so lines break only between them. */
+.comparison-heading h2 span { display: inline-block; }
 .comparison-demo { margin: 24px 0 0; }
 .comparison-film { position: relative; }
 .comparison-film video { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; background: var(--comparison-paper); }

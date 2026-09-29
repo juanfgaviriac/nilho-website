@@ -9,18 +9,21 @@
     margin: 0 auto 40px;
     padding: clamp(32px, 5vw, 72px);
     border-radius: var(--radius-md);
-    background: #f5f4f0;
+    /* The render's studio backdrop as decoded in Chromium (rgb 243 244 239). */
+    background: #f3f4ef;
 }
 .card-orbit-copy { position: relative; z-index: 1; width: 46%; }
-.card-orbit h2 { margin: 0 0 36px; font-size: clamp(3rem, 6vw, 5.3rem); font-weight: 500; letter-spacing: -.065em; line-height: 1.02; }
+.card-orbit h2 { margin: 0 0 36px; font-size: clamp(3rem, 6vw, 5.3rem); font-weight: 500; letter-spacing: -0.035em; line-height: 1.02; }
 .card-orbit-film { position: absolute; width: 64%; right: -2%; top: 50%; transform: translateY(-50%); }
 .card-orbit video {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 1;
-    /* Blend only the empty studio margin; the complete card remains opaque. */
-    mask-image: linear-gradient(transparent, #000 6%, #000 94%, transparent), linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    /* Across the whole orbit the card and its shadow stay inside x 19–92%,
+       y 19–77% of the frame. The left edge (and the top edge on phones) sits
+       inside the panel, so those fade widely; the far edges stay tight. */
+    mask-image: linear-gradient(90deg, transparent, #000 16%, #000 94%, transparent), linear-gradient(transparent, #000 16%, #000 80%, transparent);
     mask-composite: intersect;
 }
 .orbit-playback { position: absolute; right: 24px; bottom: 24px; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; padding: 12px; color: var(--ink); background: #ffffffaa; border: 1px solid #08080814; border-radius: 50%; cursor: pointer; }

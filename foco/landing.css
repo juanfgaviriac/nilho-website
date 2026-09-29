@@ -8,7 +8,8 @@
     --line: #deded8;
     --surface: #efefeb;
     --forest: #2f7771;
-    --font-display: "Manrope", sans-serif;
+    /* SF Pro Rounded, the app's face, on Apple devices; Manrope elsewhere. */
+    --font-display: ui-rounded, "SF Pro Rounded", "Manrope", sans-serif;
     --font-mono: "IBM Plex Mono", monospace;
     --space-1: 0.5rem;
     --space-2: 1rem;
@@ -234,7 +235,7 @@ h1 {
     margin-bottom: 1.75rem;
     font-size: clamp(3.6rem, 7.2vw, 7.6rem);
     font-weight: 700;
-    letter-spacing: -0.072em;
+    letter-spacing: -0.035em;
     line-height: 0.91;
 }
 
@@ -385,7 +386,7 @@ h1 span {
     margin: 0;
     font-size: clamp(2.65rem, 5.2vw, 5.9rem);
     font-weight: 600;
-    letter-spacing: -0.06em;
+    letter-spacing: -0.035em;
     line-height: 0.98;
 }
 
@@ -417,7 +418,7 @@ h1 span {
     align-self: start;
     margin: 12px 0 0;
     font-size: clamp(1.15rem, 2vw, 1.5rem);
-    letter-spacing: -0.04em;
+    letter-spacing: -0.025em;
 }
 
 /* Small explanatory demos share sizing, easing and playback controls. */
@@ -604,7 +605,7 @@ h1 span {
     font-size: clamp(12px, 2.8cqi, 22px);
     font-weight: 700;
     line-height: 1.15;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.025em;
 }
 
 .blocked-apps {
@@ -664,7 +665,7 @@ h1 span {
 .feature-chains { position: absolute; top: 0; left: 50%; width: 100vw; height: var(--space-7); transform: translateX(-50%); z-index: -1; opacity: .14; pointer-events: none; }
 @keyframes chain-flow { to { transform: translateX(-1440px); } }
 .feature-copy { flex: 1; position: relative; margin: 0; padding: 1.5rem; background: #fff; }
-.feature-copy h3 { max-width: 260px; margin: 0 0 .85rem; font-size: clamp(1.5rem, 2.2vw, 1.95rem); font-weight: 600; letter-spacing: -.045em; line-height: 1.1; }
+.feature-copy h3 { max-width: 260px; margin: 0 0 .85rem; font-size: clamp(1.5rem, 2.2vw, 1.95rem); font-weight: 600; letter-spacing: -0.025em; line-height: 1.1; }
 .feature-copy p { margin: 0; color: #42463f; font-size: .875rem; line-height: 1.65; }
 .feature-toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; }
 .feature-toolbar[hidden] { display: none; }
@@ -743,7 +744,7 @@ h1 span {
     margin: 0;
     font-size: clamp(2.4rem, 5vw, 4.8rem);
     font-weight: 600;
-    letter-spacing: -0.06em;
+    letter-spacing: -0.035em;
     line-height: 0.98;
 }
 
@@ -952,7 +953,8 @@ h1 span {
         padding: 1.75rem 0 3.5rem;
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: auto;
-        grid-template-areas: "intro" "film" "details";
+        /* Lede and purchase button stay on the first screen; the film follows. */
+        grid-template-areas: "intro" "details" "film";
         gap: 1.75rem;
     }
 
