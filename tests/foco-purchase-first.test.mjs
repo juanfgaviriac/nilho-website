@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { readPurchaseChoice, savePurchaseChoice, clearPurchaseChoice, purchaseDestination } from '../foco/account-purchase.mjs';
 import { accountPage } from '../scripts/account-pages.mjs';
 import { accountDestination, previewTotals } from '../foco/account-flow.mjs';
@@ -10,6 +11,15 @@ function storage() {
 }
 const selected = { planId: 'annual', useTrial: true, hasCard: false };
 const now = 100000000;
+test('checkout privacy headers override the site-wide defaults', async () => {
+    const { headers } = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+    const general = headers.findIndex(rule => rule.source === '/(.*)');
+    const checkout = headers.findIndex(rule => rule.source === '/(cuenta|empezar|comprar)(.*)');
+    assert.ok(general >= 0 && checkout > general);
+    const effective = Object.fromEntries([...headers[general].headers, ...headers[checkout].headers].map(({ key, value }) => [key.toLowerCase(), value]));
+    assert.equal(effective['referrer-policy'], 'no-referrer');
+    assert.equal(effective['cache-control'], 'private, no-store');
+});
 test('purchase renders all plans before account creation, including before JavaScript', () => {
     const html = accountPage({ purchase: true });
     assert.match(html, /data-entry="purchase"/);

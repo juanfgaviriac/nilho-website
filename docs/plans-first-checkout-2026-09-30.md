@@ -12,7 +12,7 @@ La página de planes se incluye en el HTML inicial. Las rutas de compra usan la 
 
 ## Verificación
 
-- 241 pruebas automatizadas pasan, incluidas recuperación y vencimiento de selección, rechazo de datos extra, precios, identidad, elegibilidad, pagos y archivos legales históricos.
+- 242 pruebas automatizadas pasan, incluidas recuperación y vencimiento de selección, rechazo de datos extra, precios, identidad, elegibilidad, pagos y archivos legales históricos.
 - Recorrido local con datos ficticios: anual + prueba → cuenta → código → entrega → resumen de $10.000 de envío y renovación anual de $119.900.
 - Recargar conserva plan y prueba; cambiar plan tras verificar no obliga a repetir cuenta; edición a trimestral actualiza el resumen.
 - Vista de escritorio y ancho de contenido de 390 px revisados sin desbordamiento horizontal.
@@ -25,3 +25,5 @@ Lectura real de `https://getfoco.co/api/foco/account?action=config` el 30 de sep
 La URL pública actual vende tarjetas con pago único. Reemplazarla ahora por estos planes dejaría a los visitantes sin una compra disponible hasta habilitar y verificar la facturación recurrente. Se mantiene producción sin cambios hasta resolver si se espera al lanzamiento del cobro recurrente o se publica anticipadamente sin pagos.
 
 Antes del lanzamiento comercial completo también deben concordar las referencias de pago único de la landing, FAQ y contenido editorial con la oferta recurrente. Los archivos de condiciones aceptadas deben permanecer inmutables.
+
+La vista hospedada usa configuración de preview: permite revisar planes y cuenta, pero no iniciar sesión ni cobrar. La validación completa con código y entrega se hizo en la revisión local. La lectura de cabeceras detectó que la regla general sobrescribía `Referrer-Policy`; se ordena primero la regla general para que las rutas privadas conserven `no-referrer`.
