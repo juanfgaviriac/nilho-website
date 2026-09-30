@@ -212,7 +212,7 @@
   ],
   "headers": [
     {
-      "source": "/(cuenta|empezar)(.*)",
+      "source": "/(cuenta|empezar|comprar)(.*)",
       "headers": [
         {
           "key": "Cache-Control",

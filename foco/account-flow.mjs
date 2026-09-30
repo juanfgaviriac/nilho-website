@@ -19,8 +19,8 @@ export function previewPlanSavings(id) {
     };
 }
 export const REVIEW_STEPS = Object.freeze([
-    ['cuenta', '01 · Tu cuenta'], ['codigo', '02 · Código de acceso'],
-    ['plan', '03 · Tu plan'], ['envio', '04 · Tu tarjeta'],
+    ['plan', '01 · Tu plan'], ['cuenta', '02 · Tu cuenta'],
+    ['codigo', '03 · Código de acceso'], ['envio', '04 · Tu tarjeta'],
     ['pago', '05 · Revisa y confirma'], ['proveedor', '06 · Paso por Wompi'],
     ['procesando', '07 · Verificando el pago'], ['confirmacion', '08 · Todo listo'], ['vitalicio', 'Acceso de por vida'],
     ['activo', 'Suscripción existente'], ['pendiente', 'Cuenta conectada'], ['error', 'Pago no aprobado'],

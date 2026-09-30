@@ -1,5 +1,7 @@
+import { renderPlanSelection } from './account-plans.mjs';
+import { readPurchaseChoice, savePurchaseChoice, clearPurchaseChoice, purchaseDestination } from './account-purchase.mjs';
 import { billingReviewFixture } from './account-review-fixtures.mjs';
-import { PREVIEW_OFFER, PREVIEW_PLANS, REVIEW_VIEWS, isLocalReview, accountDestination, subscriptionPresentation, normalizeEmail, validEmail, validCode, validDelivery, previewPlan, previewPlanSavings, previewTotals, escapeHTML as esc } from './account-flow.mjs';
+import { PREVIEW_OFFER, PREVIEW_PLANS, REVIEW_VIEWS, isLocalReview, accountDestination, subscriptionPresentation, normalizeEmail, validEmail, validCode, validDelivery, previewPlan, previewTotals, escapeHTML as esc } from './account-flow.mjs';
 import { createAccountAuth } from './account-auth.mjs';
 import { createSandboxWompi, createHostedWompi } from './account-wompi.mjs';
 import { recurringCatalog, recurringAgreement, recurringAcceptance, mountAuthentication, resumableAgreement } from './account-recurring.mjs';
@@ -7,6 +9,10 @@ import { departmentField } from './colombia-departments.mjs';
 
 const panel = document.querySelector('#account-panel');
 const review = isLocalReview(location, document.body.dataset.review);
+const plansFirst = document.body.dataset.entry === 'purchase';
+let choiceStorage;
+try { choiceStorage = window.sessionStorage; } catch { /* Browsing still works without persistence. */ }
+let purchase = readPurchaseChoice(choiceStorage);
 const reviewAccessState = review ? new URLSearchParams(location.search).get('estado') : null;
 const money = value => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
 const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
@@ -14,6 +20,10 @@ const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 // https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js
 const apple = '<svg class="account-apple-logo" viewBox="20.5 16 15 19" width="16" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M28.2226562,20.3846154 C29.0546875,20.3846154 30.0976562,19.8048315 30.71875,19.0317864 C31.28125,18.3312142 31.6914062,17.352829 31.6914062,16.3744437 C31.6914062,16.2415766 31.6796875,16.1087095 31.65625,16 C30.7304687,16.0362365 29.6171875,16.640178 28.9492187,17.4494596 C28.421875,18.06548 27.9414062,19.0317864 27.9414062,20.0222505 C27.9414062,20.1671964 27.9648438,20.3121424 27.9765625,20.3604577 C28.0351562,20.3725366 28.1289062,20.3846154 28.2226562,20.3846154 Z M25.2929688,35 C26.4296875,35 26.9335938,34.214876 28.3515625,34.214876 C29.7929688,34.214876 30.109375,34.9758423 31.375,34.9758423 C32.6171875,34.9758423 33.4492188,33.792117 34.234375,32.6325493 C35.1132812,31.3038779 35.4765625,29.9993643 35.5,29.9389701 C35.4179688,29.9148125 33.0390625,28.9122695 33.0390625,26.0979021 C33.0390625,23.6579784 34.9140625,22.5588048 35.0195312,22.474253 C33.7773438,20.6382708 31.890625,20.5899555 31.375,20.5899555 C29.9804688,20.5899555 28.84375,21.4596313 28.1289062,21.4596313 C27.3554688,21.4596313 26.3359375,20.6382708 25.1289062,20.6382708 C22.8320312,20.6382708 20.5,22.5950413 20.5,26.2911634 C20.5,28.5861411 21.3671875,31.013986 22.4335938,32.5842339 C23.3476562,33.9129053 24.1445312,35 25.2929688,35 Z"/></svg>';
 const state = { view: 'cuenta', planId: 'monthly', useTrial: false, email: '', returning: false, hasCard: false, consent: false, delivery: {}, auth: null, account: null, config: null, busy: false, resendAt: 0, generation: 0, checkout: null, returnedPayment: null };
+if (purchase) Object.assign(state, { planId: purchase.planId, hasCard: purchase.hasCard, useTrial: purchase.useTrial });
+function rememberChoice(stage = purchase?.stage || 'plan') { purchase = savePurchaseChoice(choiceStorage, state, stage); }
+function forgetChoice() { purchase = null; clearPurchaseChoice(choiceStorage); }
+const guestView = () => purchase?.stage === 'account' ? 'cuenta' : plansFirst ? 'plan' : 'cuenta';
 const recurring = () => !review && state.config?.recurringCheckout?.enabled === true;
 const billingEnvironment = () => state.config?.recurringCheckout?.environment || 'sandbox';
 const testBilling = () => billingEnvironment() === 'sandbox';
@@ -34,7 +44,6 @@ const footnote = '<p class="account-footnote">Tu cuenta es la misma en la app y 
 const appLinks = '<div class="account-app-handoff"><a class="account-button account-button--light" href="foco://focus">Abrir Foco</a><p class="account-footnote">¿Todavía no tienes la app? <a href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener noreferrer">Descargar en App Store</a></p></div>';
 const planRenewal = plan => `${state.useTrial ? 'Después de la prueba' : 'Renovación'}: ${money(plan.amount)} COP ${plan.cadence}. Puedes cancelar antes del siguiente cobro.`;
 const shippingDescription = totals => state.hasCard ? 'No necesitas envío.' : totals.shipping ? `Incluye ${money(totals.shipping)} COP de envío.` : 'Envío incluido.';
-const trialDescription = () => `Desde que vinculas tu tarjeta en la app. Solo pagas ${money(PREVIEW_OFFER.shipping)} COP de envío hoy.`;
 const trialStart = () => state.hasCard ? '' : state.useTrial ? 'Tus 7 días gratis empiezan al vincular tu tarjeta en la app Foco.' : 'Tu periodo pagado empieza al vincular tu tarjeta en la app Foco.';
 function updatePlanPricing() {
     const plan = previewPlan(state.planId);
@@ -68,7 +77,7 @@ function setBusy(busy) {
     if (!busy) {
         updateCooldown();
         if (state.view === 'pago') panel.querySelector('[data-action=pay], [data-action=replace-source]')?.toggleAttribute('disabled', !canPay());
-        if (state.view === 'plan' && !review) panel.querySelector('[data-action=delivery]').disabled = !checkoutEnabled();
+        if (state.view === 'plan' && !review) panel.querySelector('[data-action=choose-plan]').disabled = !state.config;
         if (!review && state.view === 'cuenta') {
             panel.querySelector('[data-action=apple]').disabled = !state.config?.appleEnabled;
             panel.querySelector('button[type=submit]').disabled = !state.config?.enabled;
@@ -97,6 +106,7 @@ function go(view, focus = true) {
     state.generation++;
     state.busy = false;
     state.view = view;
+    if (['vitalicio', 'activo', 'proveedor', 'confirmacion', 'pendiente'].includes(view)) forgetChoice();
     panel.setAttribute('aria-busy', 'false');
     render();
     if (review) {
@@ -141,7 +151,10 @@ function render() {
             + (!paid && state.checkout.checkoutURL && Date.parse(state.checkout.expiresAt) > Date.now() ? '<button class="account-text-button" type="button" data-action="resume-payment">Volver a Wompi</button>' : '<a class="account-text-button" href="/soporte/">Necesito ayuda</a>')
             + '<button class="account-text-button" type="button" data-action="signout">Cerrar sesión</button></div></div>';
     } else if (v === 'cuenta') {
-        html = heading('Entra a tu Foco por aquí', 'Si ya usas Foco, entra de la misma forma que en la app.')
+        html = (purchase?.stage === 'account'
+            ? heading('Ahora, tu cuenta.', 'Usa la misma cuenta en la web y en la app.')
+                + `<div class="account-selected-plan"><div><strong>${plan.name}</strong><span>${money(plan.amount)} COP ${plan.cadence}${state.useTrial ? ' · 7 días gratis' : ''}</span></div><button type="button" class="account-text-button" data-action="edit-plan">Cambiar</button></div>`
+            : heading('Entra a tu Foco por aquí', 'Si ya usas Foco, entra de la misma forma que en la app.'))
             + button(`${apple} Continuar con Apple`, 'apple', true)
             + '<div class="account-divider">o con tu correo</div>'
             + `<form class="account-form" id="email-form" novalidate>${field('email', 'Correo electrónico', { type: 'email', autocomplete: 'email', placeholder: 'tu@correo.com', value: state.email, maxlength: 254 })}${errorLine}<button class="account-button" type="submit">Continuar con correo</button></form>`
@@ -155,18 +168,7 @@ function render() {
             + '<div class="account-inline-actions"><button class="account-text-button" type="button" data-action="change-email">Cambiar correo</button><button class="account-text-button" type="button" data-action="resend">Reenviar código</button></div>'
             + (review ? '<p class="account-notice">En esta vista previa, escribe cualquier código de 6 dígitos. No enviamos correos.</p>' : '<p class="account-footnote">Si no lo encuentras, revisa spam. Nunca compartas tu código.</p>');
     } else if (v === 'plan') {
-        html = heading('Más vida.<br class="account-title-break"> Menos scroll.', 'Prueba Foco a tu ritmo. Tu tarjeta incluida y todas las herramientas para volver a lo tuyo.')
-            + `<fieldset class="plan-choice" aria-describedby="plan-savings-note plan-renewal"><legend>Elige tu plan</legend>${PREVIEW_PLANS.map(option => {
-                const savings = previewPlanSavings(option.id);
-                return `<label><input type="radio" name="plan" value="${option.id}" ${state.planId === option.id ? 'checked' : ''}><span class="plan-choice-name">${option.label}${savings.percent > 0 ? `<span class="account-badge plan-savings">Ahorras ${savings.percent}%</span>` : ''}</span><span class="plan-choice-price"><strong>${money(option.amount)}</strong><small>COP / ${option.period}</small>${option.months > 1 ? `<small class="plan-equivalent">${Number.isInteger(savings.monthlyEquivalent) ? '' : '≈ '}${money(savings.monthlyEquivalent)} COP/mes</small>` : ''}</span></label>`;
-            }).join('')}</fieldset>`
-            + '<p class="plan-savings-note" id="plan-savings-note">Ahorro aprox. frente al plan mensual, sin envío.</p>'
-            + (!state.hasCard ? `<label class="trial-choice"><span><strong>Añadir ${PREVIEW_OFFER.trialDays} días gratis</strong><small id="trial-note">${trialDescription()}</small></span><input id="trial-choice" type="checkbox" aria-describedby="trial-note" ${state.useTrial ? 'checked' : ''}></label>` : '<p class="plan-savings-note">La prueba solo aplica al solicitar una tarjeta nueva.</p>')
-            + `<div class="plan-total" aria-live="polite"><div><span>Total hoy</span><strong id="plan-today">${money(totals.today)} COP</strong></div><p id="plan-shipping">${shippingDescription(totals)}</p><p class="plan-renewal" id="plan-renewal">${planRenewal(plan)}</p></div>`
-            + `<details class="account-inclusions"><summary>Qué incluye tu plan</summary><ul class="account-features">${['Tarjeta Foco incluida.', 'Todos tus modos, rutinas y estadísticas.', 'Tu acceso en la app, con la misma cuenta.'].map(text => `<li>${check}<span>${text}</span></li>`).join('')}</ul></details>`
-            + (!review && !checkoutEnabled() ? '<p class="account-notice">Oferta en preparación. Todavía no se pueden contratar suscripciones desde la web.</p>' : '')
-            + '<div class="account-actions"><div class="account-action-row"><button class="account-text-button" type="button" data-action="signout">Cambiar de cuenta</button>'
-            + button('Continuar', 'delivery') + '</div></div>';
+        html = renderPlanSelection(state, { available: review || checkoutEnabled(), ready: review || Boolean(state.config), signedIn: Boolean(state.account) || Boolean(state.reviewSignedIn) });
     } else if (v === 'envio') {
         html = heading('¿Dónde recibes tu tarjeta?', 'Solo necesitamos los datos para tu entrega en Colombia.')
             + `<fieldset class="card-choice"><legend>¿Necesitas una tarjeta?</legend><label><input type="radio" name="card" value="new" ${!state.hasCard ? 'checked' : ''}><span>Envíenme mi tarjeta Foco<small>Tarjeta incluida · ${previewTotals(false, state.planId, state.useTrial).shipping ? money(PREVIEW_OFFER.shipping) + ' COP de envío' : 'Envío incluido'}</small></span></label><label><input type="radio" name="card" value="existing" ${state.hasCard ? 'checked' : ''}><span>Ya tengo una tarjeta Foco<small>No necesito envío.</small></span></label></fieldset>`
@@ -260,7 +262,7 @@ function render() {
         panel.querySelector('[data-action=apple]').disabled = !state.config?.appleEnabled;
         panel.querySelector('button[type=submit]').disabled = !state.config?.enabled;
     }
-    if (v === 'plan' && !review) panel.querySelector('[data-action=delivery]').disabled = !checkoutEnabled();
+    if (v === 'plan' && !review) panel.querySelector('[data-action=choose-plan]').disabled = !state.config;
     updateCooldown();
 }
 
@@ -269,7 +271,7 @@ async function readAccess() {
     try {
         const result = await state.auth.status();
         if (generation !== state.generation) return;
-        if (!result) return clearAccount();
+        if (!result) return clearAccount({ preservePurchase: true });
         state.account = result;
         state.email = typeof result.accountEmail === 'string' ? result.accountEmail : state.email;
         const destination = accountDestination(result);
@@ -286,7 +288,7 @@ async function readAccess() {
             if (!catalog.products?.length) return go('pendiente');
             state.catalog = recurringCatalog(catalog, billingEnvironment());
             state.agreement = null; state.creationId = null;
-            return go('plan');
+            return go(purchaseDestination('plan', purchase, checkoutEnabled()));
         }
         if (destination === 'plan' && sandbox()) {
             const saved = await state.auth.checkout('resume');
@@ -297,18 +299,20 @@ async function readAccess() {
                 return go(saved.checkout.state === 'draft' ? 'pago' : checkoutView(saved.checkout));
             }
         }
-        go(destination === 'plan' && !checkoutEnabled() ? 'pendiente' : destination);
+        go(purchaseDestination(destination, purchase, checkoutEnabled()));
     } catch { if (generation === state.generation) { state.account = null; go('sinconexion'); } }
 }
-function clearAccount() {
-    state.account = null; state.email = ''; state.delivery = {}; state.consent = false;
+function clearAccount({ preservePurchase = false } = {}) {
+    if (!preservePurchase) forgetChoice();
+    state.account = null; state.reviewSignedIn = false; state.email = ''; state.delivery = {}; state.consent = false;
     state.hasCard = false; state.planId = 'monthly'; state.useTrial = false; state.returning = false; state.resendAt = 0;
     state.checkout = null; state.returnedPayment = null; prepareWompi = null;
     state.agreement = null; state.catalog = null; state.acceptance = null;
     state.providerTerms = false; state.personalData = false; state.creationId = null;
     state.sourceFailed = false; state.cancelConfirm = false; state.replacing = false; state.sourceChangeId = null;
     state.authPolls = 0; state.paymentPolls = 0;
-    go('cuenta');
+    if (purchase) Object.assign(state, { planId: purchase.planId, hasCard: purchase.hasCard, useTrial: purchase.useTrial });
+    go(guestView());
 }
 function restoreCheckout(result) {
     const row = result.checkout;
@@ -589,13 +593,15 @@ panel.addEventListener('change', e => {
     if (e.target.name === 'plan' && PREVIEW_PLANS.some(plan => plan.id === e.target.value)) {
         state.planId = e.target.value;
         state.consent = false;
+        rememberChoice('plan');
         updatePlanPricing();
     }
-    if (e.target.id === 'trial-choice') { state.useTrial = !state.hasCard && e.target.checked; state.consent = false; updatePlanPricing(); }
+    if (e.target.id === 'trial-choice') { state.useTrial = !state.hasCard && e.target.checked; state.consent = false; rememberChoice('plan'); updatePlanPricing(); }
     if (e.target.name === 'card') {
         state.hasCard = e.target.value === 'existing';
         if (state.hasCard) state.useTrial = false;
         state.consent = false;
+        rememberChoice();
         render();
     }
     if (e.target.id === 'renewal-consent') { state.consent = e.target.checked; panel.querySelector('[data-action=pay], [data-action=replace-source]').disabled = !canPay(); }
@@ -620,7 +626,7 @@ panel.addEventListener('submit', e => {
         const code = form.elements.code.value.trim();
         if (!validCode(code)) return error('Escribe el código completo de tu correo.', form.elements.code);
         void task(async () => {
-            if (review) return go('plan');
+            if (review) { state.reviewSignedIn = true; return go(purchaseDestination('plan', purchase, true)); }
             await state.auth.verifyCode(state.email, code);
             await readAccess();
         }, 'El código no es válido o venció. Solicita uno nuevo.');
@@ -648,8 +654,18 @@ panel.addEventListener('submit', e => {
 panel.addEventListener('click', e => {
     const action = e.target.closest('[data-action]')?.dataset.action;
     if (!action || state.busy) return;
-    if (action === 'apple') {
-        if (review) { state.email = 'cuenta-apple@ejemplo.com'; go('plan'); }
+    if (action === 'choose-plan') {
+        if (!review && !state.config) return;
+        state.consent = false;
+        rememberChoice('account');
+        if (review) go(state.reviewSignedIn ? 'envio' : 'cuenta');
+        else if (!state.account) go('cuenta');
+        else void task(readAccess);
+    } else if (action === 'edit-plan') {
+        rememberChoice('plan');
+        go('plan');
+    } else if (action === 'apple') {
+        if (review) { state.email = 'cuenta-apple@ejemplo.com'; state.reviewSignedIn = true; go(purchaseDestination('plan', purchase, true)); }
         else void task(() => state.auth.apple(), 'No pudimos conectar con Apple. Inténtalo de nuevo.');
     } else if (action === 'returning') { state.returning = !state.returning; render(); }
     else if (action === 'change-email') go('cuenta');
@@ -720,7 +736,7 @@ async function init() {
         if (params.get('trial')==='true') state.useTrial=true;
         if (params.get('tarjeta')==='existing') {state.hasCard=true;state.useTrial=false;}
         const view = fixture?.view || params.get('vista');
-        go(REVIEW_VIEWS.has(view) ? view : 'cuenta', false);
+        go(REVIEW_VIEWS.has(view) ? view : guestView(), false);
     } else {
         const params = new URL(location.href).searchParams;
         const code = params.get('code');
@@ -729,20 +745,22 @@ async function init() {
         const oauthError = params.has('error') || new URLSearchParams(location.hash.slice(1)).has('error');
         // Remove callback codes/error details before loading anything else.
         if (location.search || location.hash) history.replaceState(null, '', location.pathname);
+        // Plans are visible before authentication, including the first paint.
+        if (plansFirst && !code && !paymentId) go(guestView(), false);
         try {
             const response = await fetch('/api/foco/account?action=config', { cache: 'no-store', signal: AbortSignal.timeout(10000) });
             if (!response.ok) throw Error('unavailable');
             state.config = await response.json();
             if (state.config.enabled) {
                 state.auth = createAccountAuth(state.config);
-                state.auth.onSignedOut(clearAccount);
+                state.auth.onSignedOut(() => clearAccount({ preservePurchase: true }));
                 if (oauthError) throw Error('oauth_failed');
                 if (code) await state.auth.exchange(code);
                 await readAccess();
-            } else go('cuenta', false);
+            } else go(guestView(), false);
         } catch {
             if (!state.auth) state.config = { enabled: false, appleEnabled: false };
-            go('cuenta', false);
+            go(guestView(), false);
             error(state.auth ? 'No se completó el inicio de sesión. Intenta de nuevo con Apple o tu correo.' : 'No pudimos abrir el acceso web. Tu cuenta en la app no cambia. Intenta de nuevo más tarde.');
         }
     }

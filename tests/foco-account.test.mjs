@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import { PREVIEW_PLANS, REVIEW_STEPS, isLocalReview, accountDestination, validCode, validEmail, validDelivery, previewPlan, previewPlanSavings, previewTotals, escapeHTML } from '../foco/account-flow.mjs';
 import { handleAccount, publicAccountConfig } from '../server/foco/account.mjs';
+import { renderPlanSelection } from '../foco/account-plans.mjs';
 import { accountPage, buildAccountPages } from '../scripts/account-pages.mjs';
 
 const env = { FOCO_WEB_ACCOUNT_ENABLED: 'true', FOCO_WEB_APPLE_ENABLED: 'true', FOCO_AUTH_URL: 'https://test.supabase.co', FOCO_AUTH_PUBLISHABLE_KEY: 'sb_publishable_fixture' };
@@ -104,7 +105,7 @@ test('normal builds exclude the review route and reuse the homepage footer', asy
     const dir = await mkdtemp(`${tmpdir()}/foco-account-build-`);
     const out = pathToFileURL(`${dir}/`);
     await buildAccountPages({ out, optimize: async html => html, homepage: '<footer class="site-footer">shared-footer-fixture</footer>' });
-    assert.deepEqual((await readdir(dir)).sort(), ['cuenta', 'empezar']);
+    assert.deepEqual((await readdir(dir)).sort(), ['comprar', 'cuenta', 'empezar', 'foco']);
     const html = await readFile(new URL('cuenta/index.html', out), 'utf8');
     assert.match(html, /shared-footer-fixture/);
     assert.match(html, /data-review="false"/);
@@ -135,7 +136,7 @@ test('card details show only compatibility without technology, charging or marke
     assert.match(html, /class="account-specs"/);
     assert.doesNotMatch(html, /<dt>Tecnología<\/dt>|<dd>NFC<\/dd>|<dt>Carga<\/dt>|<dd>No requiere<\/dd>/);
     assert.match(html, /<dt>Compatibilidad<\/dt><dd>iPhone con iOS 17\.6 o posterior<\/dd>/);
-    assert.match(source, /heading\('Más vida\.<br class="account-title-break"> Menos scroll\.'/);
+    assert.match(accountPage({ purchase: true }), /Más vida\.<br class="account-title-break"> Menos scroll\./);
 });
 test('checkout omits decorative labels, uses light conditions, and shows the escaped delivery phone', async () => {
     const source = await readFile(new URL('../foco/account.js', import.meta.url), 'utf8');
@@ -216,20 +217,20 @@ test('tier savings compare subscription prices with monthly billing, excluding s
 test('switching to an existing card removes the trial and returning to plans does not offer it', async () => {
     const source = await readFile(new URL('../foco/account.js', import.meta.url), 'utf8');
     assert.match(source, /if \(state\.hasCard\) state\.useTrial = false;/);
-    assert.match(source, /\(!state\.hasCard \? `<label class="trial-choice"/);
+    assert.doesNotMatch(renderPlanSelection({ planId: 'monthly', hasCard: true, useTrial: false }), /id="trial-choice"/);
     assert.match(source, /sin envío ni prueba gratuita/);
     assert.doesNotMatch(source, /tarjeta existente aún está pendiente/);
 });
 test('plan actions omit the redundant compatibility and trial footnote', async () => {
     const source = await readFile(new URL('../foco/account.js', import.meta.url), 'utf8');
     assert.doesNotMatch(source, /plan-start|Solo para iPhone con iOS 17\.6 o posterior\./);
-    assert.match(source, /button\('Continuar', 'delivery'\) \+ '<\/div><\/div>'/);
-    assert.match(source, /Desde que vinculas tu tarjeta en la app\./);
+    assert.match(renderPlanSelection(), /data-action="choose-plan"[^>]*>Continuar con este plan/);
+    assert.match(renderPlanSelection(), /Desde que vinculas tu tarjeta en la app\./);
 });
 test('trial copy starts on card linking in the app, not purchase, delivery or generic access activation', async () => {
     const source = await readFile(new URL('../foco/account.js', import.meta.url), 'utf8');
     assert.match(source, /Tus 7 días gratis empiezan al vincular tu tarjeta en la app Foco\./);
-    assert.match(source, /Desde que vinculas tu tarjeta en la app\./);
+    assert.match(renderPlanSelection(), /Desde que vinculas tu tarjeta en la app\./);
     assert.match(source, /Ni la compra ni la entrega inician la prueba\./);
     assert.match(source, /Volver a escanear o vincular la tarjeta no reinicia los 7 días\./);
     assert.doesNotMatch(source, /Tu prueba empieza al activar el acceso|Tu prueba empieza cuando recibes la tarjeta|La prueba comienza al recibir la tarjeta/);

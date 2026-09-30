@@ -47,7 +47,7 @@ test('authorization is explicit and tokens never enter browser persistence or te
     assert.match(source,/widgetGeneration !== state\.generation/);
     assert.match(source,/acceptedProviderTerms: true, acceptedPersonalData: true/);
     assert.match(source,/if \(state\.authPolls < 60\)/);
-    assert.doesNotMatch(source,/localStorage|sessionStorage|console\.log|gtag\(/);
+    assert.doesNotMatch(source,/localStorage|\.setItem\(|console\.log|gtag\(/);
 
 });
 

@@ -274,3 +274,9 @@ html:has(.account-page) { scroll-behavior: auto; }
 .account-result-actions > .account-text-button { min-height: 44px; }
 
 .account-page .account-summary-grid--existing { grid-template-columns: 1fr; }
+
+.account-selected-plan { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 24px; padding: 16px; border-radius: 16px; background: var(--surface); }
+.account-selected-plan > div { display: grid; gap: 4px; min-width: 0; }
+.account-selected-plan strong { font-size: 14px; font-weight: 600; }
+.account-selected-plan span { font-size: 12px; line-height: 1.65; color: var(--muted); }
+.account-selected-plan .account-text-button { flex: none; }

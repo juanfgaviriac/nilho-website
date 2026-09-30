@@ -29,7 +29,7 @@ const iconLinks = `    <link rel="icon" href="/foco/assets/favicon/favicon.ico" 
     <link rel="manifest" href="/foco/assets/favicon/site.webmanifest">
 `;
 await cp(new URL('foco/assets/favicon/favicon.ico',root),new URL('favicon.ico',out));
-for (const path of new Set(['', 'blog/', 'comprar/', 'suscripciones/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
+for (const path of new Set(['', 'blog/', 'suscripciones/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
     const source = editorialPages.get(path) ?? await readFile(new URL(`foco/${path}index.html`,root),'utf8');
     let html = path === 'compra/' || path === 'compra/privacidad/' ? renderCommercePage(source) : source;
     html = renderSEO(renderCheckoutPage(renderSharedFooter(html, homepage)), path);
@@ -50,5 +50,5 @@ if (process.env.FOCO_ACCOUNT_REVIEW === '1' && process.env.VERCEL) throw new Err
 await buildAccountPages({ out, optimize, homepage, review: process.env.FOCO_ACCOUNT_REVIEW === '1' });
 if (process.env.FOCO_ACCOUNT_REVIEW === '1') await buildAccountReviewGallery(out);
 await writeFile(new URL('robots.txt',out),'User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: https://getfoco.co/sitemap.xml\n');
-await writeFile(new URL('sitemap.xml',out),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['','comprar/','soporte/','privacidad/','terminos/','compra/','compra/privacidad/', ...blogSitemapPaths()].map(path=>`<url><loc>https://getfoco.co/${path}</loc></url>`).join('')+'</urlset>');
+await writeFile(new URL('sitemap.xml',out),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['','soporte/','privacidad/','terminos/','compra/','compra/privacidad/', ...blogSitemapPaths()].map(path=>`<url><loc>https://getfoco.co/${path}</loc></url>`).join('')+'</urlset>');
 console.log('Foco-only Vercel artifact built in dist/.');

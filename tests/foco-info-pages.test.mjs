@@ -23,7 +23,7 @@ test('current-page presentation removes arrow glyphs without changing links or S
 
 test('current pages reuse the homepage footer without changing their content', () => {
     const homepage = read('foco/index.html');
-    for (const page of [...pages, 'comprar/', 'pago/']) {
+    for (const page of [...pages, 'pago/']) {
         const source = read(`foco/${page}index.html`);
         const rendered = renderSharedFooter(source, homepage);
         assert.equal(footer(rendered), footer(homepage));
@@ -85,10 +85,12 @@ test('production build publishes complete canonical pages and preserves earlier 
             assert.doesNotMatch(read(`${prefix}${page}index.html`), /[←↑→↓↖↗↘↙]/, `${prefix}${page}`);
         }
     }
-    for (const page of [...pages, 'comprar/', 'pago/']) {
+    for (const page of [...pages, 'pago/']) {
         assert.equal(footer(read(`dist/${page}index.html`)), homepageFooter);
         assert.equal(footer(read(`dist/foco/${page}index.html`)), footer(read('dist/foco/index.html')));
     }
+    assert.equal(footer(read('dist/comprar/index.html')), footer(read('dist/cuenta/index.html')));
+    assert.equal(footer(read('dist/foco/comprar/index.html')), footer(read('dist/cuenta/index.html')));
     for (const page of pages) {
         const html = read(`dist/${page}index.html`);
         assert.doesNotMatch(html, /Pendiente de completar|Compras aún no habilitadas/);

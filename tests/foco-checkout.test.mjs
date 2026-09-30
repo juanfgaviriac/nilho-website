@@ -121,7 +121,9 @@ test('shared cart anchors preserve campaign parameters and lead to the new page'
     assert.match(script, /location.hash === '#comprar'/);
     assert.match(script, /location.replace\('\/comprar\/' \+ location.search\)/);
     const build = readFileSync(new URL('../scripts/build-vercel.mjs', import.meta.url), 'utf8');
-    assert.match(build, /'comprar\/'/);
+    assert.match(build, /await buildAccountPages/);
+    const accountBuild = readFileSync(new URL('../scripts/account-pages.mjs', import.meta.url), 'utf8');
+    assert.match(accountBuild, /'comprar\/'/);
     const routes = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')).redirects;
     assert.ok(routes.some(r => r.source === '/foco/comprar/' && r.destination === '/comprar/'));
 });
