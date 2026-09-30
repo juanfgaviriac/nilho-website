@@ -31,7 +31,7 @@ const field = (name, label, options = {}) => name === 'department' ? departmentF
 const button = (text, action, light = false) => `<button type="button" class="account-button${light ? ' account-button--light' : ''}" data-action="${action}">${text}</button>`;
 const errorLine = '<p class="account-error" id="form-error" role="alert"></p>';
 const footnote = '<p class="account-footnote">Tu cuenta es la misma en la app y en la web.</p>';
-const appLinks = '<a class="account-button account-button--light" href="foco://focus">Abrir Foco</a><p class="account-footnote">¿Todavía no tienes la app? <a href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener noreferrer">Descargar en App Store</a></p>';
+const appLinks = '<div class="account-app-handoff"><a class="account-button account-button--light" href="foco://focus">Abrir Foco</a><p class="account-footnote">¿Todavía no tienes la app? <a href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener noreferrer">Descargar en App Store</a></p></div>';
 const planRenewal = plan => `${state.useTrial ? 'Después de la prueba' : 'Renovación'}: ${money(plan.amount)} COP ${plan.cadence}. Puedes cancelar antes del siguiente cobro.`;
 const shippingDescription = totals => state.hasCard ? 'No necesitas envío.' : totals.shipping ? `Incluye ${money(totals.shipping)} COP de envío.` : 'Envío incluido.';
 const trialDescription = () => `Desde que vinculas tu tarjeta en la app. Solo pagas ${money(PREVIEW_OFFER.shipping)} COP de envío hoy.`;

@@ -20,6 +20,8 @@ html:has(.account-page) { scroll-behavior: auto; }
 .account-panel { min-width: 0; background: var(--white); border: 1px solid #e6e6e0; border-radius: var(--account-radius); padding: 34px; box-shadow: 0 8px 28px #08080804; }
 .account-panel:focus { outline: none; }
 .account-identity { margin: 0 0 20px; color: var(--muted); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.account-app-handoff { display: grid; gap: 14px; margin: 20px 0 24px; }
+.account-app-handoff .account-footnote { margin: 0; }
 .account-panel:not([data-view="plan"], [data-view="envio"], [data-view="pago"]) { width: 100%; max-width: 480px; }
 .step-content { min-width: 0; }
 .account-panel h1 { margin: 0; font-size: clamp(28px, 3vw, 36px); font-weight: 600; line-height: 1.18; letter-spacing: -.055em; }
