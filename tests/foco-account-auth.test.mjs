@@ -60,7 +60,7 @@ test('Apple always returns to the fixed account callback without merging by emai
 });
 test('access comes only from authenticated server verification, not local metadata or email', async () => {
     const { instance, calls } = fixture({ response: Response.json({ access: { entitlement: 'unassigned' } }) });
-    assert.deepEqual(await instance.status(), { access: { entitlement: 'unassigned' } });
+    assert.deepEqual(await instance.status(), { access: { entitlement: 'unassigned' }, accountEmail: '' });
     const request = calls.find(call => call[0] === 'fetch');
     assert.equal(request[1], '/api/foco/account?action=status');
     assert.deepEqual(request[2].headers, { authorization: 'Bearer verified-by-backend' });

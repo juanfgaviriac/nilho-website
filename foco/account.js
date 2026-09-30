@@ -31,6 +31,7 @@ const field = (name, label, options = {}) => name === 'department' ? departmentF
 const button = (text, action, light = false) => `<button type="button" class="account-button${light ? ' account-button--light' : ''}" data-action="${action}">${text}</button>`;
 const errorLine = '<p class="account-error" id="form-error" role="alert"></p>';
 const footnote = '<p class="account-footnote">Tu cuenta es la misma en la app y en la web.</p>';
+const appLinks = '<a class="account-button account-button--light" href="foco://focus">Abrir Foco</a><p class="account-footnote">¿Todavía no tienes la app? <a href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener noreferrer">Descargar en App Store</a></p>';
 const planRenewal = plan => `${state.useTrial ? 'Después de la prueba' : 'Renovación'}: ${money(plan.amount)} COP ${plan.cadence}. Puedes cancelar antes del siguiente cobro.`;
 const shippingDescription = totals => state.hasCard ? 'No necesitas envío.' : totals.shipping ? `Incluye ${money(totals.shipping)} COP de envío.` : 'Envío incluido.';
 const trialDescription = () => `Desde que vinculas tu tarjeta en la app. Solo pagas ${money(PREVIEW_OFFER.shipping)} COP de envío hoy.`;
@@ -197,13 +198,13 @@ function render() {
         html = `<div class="account-status-symbol">${check}</div>` + heading('Listo.<br>Lo que sigue es tuyo.', state.hasCard ? 'Tu acceso está listo. Abre la app con esta misma cuenta y vincula tu tarjeta.' : 'Tu pedido está confirmado. Ahora nos encargamos de llevar Foco hasta ti.')
             + `<p class="account-renewal"><strong>${plan.name}</strong><br>${planRenewal(plan)}</p>`
             + `<ol class="account-steps"><li><div><strong>Abre la app Foco</strong><span>Entra con el mismo método que usaste aquí.</span></div></li><li><div><strong>${state.hasCard ? 'Vincula tu tarjeta' : 'Recibe tu tarjeta'}</strong><span>${state.hasCard ? 'Acércala a tu iPhone desde la app.' : 'Te avisaremos cuando tu envío esté en camino.'}</span></div></li><li><div><strong>${state.useTrial ? 'Tus 7 días, a tu ritmo' : 'Empieza a usar Foco'}</strong><span>${state.useTrial ? trialStart() : 'Configura tus modos y rutinas en la app.'}</span></div></li></ol>`
-            + '<a class="account-button" href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener">Abrir Foco en App Store</a>'
+            + appLinks
             + (review ? '<p class="account-footnote">Confirmación de ejemplo. No se creó ningún pedido.</p>' : footnote);
     } else if (v === 'vitalicio') {
         html = `<div class="account-status-symbol">${check}</div>` + heading('Tu Foco.<br>Para siempre.', 'Tu cuenta tiene acceso de por vida. No necesitas suscribirte ni añadir un medio de pago.')
             + '<div class="account-plan"><div class="account-plan-top"><span>Acceso de por vida</span><span class="account-badge">Activo</span></div><p style="margin-top:16px">Sin mensualidades. Sin fecha de vencimiento.<br>Ligado a tu cuenta, no a una tarjeta específica.</p></div>'
             + '<p class="step-lede">Sigue usando tu tarjeta. Si la reemplazas, vincula una tarjeta Foco válida en la app con esta misma cuenta.</p>'
-            + '<a class="account-button" href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener">Abrir Foco en App Store</a>'
+            + appLinks
             + '<div class="account-inline-actions"><a class="account-text-button" href="/soporte/">Necesito ayuda</a><button class="account-text-button" type="button" data-action="signout">Cerrar sesión</button></div>';
     } else if (v === 'activo') {
         const account = review ? { needsBillingReview: false, subscriptions: [{ provider: 'apple', plan: 'monthly', status: 'active', autoRenews: true, periodEndsAt: '2099-10-01T00:00:00Z', gracePeriodEndsAt: null }] } : state.account;
@@ -233,6 +234,7 @@ function render() {
     } else if (v === 'pendiente') {
         html = heading('Ya entraste<br>a tu Foco.', 'Tu cuenta está conectada. Los nuevos planes todavía no están disponibles para contratar.')
             + '<p class="account-notice">Si ya compraste tu tarjeta, continúa en la app con esta misma cuenta. No necesitas contratar otro plan aquí.</p>'
+            + appLinks
             + button('Consultar de nuevo', 'retry')
             + '<div class="account-inline-actions"><a href="/soporte/">Necesito ayuda</a><button class="account-text-button" type="button" data-action="signout">Cerrar sesión</button></div>';
     } else if (v === 'error') {
@@ -248,7 +250,9 @@ function render() {
         : review && ['error', 'autorizacion'].includes(v) ? '<p class="account-sandbox-note">Vista previa · Sin cargos reales.</p>' : '';
     const bankFrame = v === 'proveedor' && (state.agreement?.sourceState === 'verifying' || state.agreement?.sourceChange?.state === 'verifying') && !state.agreement.canceledAt && !state.sourceFailed
         ? panel.querySelector('#bank-authentication iframe') : null;
-    panel.innerHTML = `<div class="step-content">${notice}${html}</div>`;
+    const identity = !review && state.account && state.email
+        ? `<p class="account-identity">${esc(state.email)}</p>` : '';
+    panel.innerHTML = `<div class="step-content">${identity}${notice}${html}</div>`;
     if (review && v === 'autorizacion') panel.querySelectorAll('button').forEach(el => { el.disabled = true; });
     if (bankFrame) panel.querySelector('#bank-authentication')?.append(bankFrame);
     if (v === 'codigo-error') error('El código venció o no es válido. Solicita uno nuevo.');
@@ -267,6 +271,7 @@ async function readAccess() {
         if (generation !== state.generation) return;
         if (!result) return clearAccount();
         state.account = result;
+        state.email = typeof result.accountEmail === 'string' ? result.accountEmail : state.email;
         const destination = accountDestination(result);
         if (recurring() && destination !== 'vitalicio' && !result.needsBillingReview
             && !result.subscriptions.some(row => row.provider === 'apple' && (row.accessUntil || row.autoRenews))) {
@@ -388,7 +393,7 @@ function recurringResult(a = state.agreement) {
     const until = date(attention ? a.graceEndsAt : end);
     if (next || until) html += `<div class="billing-date"><span>${next ? 'Próxima renovación' : attention ? 'Acceso temporal hasta' : expired ? 'Finalizó el' : 'Acceso hasta'}</span><strong>${next || until}</strong></div>`;
     if (!canceled && a.sourceChange) html += `<p class="account-notice" role="status">${a.sourceChange.state === 'available' ? 'Tarjeta de pago actualizada.' : a.sourceChange.state === 'failed' ? 'No se cambió la tarjeta. Puedes probar con otra.' : a.sourceChange.state === 'verifying' ? 'Confirma el cambio con tu banco.' : 'Verificando tu nueva tarjeta. No repitas la autorización.'}</p>`;
-    if (paid && !revoked && !expired) html += '<p class="account-hint">Abre Foco e inicia sesión con la misma cuenta que usaste aquí. Tu plan se reconocerá sin volver a pagar.</p><a class="account-button account-button--light" href="https://apps.apple.com/co/app/id6808677908" target="_blank" rel="noopener noreferrer">Abrir Foco en App Store</a>';
+    if (paid && !revoked && !expired) html += '<p class="account-hint">Abre Foco e inicia sesión con la misma cuenta que usaste aquí. Tu plan se reconocerá sin volver a pagar.</p>' + appLinks;
     html += '<div id="bank-authentication"></div>' + errorLine + '<div class="account-result-actions">';
     if (a.canRetryPayment && !canceled && a.latestPayment?.state === 'declined') html += `<button type="button" class="account-button account-button--authorize" data-action="retry-payment"><span>Pagar · ${money(a.latestPayment.amountInCents / 100)} COP</span><small>Con tu nueva tarjeta de pago</small></button>`;
     if (paid || canceled || attention) html += '<button class="account-text-button" type="button" data-action="refresh-authorization">Actualizar estado</button>';
@@ -748,5 +753,13 @@ window.addEventListener('pageshow', event => {
     if (!event.persisted) return;
     cooldownTimer = setInterval(updateCooldown, 1000);
     if (!review && state.auth) void task(readAccess);
+});
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' || review || !state.auth || state.busy) return;
+    // Pick up NFC activation or cancellation performed in the app. Leave an
+    // unfinished form or bank authentication in place when switching apps.
+    const completedAgreement = state.view === 'proveedor' && state.agreement?.initialPayment === 'approved'
+        && !state.replacing && !['dispatched', 'verifying', 'unknown'].includes(state.agreement.sourceChange?.state);
+    if (completedAgreement || ['vitalicio', 'activo', 'pendiente'].includes(state.view)) void task(readAccess);
 });
 void init();

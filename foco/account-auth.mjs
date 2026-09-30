@@ -34,7 +34,11 @@ export function createAccountAuth(config, { origin = window.location.origin, sto
             });
             if (response.status === 401) { await client.auth.signOut({ scope: 'local' }); return null; }
             if (!response.ok) throw new Error('access_unavailable');
-            return response.json();
+            const account = await response.json();
+            // Display identity only after the server accepted this session. This
+            // label never decides ownership or access; the backend does that.
+            const accountEmail = typeof session.user?.email === 'string' ? session.user.email : '';
+            return { ...account, accountEmail };
         },
         async checkout(action, input) {
             if (origin !== 'http://127.0.0.1:4338' || config.sandboxCheckout?.enabled !== true

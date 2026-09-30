@@ -54,7 +54,8 @@ test('authorization is explicit and tokens never enter browser persistence or te
 async function resultRenderer(state = {}) {
     const source = await readFile(new URL('../foco/account.js', import.meta.url), 'utf8');
     const render = source.slice(source.indexOf('function recurringResult('), source.indexOf('async function prepareAuthorization('));
-    return runInNewContext(`let celebratedAgreement; ${render}; recurringResult`, {
+    const appLinks = source.match(/^const appLinks = (.+);$/m)[0];
+    return runInNewContext(`let celebratedAgreement; ${appLinks} ${render}; recurringResult`, {
         state, previewPlan, money: value => String(value), check: '<svg aria-hidden="true"></svg>', errorLine: '',
         heading: (title, lede) => `<h1>${title}</h1><p>${lede}</p>`,
         button: (text, action) => `<button data-action="${action}">${text}</button>`,
