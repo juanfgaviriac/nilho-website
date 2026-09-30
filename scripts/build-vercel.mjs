@@ -1,3 +1,4 @@
+import { buildAccountReviewGallery } from './build-account-review-gallery.mjs';
 import { cp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { renderCommercePage, snapshotPolicies } from './policies.mjs';
 import { renderSharedFooter } from './shared-footer.mjs';
@@ -8,6 +9,7 @@ import { renderSEO } from './seo.mjs';
 import { pageOptimizer } from './optimize-page.mjs';
 import { renderAnalytics } from './analytics.mjs';
 import { blogPages, blogSitemapPaths } from './blog.mjs';
+import { buildAccountPages } from './account-pages.mjs';
 const root = new URL('../', import.meta.url);
 await snapshotPolicies();
 const knowledge = await writeKnowledge();
@@ -27,7 +29,7 @@ const iconLinks = `    <link rel="icon" href="/foco/assets/favicon/favicon.ico" 
     <link rel="manifest" href="/foco/assets/favicon/site.webmanifest">
 `;
 await cp(new URL('foco/assets/favicon/favicon.ico',root),new URL('favicon.ico',out));
-for (const path of new Set(['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
+for (const path of new Set(['', 'blog/', 'comprar/', 'suscripciones/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
     const source = editorialPages.get(path) ?? await readFile(new URL(`foco/${path}index.html`,root),'utf8');
     let html = path === 'compra/' || path === 'compra/privacidad/' ? renderCommercePage(source) : source;
     html = renderSEO(renderCheckoutPage(renderSharedFooter(html, homepage)), path);
@@ -39,9 +41,14 @@ for (const path of new Set(['', 'blog/', 'comprar/', 'pago/', 'privacidad/', 'te
     await writeFile(new URL(`foco/${path}index.html`,out),html);
     await mkdir(new URL(path,out),{recursive:true});
     // Archives remain byte-for-byte original. Only current pages get clean links.
-    await writeFile(new URL(`${path}index.html`,out),html.replaceAll('href="/foco/#comprar"', 'href="/comprar/"').replace(/href="\/foco\/(?=[#"]|(?:blog|comprar|pago|privacidad|terminos|soporte|compra)\/)/g,'href="/'));
+    await writeFile(new URL(`${path}index.html`,out),html.replaceAll('href="/foco/#comprar"', 'href="/comprar/"').replace(/href="\/foco\/(?=[#"]|(?:blog|comprar|suscripciones|pago|privacidad|terminos|soporte|compra)\/)/g,'href="/'));
 }
 await cp(new URL('foco/compra/versiones/',root),new URL('compra/versiones/',out),{recursive:true});
+// Private account/checkout surfaces never receive GA, SEO product offers or
+// callback-query tracking. Review fixtures are emitted only by an explicit local build.
+if (process.env.FOCO_ACCOUNT_REVIEW === '1' && process.env.VERCEL) throw new Error('Account review is local-only.');
+await buildAccountPages({ out, optimize, homepage, review: process.env.FOCO_ACCOUNT_REVIEW === '1' });
+if (process.env.FOCO_ACCOUNT_REVIEW === '1') await buildAccountReviewGallery(out);
 await writeFile(new URL('robots.txt',out),'User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: https://getfoco.co/sitemap.xml\n');
 await writeFile(new URL('sitemap.xml',out),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['','comprar/','soporte/','privacidad/','terminos/','compra/','compra/privacidad/', ...blogSitemapPaths()].map(path=>`<url><loc>https://getfoco.co/${path}</loc></url>`).join('')+'</urlset>');
 console.log('Foco-only Vercel artifact built in dist/.');

@@ -1,0 +1,273 @@
+/* Account steps use immediate focus changes, not the landing page's anchor animation. */
+html:has(.account-page) { scroll-behavior: auto; }
+.account-page { --account-radius: 28px; --account-gap: 24px; --account-error: #a23232; overflow-x: visible; overflow-anchor: none; }
+.account-page [hidden] { display: none !important; }
+.account-page :focus-visible { outline: 2px solid var(--forest); outline-offset: 4px; }
+/* Step titles receive focus for announcements, but are not interactive controls. */
+.account-page #step-title:focus { outline: none; }
+.account-header { width: min(1180px, calc(100% - 64px)); margin: 0 auto; min-height: 100px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.account-header > a:last-child { min-height: 44px; display: inline-flex; align-items: center; font-size: 13px; color: var(--ink-soft); text-underline-offset: 5px; }
+.account-layout { width: min(1120px, calc(100% - 64px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px); align-items: start; gap: clamp(32px, 6vw, 100px); margin: 32px auto 80px; min-height: 600px; }
+.account-story { padding: 20px 0; position: sticky; top: 20px; }
+.account-story .story-title { font-size: clamp(34px, 3.7vw, 49px); line-height: 1.16; letter-spacing: -.06em; font-weight: 600; margin: 0; }
+.account-story .story-title span { color: var(--muted); }
+.account-product { height: 320px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.account-product img { width: min(100%, 430px); height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.account-specs { margin: 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.8; }
+.account-specs > div { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; }
+.account-specs dt { color: var(--muted); }
+.account-specs dd { margin: 0; text-align: right; color: var(--ink-soft); }
+.account-panel { min-width: 0; background: var(--white); border: 1px solid #e6e6e0; border-radius: var(--account-radius); padding: 34px; box-shadow: 0 8px 28px #08080804; }
+.account-panel:focus { outline: none; }
+.account-panel:not([data-view="plan"], [data-view="envio"], [data-view="pago"]) { width: 100%; max-width: 480px; }
+.step-content { min-width: 0; }
+.account-panel h1 { margin: 0; font-size: clamp(28px, 3vw, 36px); font-weight: 600; line-height: 1.18; letter-spacing: -.055em; }
+.step-lede { font-size: 13px; line-height: 1.85; margin: 14px 0 28px; color: var(--muted); overflow-wrap: anywhere; }
+.step-lede strong { color: var(--ink-soft); font-weight: 600; }
+.account-form { display: grid; gap: 18px; }
+.account-field { display: grid; gap: 8px; min-width: 0; }
+.account-field label { font-size: 12px; font-weight: 600; }
+.account-field input, .account-field select { min-width: 0; width: 100%; height: 52px; border-radius: 12px; border: 1px solid var(--line); padding: 0 15px; background: var(--white); color: var(--ink); font: inherit; font-size: 16px; transition: border-color 160ms; }
+.account-field input::placeholder { color: #8b8b85; }
+.account-field input:focus, .account-field select:focus { border-color: var(--forest); }
+.account-field input[aria-invalid=true], .account-field select[aria-invalid=true] { border-color: var(--account-error); }
+.account-field select { padding-right: 32px; text-overflow: ellipsis; cursor: pointer; }
+.account-field select:invalid { color: #8b8b85; }
+.account-field select option { color: var(--ink); }
+.account-field small { color: var(--muted); line-height: 1.6; font-size: 11px; }
+.account-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.account-field-row--desktop { grid-template-columns: 1fr; gap: 18px; }
+.account-actions { padding-top: 8px; }
+.account-action-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 24px; }
+.account-actions .account-footnote { margin-top: 12px; }
+.account-button { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; width: 100%; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--white); padding: 13px 20px; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; transition: transform 180ms var(--ease-out), background 180ms; }
+.account-button:hover { background: #242424; }
+.account-button:active:not(:disabled) { transform: scale(.985); }
+.account-button:disabled { opacity: .45; cursor: default; }
+.account-button--light { background: var(--white); color: var(--ink); border-color: var(--line); }
+.account-button--light:hover { background: var(--surface); }
+.account-button svg { width: 19px; height: 19px; }
+.account-button .account-apple-logo { display: block; width: 16px; height: 20px; flex: none; }
+.account-divider { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--muted); margin: 24px 0; }
+.account-divider::before, .account-divider::after { content: ''; height: 1px; background: var(--line); flex: 1; }
+.account-text-button { display: inline-flex; align-items: center; background: none; padding: 0; border: 0; min-height: 44px; text-align: left; color: var(--ink-soft); font-size: 12px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+.account-text-button:disabled { opacity: .45; cursor: default; }
+.account-footnote { font-size: 10px; line-height: 1.9; color: var(--muted); text-align: center; margin: 18px 0 0; }
+.account-footnote a { text-underline-offset: 3px; }
+.account-hint { margin: 22px 0 0; border-top: 1px solid var(--line); padding-top: 20px; font-size: 11px; color: var(--muted); line-height: 1.85; }
+.account-hint strong { color: var(--ink-soft); font-weight: 600; }
+.account-error { color: var(--account-error); font-size: 12px; line-height: 1.7; margin: 0; }
+.account-error:empty { display: none; }
+.account-notice { background: var(--surface); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8; color: var(--ink-soft); margin: 16px 0; }
+.account-sandbox-note { margin: 0 0 20px; padding: 0 0 14px; border-bottom: 1px solid var(--line); font-size: 11px; line-height: 1.7; color: var(--muted); }
+.account-code .account-field input { font-family: var(--font-mono); font-size: 25px; letter-spacing: .32em; text-align: center; height: 60px; }
+.account-inline-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.account-result-actions { display: grid; gap: 16px; margin-top: 8px; }
+.account-result-actions .account-inline-actions { flex-wrap: wrap; gap: 8px 24px; margin-top: 0; }
+/* A quiet, one-time completion moment. The copy and controls stay still. */
+.account-authorization { text-align: center; }
+.authorization-art { width: 216px; max-width: 100%; margin: 0 auto 20px; }
+.authorization-emblem { display: block; width: 100%; height: auto; }
+.account-authorization .step-lede { max-width: 32ch; margin: 12px auto 24px; }
+.authorization-renewal { padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.authorization-renewal p { margin: 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.authorization-renewal strong { font-size: 28px; font-weight: 600; letter-spacing: -.045em; line-height: 1.25; color: var(--ink); }
+.authorization-renewal span { display: inline-block; margin-left: 4px; }
+.authorization-renewal .authorization-trial { max-width: 36ch; margin: 10px auto 0; font-size: 11px; }
+.account-authorization .account-result-actions { margin-top: 18px; text-align: left; }
+.account-authorization .account-footnote { margin-top: 14px; }
+.account-authorization--arrive .authorization-emblem { animation: authorization-emblem-arrive 280ms var(--ease-out) both; }
+@keyframes authorization-emblem-arrive { from { opacity: 0; transform: translateY(6px) scale(.96); } to { opacity: 1; transform: none; } }
+.account-plan { border: 1px solid var(--forest); background: #f4f8f6; border-radius: 18px; padding: 23px; margin-bottom: 22px; }
+.account-plan-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; font-weight: 600; }
+.account-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; color: #235c56; background: #e3eeea; padding: 6px 10px; font-size: 10px; font-weight: 600; }
+.plan-choice { display: grid; gap: 10px; border: 0; margin: 0; padding: 0; min-width: 0; }
+.plan-choice legend { width: 100%; padding: 0 0 14px; font-size: 12px; font-weight: 600; }
+.plan-choice label { display: flex; align-items: center; gap: 12px; min-height: 84px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; cursor: pointer; }
+.plan-choice label:has(input:checked) { background: #f4f8f6; border-color: var(--forest); }
+.plan-choice input { width: 17px; height: 17px; margin: 0; flex-shrink: 0; accent-color: var(--forest); }
+.plan-choice-name { display: grid; justify-items: start; gap: 8px; font-size: 13px; font-weight: 600; }
+.plan-savings { padding: 4px 7px; white-space: nowrap; }
+.plan-choice-price { display: grid; gap: 3px; margin-left: auto; text-align: right; }
+.plan-choice-price strong { font-size: 25px; font-weight: 600; line-height: 1.15; letter-spacing: -.045em; }
+.plan-choice-price small { font-size: 10px; color: var(--muted); }
+.plan-choice-price .plan-equivalent { margin-top: 3px; color: var(--forest); white-space: nowrap; }
+.plan-savings-note { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.plan-renewal { font-size: 11px; color: var(--muted); line-height: 1.8; margin: 14px 0 24px; }
+.trial-choice { display: flex; align-items: center; gap: 16px; padding: 16px 18px; margin: 14px 0 22px; border: 1px solid var(--line); border-radius: 16px; cursor: pointer; }
+.trial-choice:has(input:checked) { border-color: var(--forest); background: #f4f8f6; }
+.trial-choice > span { flex: 1; }
+.trial-choice strong { display: block; font-size: 12px; font-weight: 600; }
+.trial-choice small { display: block; font-size: 11px; line-height: 1.7; color: var(--muted); margin-top: 4px; }
+.trial-choice input { width: 18px; height: 18px; flex-shrink: 0; margin: 0; accent-color: var(--forest); }
+.plan-total { margin-bottom: 22px; }
+.plan-total > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 12px; }
+.plan-total strong { font-size: 18px; font-weight: 600; }
+.plan-total > p { font-size: 11px; line-height: 1.8; color: var(--muted); margin: 6px 0 0; }
+.account-plan p { font-size: 11px; line-height: 1.8; margin: 0; color: var(--muted); }
+.account-features { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 12px; font-size: 12px; line-height: 1.7; }
+.account-features li { display: flex; align-items: flex-start; gap: 10px; }
+.account-features svg { width: 17px; height: 17px; flex: 0 0 17px; color: var(--forest); margin-top: 2px; }
+.account-inclusions { margin: 0 0 12px; font-size: 12px; color: var(--ink-soft); }
+.account-inclusions summary { cursor: pointer; padding: 12px 0; }
+.account-inclusions .account-features { margin: 8px 0 12px; }
+.account-summary-grid > div { min-width: 0; }
+.account-panel h1 + .account-summary-grid { margin-top: 24px; }
+.card-choice { display: grid; gap: 10px; margin: 0 0 24px; padding: 0; border: 0; }
+.card-choice legend { font-size: 12px; font-weight: 600; padding: 0 0 10px; }
+.card-choice label { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 14px; padding: 14px; cursor: pointer; min-height: 65px; }
+.card-choice label:has(input:checked) { border-color: var(--forest); background: #f4f8f6; }
+.card-choice input { accent-color: var(--forest); width: 17px; height: 17px; flex-shrink: 0; }
+.card-choice span { display: grid; gap: 4px; font-size: 12px; font-weight: 600; }
+.card-choice small { color: var(--muted); font-size: 11px; font-weight: 400; line-height: 1.6; }
+.account-receipt { margin: 0 0 24px; }
+.account-receipt > div { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; line-height: 1.8; padding: 9px 0; }
+.account-receipt dt { color: var(--muted); }
+.account-receipt dd { margin: 0; text-align: right; font-weight: 600; }
+.account-receipt .receipt-total { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 18px; font-size: 15px; }
+.receipt-total dt { color: var(--ink); }
+.account-receipt .receipt-total dd { font-size: 26px; letter-spacing: -.045em; line-height: 1.25; }
+.account-renewal { border-left: 2px solid var(--forest); padding-left: 14px; font-size: 12px; line-height: 1.85; margin: 0 0 24px; color: var(--ink-soft); }
+.account-delivery { margin-bottom: 22px; padding: 16px; background: var(--surface); border-radius: 12px; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.account-delivery p { margin: 0; }
+.account-delivery .account-delivery-phone { margin-top: 6px; }
+.account-check { display: flex; align-items: flex-start; gap: 10px; font-size: 11px; line-height: 1.85; color: var(--ink-soft); margin: 20px 0; }
+.account-check input { width: 18px; height: 18px; margin: 3px 0 0; flex-shrink: 0; accent-color: var(--ink); }
+.account-check a { text-underline-offset: 3px; }
+.account-provider-consent { display: grid; gap: 8px; margin-bottom: 16px; }
+.account-provider-consent .account-check { margin: 0; }
+.account-payment-authorization, .account-payment-confirmation { --authorization-text: 14px; --authorization-action: clamp(16px, 1.6vw, 18px); }
+.account-payment-authorization { margin-top: 8px; }
+.account-payment-confirmation .step-lede { font-size: var(--authorization-text); }
+.account-payment-authorization .account-check { font-size: var(--authorization-text); line-height: 1.6; gap: 12px; }
+.account-payment-authorization .account-check input { width: 20px; height: 20px; margin-top: 2px; }
+.account-payment-authorization .account-provider-consent { gap: 4px; }
+.account-payment-authorization .account-provider-consent .account-check { align-items: center; min-height: 44px; }
+.account-payment-authorization .account-provider-consent input { margin-top: 0; }
+.account-payment-authorization .account-actions { margin-top: 24px; }
+.account-button.account-button--authorize { display: flex; flex-direction: column; gap: 6px; min-height: 86px; height: auto; padding: 20px 24px; border-radius: 24px; white-space: normal; text-align: center; }
+.account-button--authorize > span { font-size: var(--authorization-action); font-weight: 600; line-height: 1.4; }
+.account-button--authorize > small { max-width: 44ch; font-size: 13px; font-weight: 400; line-height: 1.6; }
+.account-bank-challenge { display: block; width: 100%; min-height: 420px; border: 0; margin: 16px 0; }
+.account-bank-fingerprint { position: absolute; width: 1px; height: 1px; border: 0; pointer-events: none; opacity: 0; }
+.account-status-symbol { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; background: #e9f0ed; color: var(--forest); margin-bottom: 22px; }
+.account-status-symbol svg { width: 27px; height: 27px; }
+.account-status-symbol--error { color: var(--account-error); background: #f7ece9; }
+.account-steps { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 20px; counter-reset: steps; }
+.account-steps li { display: flex; gap: 14px; font-size: 12px; line-height: 1.8; }
+.account-steps li::before { counter-increment: steps; content: counter(steps, decimal-leading-zero); font-family: var(--font-mono); color: var(--muted); font-size: 10px; padding-top: 3px; }
+.account-steps strong { display: block; font-weight: 600; }
+.account-steps span { color: var(--muted); }
+.account-spinner { width: 24px; height: 24px; border: 2px solid #bdd2ca; border-top-color: var(--forest); border-radius: 50%; animation: account-spin 1s linear infinite; }
+@keyframes account-spin { to { transform: rotate(360deg); } }
+.account-terms { margin: 8px 0; font-size: 11px; line-height: 1.85; color: var(--ink-soft); }
+.account-terms summary { display: flex; align-items: center; gap: 8px; width: fit-content; min-height: 44px; cursor: pointer; font-size: 12px; font-weight: 400; list-style: none; text-decoration: underline; text-underline-offset: 4px; }
+.account-terms summary::-webkit-details-marker { display: none; }
+.account-terms summary::after { content: ''; width: 5px; height: 5px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(45deg); margin-top: -3px; }
+.account-terms[open] summary::after { transform: rotate(225deg); margin-top: 3px; }
+.account-terms p { margin-bottom: 0; }
+.account-page .site-footer { margin-top: 0; }
+/* Use desktop width, not an inner scroll area. Content can still grow at zoom. */
+@media (min-width: 1000px) {
+    .account-header { min-height: 72px; }
+    .account-layout { width: min(1180px, calc(100% - 64px)); grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 4vw, 64px); margin-top: 12px; min-height: 0; }
+    .account-layout:has(.account-panel:not([data-view="plan"], [data-view="envio"], [data-view="pago"])) { max-width: 1040px; grid-template-columns: minmax(0, 1fr) minmax(0, 480px); }
+    .account-story { padding-top: 24px; }
+    .account-story .story-title { font-size: clamp(32px, 3.2vw, 43px); }
+    .account-product { height: clamp(240px, 38svh, 340px); }
+    .account-specs > div { flex-wrap: wrap; gap: 4px 16px; }
+    .account-panel { padding: 24px 28px; }
+    .step-content { display: flex; flex-direction: column; }
+    /* Only the longer checkout steps share a baseline; short screens hug their content. */
+    .account-panel:is([data-view="plan"], [data-view="envio"], [data-view="pago"]) .step-content { min-height: min(620px, calc(100svh - 164px)); }
+    .account-panel:not([data-view="plan"], [data-view="envio"], [data-view="pago"]) { padding: 32px; }
+    .account-panel h1 { font-size: 32px; }
+    .account-title-break { display: none; }
+    .step-lede { margin: 10px 0 20px; line-height: 1.65; }
+    .account-sandbox-note { margin-bottom: 16px; padding-bottom: 10px; }
+    .account-field-row--desktop { grid-template-columns: 1fr 1fr; }
+    .account-field-row { align-items: start; }
+    .account-field { gap: 6px; }
+    .account-field input, .account-field select { height: 46px; }
+    #delivery-form { display: flex; flex-direction: column; flex: 1; gap: 14px; }
+    .account-actions { margin-top: auto; padding-top: 16px; }
+    .account-actions .account-button { min-height: 48px; }
+    .account-action-row { grid-template-columns: auto minmax(0, 1fr); gap: 32px; }
+    .card-choice { grid-template-columns: 1fr 1fr; margin-bottom: 20px; }
+    .card-choice label { gap: 8px; padding: 12px; }
+    .card-choice input { margin: 0; }
+    .plan-choice { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .plan-choice legend { padding-bottom: 10px; }
+    .plan-choice label { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 14px; }
+    .plan-choice input { position: absolute; top: 14px; right: 12px; width: 15px; height: 15px; }
+    .plan-choice-name { min-height: 39px; padding-right: 14px; gap: 5px; }
+    .plan-savings { font-size: 9px; padding: 3px 6px; }
+    .plan-choice-price { margin: 0; text-align: left; }
+    .plan-choice-price strong { font-size: 26px; }
+    .plan-choice-price .plan-equivalent { margin-top: 0; }
+    .plan-savings-note { margin-top: 6px; }
+    .trial-choice { margin: 12px 0; padding: 12px 14px; }
+    .plan-total { margin-bottom: 0; }
+    .plan-total > p { margin-top: 4px; line-height: 1.6; }
+    .account-inclusions { margin-bottom: 0; }
+    .account-summary-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; }
+    .account-receipt { margin-bottom: 14px; }
+    .account-receipt > div { padding: 5px 0; gap: 10px; }
+    .account-receipt .receipt-total { margin-top: 6px; padding-top: 12px; }
+    .account-renewal { margin-bottom: 0; font-size: 11px; line-height: 1.6; }
+    .account-delivery { margin: 0; padding: 14px; }
+    .account-check { margin: 4px 0 12px; line-height: 1.65; }
+}
+@media (max-width: 860px) {
+    .account-layout { gap: 32px; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); }
+    .account-panel { padding: 28px; }
+    .account-story .story-title { font-size: 34px; }
+    .account-product { height: 260px; }
+    .account-specs > div { flex-direction: column; gap: 0; }
+    .account-specs dd { text-align: left; }
+}
+@media (max-width: 700px) {
+    .account-header { width: calc(100% - 40px); min-height: 76px; }
+    .account-layout { width: calc(100% - 32px); grid-template-columns: 1fr; gap: 18px; margin: 16px auto 48px; min-height: 0; }
+    .account-story { display: none; }
+    .account-panel { padding: 25px 22px; border-radius: 22px; }
+    .account-panel h1 { font-size: 31px; }
+    .account-field-row { gap: 12px; }
+    #delivery-form .account-field-row:has(#department) { grid-template-columns: 1fr; }
+    .account-field-row--desktop { gap: 18px; }
+    .account-action-row { gap: 16px; }
+    .account-code .account-field input { letter-spacing: .24em; }
+}
+@media (max-width: 360px) {
+    .account-panel { padding: 24px 18px; }
+    .account-field-row { grid-template-columns: 1fr; }
+    .plan-choice label { gap: 8px; padding: 14px 12px; }
+    .plan-choice-price strong { font-size: 22px; }
+    .account-action-row { grid-template-columns: 1fr; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .account-page *, .account-page *::before, .account-page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Account essentials stay readable at every width. */
+.account-page .step-lede { font-size: 15px; line-height: 1.65; }
+.account-page .account-field label { font-size: 14px; }
+.account-page .account-field small, .account-page .account-footnote { font-size: 12px; line-height: 1.65; }
+.account-page .account-button { font-size: 16px; }
+.account-page .account-text-button { font-size: 14px; }
+.account-page .account-notice, .account-page .account-error { font-size: 14px; line-height: 1.65; }
+.account-page .account-sandbox-note { font-size: 12px; }
+.billing-date { display: grid; gap: 6px; margin: 24px 0; text-align: left; font-size: 16px; line-height: 1.5; }
+.billing-date span { color: var(--muted); font-size: 14px; }
+.billing-date strong { font-weight: 500; }
+.authorization-renewal .billing-plan-name { color: var(--ink); font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.account-page .account-cancel { color: var(--account-error); }
+.account-cancel-confirmation { text-align: left; background: var(--surface); border-radius: 18px; padding: 20px; }
+.account-cancel-confirmation h2 { margin: 0; font-size: 20px; letter-spacing: -.025em; }
+.account-cancel-confirmation p { font-size: 14px; line-height: 1.65; margin: 12px 0 20px; }
+.account-cancel-confirmation .account-button { color: var(--account-error); }
+
+.account-authorization > h1 + .authorization-renewal { margin-top: 22px; }
+.account-result-actions > .account-text-button { min-height: 44px; }
+
+.account-page .account-summary-grid--existing { grid-template-columns: 1fr; }

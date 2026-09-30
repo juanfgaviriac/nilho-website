@@ -6,13 +6,17 @@
     "build": "node scripts/build-site.mjs",
     "test": "node --test tests/*.test.mjs",
     "preview:receipt": "node scripts/preview-receipt.mjs",
+    "preview:account": "FOCO_ACCOUNT_REVIEW=1 npm run build:vercel && node scripts/preview-account.mjs",
+    "dev:account": "node --env-file-if-exists=.env.account.local --env-file-if-exists=.env.subscription-sandbox.local scripts/dev-account.mjs",
+    "verify:account": "node scripts/verify-account-review.mjs",
     "build:vercel": "node scripts/build-vercel.mjs"
   },
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "dependencies": {
     "@netlify/blobs": "11.1.0",
+    "@supabase/supabase-js": "2.112.4",
     "@vercel/blob": "^2.8.0",
     "ai": "^7.0.108"
   },

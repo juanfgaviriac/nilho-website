@@ -4,3 +4,10 @@
 .env*
 node_modules
 dist
+
+tests
+docs
+output
+*.p8
+*.pem
+*.key

@@ -3,7 +3,12 @@
   "framework": null,
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist",
-  "crons": [{ "path": "/api/foco/analytics-retry", "schedule": "0 * * * *" }],
+  "crons": [
+    {
+      "path": "/api/foco/analytics-retry",
+      "schedule": "0 * * * *"
+    }
+  ],
   "regions": [
     "iad1"
   ],
@@ -206,6 +211,27 @@
     }
   ],
   "headers": [
+    {
+      "source": "/(cuenta|empezar)(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    },
     {
       "source": "/foco/_assets/:path*",
       "headers": [
