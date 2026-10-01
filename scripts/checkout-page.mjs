@@ -27,7 +27,7 @@ export function renderCheckoutPage(html, config = FOCO_CHECKOUT) {
         'summary-discount': current.discount ? `−${formatCOP(current.discount)}` : '',
         'summary-shipping': current.shipping ? formatCOP(current.shipping) : 'Envío gratis',
         'summary-total': formatCOP(current.total),
-        'checkout-availability': checkoutAvailable(config) ? 'Disponible para envío' : 'Próximamente disponible',
+        'checkout-availability': checkoutAvailable(config) ? 'Disponible para envío' : 'Compras pausadas',
     })) html = html.replace(new RegExp(`(id="${id}"[^>]*>)[^<]*`), (_, start) => start + escape(value));
     html = html.replace(/(id="comprar"[^>]*data-quantity=")\d+"/, `$1${selected}"`)
         .replace(/id="summary-discount-row"(?: hidden)?/, `id="summary-discount-row"${current.discount ? '' : ' hidden'}`)

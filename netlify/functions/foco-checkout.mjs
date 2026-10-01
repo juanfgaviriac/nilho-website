@@ -1,14 +1,3 @@
-import { runtime } from '../../server/foco/runtime.mjs';
-import { json, readJSON, errorResponse, checkoutOriginAllowed } from '../../server/foco/http.mjs';
-export default async (request, context) => {
-    try {
-        if (context?.deploy?.context === 'production') {
-            return json({ error: 'checkout_moved', checkoutURL: 'https://getfoco.co/comprar/' }, 410);
-        }
-        if (!checkoutOriginAllowed(request, process.env)) return json({ error: 'origin_not_allowed' }, 403);
-        const input = await readJSON(request, 4096);
-        const commerce = await runtime(context);
-        return json(await commerce.createCheckout(input));
-    } catch (error) { return errorResponse(error); }
-};
-export const config = { path: '/api/foco/checkout', rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ['ip','domain'] } };
+import { json } from '../../server/foco/http.mjs';
+export default async () => { return json({ error: 'legacy_checkout_retired', checkoutURL: 'https://getfoco.co/comprar/' }, 410); };
+export const config = { path: '/api/foco/checkout' };

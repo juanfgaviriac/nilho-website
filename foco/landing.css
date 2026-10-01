@@ -881,3 +881,7 @@ h1 span {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* New purchases stay closed until the replacement checkout launches. */
+button[data-checkout-paused] { font-family: inherit; opacity: .55; cursor: not-allowed; }
+button[data-checkout-paused]:hover { transform: none; box-shadow: none; background: var(--ink); }

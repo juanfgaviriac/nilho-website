@@ -16,11 +16,11 @@ for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
     });
 }
 
-test('approved launch defaults to two and requires explicit consent for every offer', () => {
+test('retired checkout cannot start an offer even with consent', () => {
     assert.equal(FOCO_CHECKOUT.defaultQuantity, 2);
-    assert.equal(FOCO_CHECKOUT.productionEnabled, true);
+    assert.equal(FOCO_CHECKOUT.productionEnabled, false);
     for (const quantity of [1, 2, 3]) {
-        assert.equal(checkoutCanStart(quantity, true), true);
+        assert.equal(checkoutCanStart(quantity, true), false);
         assert.equal(checkoutCanStart(quantity, false), false);
         assert.equal(checkoutCanStart(quantity, true, { ...FOCO_CHECKOUT, productionEnabled: false }), false);
     }
@@ -73,11 +73,10 @@ test('result accepts only a bounded transaction id, never a claimed payment stat
     }
 });
 
-test('landing links to the dedicated cart without loading checkout controls', () => {
+test('landing purchase buttons are disabled without loading checkout controls', () => {
     const html = readFileSync(new URL('../foco/index.html', import.meta.url), 'utf8');
-    const links = [...html.matchAll(/href="([^"]+)" data-checkout-open/g)];
-    assert.ok(links.length >= 2);
-    for (const link of links) assert.equal(link[1], '/comprar/');
+    assert.equal([...html.matchAll(/<button[^>]*disabled data-checkout-paused>/g)].length, 3);
+    assert.doesNotMatch(html, /data-checkout-open/);
     assert.doesNotMatch(html, /id="wompi-pay"|id="purchase-consent"|checkout\.js/);
     const page = readFileSync(new URL('../foco/comprar/index.html', import.meta.url), 'utf8');
     assert.match(page, /id="wompi-pay"[^>]*disabled/);

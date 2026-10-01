@@ -41,7 +41,7 @@ test('closed checkout is never advertised as available in search or first HTML',
         { ...FOCO_CHECKOUT, commerce: { ...FOCO_CHECKOUT.commerce, availableCards: 5 } },
     ]) {
         assert.equal(product(config).offers.availability, 'https://schema.org/OutOfStock');
-        assert.match(renderCheckoutPage(source, config), /id="checkout-availability">Próximamente disponible/);
+        assert.match(renderCheckoutPage(source, config), /id="checkout-availability">Compras pausadas/);
     }
 });
 
