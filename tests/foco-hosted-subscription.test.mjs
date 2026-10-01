@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { SUBSCRIPTION_POLICY_VERSION } from '../foco/subscription-policy.mjs';
 import assert from 'node:assert/strict';
 import { handleHostedSubscription, hostedSubscriptionConfig, billingPath } from '../server/foco/subscription.mjs';
 import { recurringCatalog, recurringAgreement, resumableAgreement } from '../foco/account-recurring.mjs';
@@ -50,7 +51,7 @@ test('staging uses only its separate hosted sandbox path',async()=>{
     assert.equal(destination,'https://foco-backend.vercel.app/billing-sandbox/api/v1/subscription?action=status');
 });
 const catalog=environment=>({environment,publicKey:`pub_${environment==='production'?'prod':'test'}_fixture`,products:PREVIEW_PLANS.map(p=>({
-    product_id:`foco.web.${p.id}.v1`,plan_code:p.id,interval_months:p.months,amount_in_cents:p.amount*100,currency:'COP',trial_days:7,shipping_in_cents:1000000,terms_version:'foco-web-subscription-v1'}))});
+    product_id:`foco.web.${p.id}.v1`,plan_code:p.id,interval_months:p.months,amount_in_cents:p.amount*100,currency:'COP',trial_days:7,shipping_in_cents:1000000,terms_version:SUBSCRIPTION_POLICY_VERSION}))});
 test('browser catalog rejects mixed environments, changed prices and unexpected currency',()=>{
     assert.equal(recurringCatalog(catalog('production'),'production').products.length,3);
     assert.throws(()=>recurringCatalog(catalog('sandbox'),'production'));

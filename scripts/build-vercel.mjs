@@ -50,5 +50,9 @@ if (process.env.FOCO_ACCOUNT_REVIEW === '1' && process.env.VERCEL) throw new Err
 await buildAccountPages({ out, optimize, homepage, review: process.env.FOCO_ACCOUNT_REVIEW === '1' });
 if (process.env.FOCO_ACCOUNT_REVIEW === '1') await buildAccountReviewGallery(out);
 await writeFile(new URL('robots.txt',out),'User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: https://getfoco.co/sitemap.xml\n');
-await writeFile(new URL('sitemap.xml',out),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['','soporte/','privacidad/','terminos/','compra/','compra/privacidad/', ...blogSitemapPaths()].map(path=>`<url><loc>https://getfoco.co/${path}</loc></url>`).join('')+'</urlset>');
+await writeFile(new URL('sitemap.xml',out),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+['','suscripciones/','soporte/','privacidad/','terminos/','compra/','compra/privacidad/', ...blogSitemapPaths()].map(path=>`<url><loc>https://getfoco.co/${path}</loc></url>`).join('')+'</urlset>');
 console.log('Foco-only Vercel artifact built in dist/.');
+
+for (const asset of ['checkout.js','checkout-config.mjs','commerce.js','commerce-config.mjs']) {
+    await rm(new URL(`dist/foco/${asset}`, root), { force: true });
+}

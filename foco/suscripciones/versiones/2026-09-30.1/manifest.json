@@ -1,0 +1,17 @@
+{
+  "version": "foco-web-subscription-2026-09-30.1",
+  "documents": {
+    "terms": {
+      "url": "/foco/suscripciones/versiones/2026-09-30.1/terms.html",
+      "sha256": "0361b4540207f9cdffcdb4f7cdc9108996c3e22d0bdde05cd53634b7a80db5a2"
+    },
+    "privacy": {
+      "url": "/foco/suscripciones/versiones/2026-09-30.1/privacy.html",
+      "sha256": "d0e5b4da85dd32bd9b38da2b41709741df77c754770a0c81826b892ebd3660f8"
+    },
+    "app-privacy": {
+      "url": "/foco/suscripciones/versiones/2026-09-30.1/app-privacy.html",
+      "sha256": "5b1d33d945a01d0ce9509d37199389936081f104f26476c337f3f52deb0a659f"
+    }
+  }
+}

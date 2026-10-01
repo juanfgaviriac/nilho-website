@@ -10,7 +10,7 @@ import { FOCO_CHECKOUT, getOffer, formatCOP } from '../foco/checkout-config.mjs'
 
 const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
-const pages = ['compra/', 'compra/privacidad/', 'soporte/', 'privacidad/', 'terminos/'];
+const pages = ['compra/', 'compra/privacidad/', 'soporte/', 'privacidad/', 'terminos/', 'suscripciones/'];
 const footer = html => html.match(/<footer\b[^>]*>[\s\S]*?<\/footer>/)[0];
 
 test('current-page presentation removes arrow glyphs without changing links or SVG controls', () => {
@@ -61,8 +61,8 @@ test('commercial HTML contains current seller and prices without JavaScript and 
         assert.ok(html.includes(FOCO_CHECKOUT.commerce.seller.noticeAddress));
         assert.equal(renderCommercePage(html), html);
         if (page === 'compra/') {
-            for (const quantity of [1, 2, 3]) assert.ok(html.includes(`${formatCOP(getOffer(quantity).total)} COP`));
-            assert.match(html, /data-offer-list><div>/);
+            for (const amount of ['14.900','39.900','119.900','17.500','45.900','137.900']) assert.ok(html.includes(amount));
+            assert.doesNotMatch(html, /data-offer-list|100\.000|200\.000|250\.000/);
         }
     }
     assert.throws(() => renderCommercePage('<p data-field="unknown">placeholder</p>'), /Missing public commerce field/);
@@ -80,6 +80,13 @@ test('production build publishes complete canonical pages and preserves earlier 
     };
     execFileSync(process.execPath, ['scripts/build-vercel.mjs'], { cwd: root });
     const homepageFooter = footer(read('dist/index.html'));
+    for (const asset of ['checkout.js','checkout-config.mjs','commerce.js','commerce-config.mjs']) {
+        assert.equal(existsSync(new URL(`dist/foco/${asset}`,root)),false,asset);
+    }
+    for (const page of ['', 'comprar/', 'suscripciones/', 'compra/', 'soporte/', 'blog/cuanto-cuesta-foco/']) {
+        assert.doesNotMatch(read(`dist/${page}index.html`),/\$(?:100|110|200|250)\.000|data-offer-list|id="quantity"/);
+    }
+
     for (const page of ['', ...pages, 'comprar/', 'pago/']) {
         for (const prefix of ['dist/', 'dist/foco/']) {
             assert.doesNotMatch(read(`${prefix}${page}index.html`), /[←↑→↓↖↗↘↙]/, `${prefix}${page}`);
@@ -94,9 +101,13 @@ test('production build publishes complete canonical pages and preserves earlier 
     for (const page of pages) {
         const html = read(`dist/${page}index.html`);
         assert.doesNotMatch(html, /Pendiente de completar|Compras aún no habilitadas/);
-        for (const [, href] of html.matchAll(/href="(\/[^"#?]*)[^\"]*"/g)) {
-            const path = href.endsWith('/') ? `${href}index.html` : href;
+        for (const [, href] of html.matchAll(/href="(\/[^\"]*)"/g)) {
+            const url = new URL(href, 'https://getfoco.co');
+            const path = url.pathname.endsWith('/') ? `${url.pathname}index.html` : url.pathname;
             assert.ok(existsSync(new URL(`dist${path}`, root)), `${page}: missing ${href}`);
+            if (url.hash && path.endsWith('.html')) {
+                assert.ok(read(`dist${path}`).includes(`id="${decodeURIComponent(url.hash.slice(1))}"`), `${page}: missing anchor ${href}`);
+            }
         }
     }
     for (const [path, hash] of Object.entries(historical)) {

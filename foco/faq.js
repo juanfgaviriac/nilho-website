@@ -29,7 +29,7 @@ if (form) {
         sources.replaceChildren();
         for (const source of data.sources) {
             // Only same-site source links. Never render model HTML or Markdown.
-            if (!/^\/(?:#faq|comprar\/|(?:soporte|compra|compra\/privacidad|privacidad|terminos)\/#[-a-z0-9]+)$/.test(source.url)) continue;
+            if (!/^\/(?:#faq|comprar\/|(?:soporte|compra|compra\/privacidad|privacidad|terminos|suscripciones)\/#[-a-z0-9]+)$/.test(source.url)) continue;
             const link = document.createElement('a');
             link.href = source.url;
             link.textContent = source.title;

@@ -23,7 +23,7 @@ for (const dir of ['assets','foco']) await cp(new URL(dir, root), new URL(`dist/
 const homepage = await readFile(new URL('foco/index.html', root), 'utf8');
 const optimize = pageOptimizer(new URL('dist/', root));
 const editorialPages = blogPages({ preview: process.env.FOCO_BLOG_PREVIEW === '1' });
-for (const path of new Set(['', 'blog/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
+for (const path of new Set(['', 'blog/', 'suscripciones/', 'pago/', 'privacidad/', 'terminos/', 'soporte/', 'compra/', 'compra/privacidad/', ...editorialPages.keys()])) {
     const file = new URL(`dist/foco/${path}index.html`, root);
     let html = editorialPages.get(path) ?? await readFile(file, 'utf8');
     if (path === 'compra/' || path === 'compra/privacidad/') html = renderCommercePage(html);
@@ -33,3 +33,7 @@ for (const path of new Set(['', 'blog/', 'pago/', 'privacidad/', 'terminos/', 's
 }
 await buildAccountPages({ out: new URL('dist/', root), optimize, homepage });
 console.log('Static site built in dist/. Checkout remains gated by configuration.');
+
+for (const asset of ['checkout.js','checkout-config.mjs','commerce.js','commerce-config.mjs']) {
+    await rm(new URL(`dist/foco/${asset}`, root), { force: true });
+}

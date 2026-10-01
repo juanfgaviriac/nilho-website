@@ -1,5 +1,6 @@
+import { PREVIEW_PLANS, previewTotals } from '../foco/account-flow.mjs';
 import { blogArticles, blogSources } from './blog-content.mjs';
-import { FOCO_CHECKOUT, getOffer, formatCOP } from '../foco/checkout-config.mjs';
+import { FOCO_CHECKOUT, formatCOP } from '../foco/checkout-config.mjs';
 
 const origin = 'https://getfoco.co';
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -22,10 +23,9 @@ function table(caption, headings, rows) {
 }
 
 export function priceRows(config = FOCO_CHECKOUT) {
-    return [1, 2, 3].map(quantity => {
-        const offer = getOffer(quantity, config);
-        return { quantity, product: offer.subtotal - offer.discount, shipping: offer.shipping, total: offer.total, perCard: offer.total / quantity };
-    });
+    return PREVIEW_PLANS.map(plan => ({ plan: plan.name, months: plan.months, product: plan.amount,
+        shipping: previewTotals(false, plan.id, false).shipping,
+        total: previewTotals(false, plan.id, false).today }));
 }
 
 function chart({ id, title, subtitle, rows, max, format, unit, note, source }) {
@@ -34,7 +34,7 @@ function chart({ id, title, subtitle, rows, max, format, unit, note, source }) {
 
 function visual(name, config) {
     const prices = priceRows(config);
-    const offer = getOffer(1, config);
+    const offer = priceRows(config)[0];
     if (['modos', 'rutinas', 'analytics'].includes(name)) return picture(name, { caption: true });
     if (name === 'who') return chart({
         id: 'uso-problematico', title: 'Señales de uso problemático de redes', subtitle: 'Adolescentes en la encuesta HBSC. Porcentaje de participantes.',
@@ -42,35 +42,34 @@ function visual(name, config) {
         note: 'Encuesta de 2022: cerca de 280.000 jóvenes de 11, 13 y 15 años, en 44 países y regiones de Europa, Asia central y Canadá. No son datos de Colombia ni diagnósticos individuales. Escala desde cero.',
         source: 'Fuente: <a href="#fuente-who">OMS Europa / HBSC</a>. Publicado en 2024; observaciones de 2018 y 2022.',
     });
-    if (name === 'price-table') return table('Precio de Foco por cantidad · COP, antes de cupones', ['Cantidad', 'Tarjetas', 'Envío', 'Total'], prices.map(row => [`${row.quantity} ${row.quantity === 1 ? 'tarjeta' : 'tarjetas'}`, formatCOP(row.product), formatCOP(row.shipping), formatCOP(row.total)]));
+    if (name === 'price-table') return table('Planes web con tarjeta nueva · COP, sin prueba', ['Plan', 'Periodo completo', 'Envío inicial', 'Total inicial'], prices.map(row => [row.plan, formatCOP(row.product), formatCOP(row.shipping), formatCOP(row.total)]));
     if (name === 'price-chart') return chart({
-        id: 'costo-unitario', title: 'Costo por tarjeta, con envío', subtitle: 'Total del paquete dividido entre su cantidad. Pesos colombianos, antes de cupones.',
-        rows: prices.map(row => ({ label: `${row.quantity} ${row.quantity === 1 ? 'tarjeta' : 'tarjetas'}`, value: row.perCard })),
-        max: Math.ceil(Math.max(...prices.map(row => row.perCard)) / 20000) * 20000,
-        format: value => `${Number.isInteger(value) ? '' : '≈ '}${formatCOP(Math.round(value))}`, unit: 'COP por tarjeta',
-        note: 'Cálculo: (tarjetas + envío − descuento del paquete) ÷ cantidad. Valores unitarios redondeados al peso. No es el precio de venta de una tarjeta suelta. Escala desde cero.',
-        source: 'Fuente: <a href="#fuente-focoPrice">configuración de compra de Foco</a>. El checkout confirma disponibilidad, cupones y total final.',
+        id: 'costo-mensual', title: 'Equivalente mensual de cada plan web', subtitle: 'La suscripción se cobra por el periodo completo. Esta comparación no representa cuotas mensuales.',
+        rows: prices.map(row => ({ label: row.plan, value: row.product / row.months })), max: 16000,
+        format: value => `${Number.isInteger(value) ? '' : '≈ '}${formatCOP(Math.round(value))}`, unit: 'COP por mes equivalente',
+        note: 'Cálculo: precio de la suscripción dividido entre los meses del periodo. No incluye el envío inicial. Los planes trimestral y anual se pagan completos. Escala desde cero.',
+        source: 'Fuente: <a href="/suscripciones/#precios">precios y condiciones de Foco</a>.',
     });
     if (name === 'screen-time-table') return table('Dos herramientas, distintas decisiones', ['Qué comparas', 'Tiempo en pantalla', 'Foco'], [
-        ['Costo adicional', 'Incluido en el iPhone', `${formatCOP(offer.subtotal - offer.discount)} COP por tarjeta; envío según cantidad`],
+        ['Costo adicional', 'Incluido en el iPhone', `${formatCOP(offer.product)} COP al mes en web; tarjeta incluida por cuenta elegible`],
         ['Organización', 'Límites y horarios; opciones según la versión de iOS', 'Modos, sesiones con duración o Hasta volver y rutinas'],
         ['Qué mide', 'Uso del dispositivo y las apps', 'Tiempo de sesiones de Foco, no uso total del teléfono'],
         ['Objeto físico', 'No lo requiere', 'Tarjeta para cerrar Hasta volver o terminar antes'],
         ['Buen punto de partida', 'Ver tu uso y probar límites sin comprar', 'Añadir un paso físico a una decisión de enfoque'],
     ]);
     if (name === 'brick-table') return table('Foco y Brick · información consultada el 23 de septiembre de 2026', ['Qué comparas', 'Foco', 'Brick'], [
-        ['Precio anunciado', `${formatCOP(offer.subtotal - offer.discount)} COP por tarjeta`, 'US$59 por dispositivo'],
-        ['Envío a Colombia', `${formatCOP(offer.shipping)} COP para una tarjeta`, 'Confirmar disponibilidad y total en su checkout'],
+        ['Precio anunciado', `${formatCOP(offer.product)} COP al mes en web`, 'US$59 por dispositivo'],
+        ['Envío a Colombia', `${formatCOP(offer.shipping)} COP en mensual sin prueba; incluido en trimestral/anual sin prueba`, 'Confirmar disponibilidad y total en su checkout'],
         ['Compatibilidad anunciada', 'iPhone con iOS 17.6 o posterior', 'iOS 17 o posterior; Android 12 o posterior'],
         ['Formato', 'Tarjeta física reutilizable', 'Dispositivo con imán y base antideslizante'],
-        ['Modelo actual de pago', 'Pago único, sin suscripción', 'Pago único; app incluida sin cargos recurrentes'],
+        ['Modelo actual de pago', 'Planes mensual, trimestral y anual; acceso de por vida para cuentas que ya lo tienen', 'Pago único; app incluida sin cargos recurrentes'],
     ]);
     throw new Error(`Unknown blog visual: ${name}`);
 }
 
 function bodyHTML(html, config, available) {
-    const offer = getOffer(1, config);
-    const values = { focoUnit: formatCOP(offer.subtotal - offer.discount), focoShipping: formatCOP(offer.shipping), focoTotal: formatCOP(offer.total) };
+    const offer = priceRows(config)[0];
+    const values = { focoUnit: formatCOP(offer.product), focoShipping: formatCOP(offer.shipping), focoTotal: formatCOP(offer.total) };
     return html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
         if (!(key in values)) throw new Error(`Unknown blog value: ${key}`);
         return escape(values[key]);
@@ -106,7 +105,7 @@ export function renderArticle(article, { preview = false, articles = blogArticle
     const schema = { '@type': 'BlogPosting', '@id': `${origin}/${path}#article`, headline: article.title, description: article.description, mainEntityOfPage: `${origin}/${path}`, url: `${origin}/${path}`, image: `${origin}${imagePath(article.cover)}`, author, publisher: { '@type': 'Organization', name: 'Foco', url: `${origin}/` }, inLanguage: 'es-CO', citation: article.sources.map(id => blogSources[id].url), ...(publicationDate ? { datePublished: publicationDate, dateModified: article.modifiedAt || publicationDate } : { dateCreated: article.preparedAt }) };
     return shell({ title: article.title, description: article.description, path, preview, type: 'article', publishedAt: publicationDate, graph: [schema, breadcrumbs(path, article.title)], content: `
 <main class="article-page" id="contenido"><header class="article-header"><a class="article-back" href="/blog/">El blog de Foco</a><div class="editorial-eyebrow">${article.category}<span aria-hidden="true"> / </span>${readMinutes(article)} min de lectura</div><h1>${article.title}</h1><p class="article-dek">${article.dek}</p><p class="article-meta"><a href="/blog/criterio-editorial/">Por el Equipo Foco</a><span>${publicationDate ? 'Publicado' : 'Borrador preparado'} el <time datetime="${publicationDate || article.preparedAt}">${date(publicationDate || article.preparedAt)}</time>${article.modifiedAt && article.modifiedAt !== publicationDate ? ` · Actualizado el <time datetime="${article.modifiedAt}">${date(article.modifiedAt)}</time>` : ''}</span></p></header>
-<div class="article-layout"><aside class="article-sidebar"><nav aria-label="En este artículo"><p class="editorial-eyebrow">En esta lectura</p><ol>${article.sections.map(section => `<li><a href="#${section.id}">${section.title}</a></li>`).join('')}<li><a href="#fuentes">Fuentes y contexto</a></li></ol></nav></aside><article class="article-content" aria-label="${escape(article.title)}"><div class="article-answer"><span class="editorial-eyebrow">La respuesta corta</span><p>${render(article.answer)}</p></div>${article.medical ? '<p class="article-health-note">Información general, no un diagnóstico ni un tratamiento. Foco es una herramienta de enfoque.</p>' : ''}${article.sections.map(section => `<section id="${section.id}"><h2>${section.title}</h2>${render(section.html)}</section>`).join('')}<section class="article-questions" aria-labelledby="preguntas"><h2 id="preguntas">Un par de dudas más</h2>${article.questions.map(([q, a]) => `<details><summary>${escape(q)}</summary><p>${render(a)}</p></details>`).join('')}</section><section class="article-sources" id="fuentes"><h2>Fuentes y contexto</h2><p>Lo escribe el equipo que crea Foco. Distinguimos las funciones de nuestro producto de la evidencia externa. <a href="/blog/criterio-editorial/">Nuestro criterio editorial</a>.</p><ol>${article.sources.map(id => `<li id="fuente-${id}"><a href="${blogSources[id].url}">${escape(blogSources[id].title)}</a><span>Consultado el ${date(blogSources[id].accessed)}.</span></li>`).join('')}</ol></section><aside class="article-cta"><p class="editorial-eyebrow">Conoce Foco</p><h2>Tu teléfono sigue siendo útil.<br>El scroll puede esperar.</h2><p>Una tarjeta y una app para pausar lo que te distrae. Para iPhone. Pago único, sin suscripción.</p><a href="/comprar/">Ver la tarjeta Foco</a></aside></article></div>${related.length ? `<section class="article-related" aria-labelledby="seguir-leyendo"><p class="editorial-eyebrow" id="seguir-leyendo">Sigue por aquí</p><div>${related.map(item => `<a href="${articlePath(item)}"><span>${item.category}</span><h2>${item.title}</h2></a>`).join('')}</div></section>` : ''}</main>` });
+<div class="article-layout"><aside class="article-sidebar"><nav aria-label="En este artículo"><p class="editorial-eyebrow">En esta lectura</p><ol>${article.sections.map(section => `<li><a href="#${section.id}">${section.title}</a></li>`).join('')}<li><a href="#fuentes">Fuentes y contexto</a></li></ol></nav></aside><article class="article-content" aria-label="${escape(article.title)}"><div class="article-answer"><span class="editorial-eyebrow">La respuesta corta</span><p>${render(article.answer)}</p></div>${article.medical ? '<p class="article-health-note">Información general, no un diagnóstico ni un tratamiento. Foco es una herramienta de enfoque.</p>' : ''}${article.sections.map(section => `<section id="${section.id}"><h2>${section.title}</h2>${render(section.html)}</section>`).join('')}<section class="article-questions" aria-labelledby="preguntas"><h2 id="preguntas">Un par de dudas más</h2>${article.questions.map(([q, a]) => `<details><summary>${escape(q)}</summary><p>${render(a)}</p></details>`).join('')}</section><section class="article-sources" id="fuentes"><h2>Fuentes y contexto</h2><p>Lo escribe el equipo que crea Foco. Distinguimos las funciones de nuestro producto de la evidencia externa. <a href="/blog/criterio-editorial/">Nuestro criterio editorial</a>.</p><ol>${article.sources.map(id => `<li id="fuente-${id}"><a href="${blogSources[id].url}">${escape(blogSources[id].title)}</a><span>Consultado el ${date(blogSources[id].accessed)}.</span></li>`).join('')}</ol></section><aside class="article-cta"><p class="editorial-eyebrow">Conoce Foco</p><h2>Tu teléfono sigue siendo útil.<br>El scroll puede esperar.</h2><p>Una tarjeta y una app para pausar lo que te distrae. Para iPhone. Consulta las condiciones de la oferta que elijas.</p><a href="/comprar/">Ver los planes Foco</a></aside></article></div>${related.length ? `<section class="article-related" aria-labelledby="seguir-leyendo"><p class="editorial-eyebrow" id="seguir-leyendo">Sigue por aquí</p><div>${related.map(item => `<a href="${articlePath(item)}"><span>${item.category}</span><h2>${item.title}</h2></a>`).join('')}</div></section>` : ''}</main>` });
 }
 
 function renderIndex(articles, preview) {

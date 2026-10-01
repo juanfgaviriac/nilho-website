@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { SUBSCRIPTION_POLICY_VERSION } from '../foco/subscription-policy.mjs';
 import assert from 'node:assert/strict';
 import { recurringCatalog, recurringAgreement, recurringAcceptance, mountAuthentication, resumableAgreement } from '../foco/account-recurring.mjs';
 import { PREVIEW_PLANS, previewPlan } from '../foco/account-flow.mjs';
@@ -6,10 +7,10 @@ import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 const catalog = () => ({ environment:'sandbox',publicKey:'pub_test_fixture',products:PREVIEW_PLANS.map(p=>({
     plan_code:p.id,product_id:`test.${p.id}`,amount_in_cents:p.amount*100,interval_months:p.months,currency:'COP',
-    trial_days:7,shipping_in_cents:1000000,terms_version:'test-v1' })) });
+    trial_days:7,shipping_in_cents:1000000,terms_version:SUBSCRIPTION_POLICY_VERSION })) });
 test('recurring checkout refuses drift in server pricing, trial, shipping or environment',()=>{
     assert.equal(recurringCatalog(catalog()).products.length,3);
-    for(const changes of [{amount_in_cents:1},{interval_months:12},{currency:'USD'},{trial_days:14},{shipping_in_cents:0},{terms_version:''}]) {
+    for(const changes of [{amount_in_cents:1},{interval_months:12},{currency:'USD'},{trial_days:14},{shipping_in_cents:0},{terms_version:''},{terms_version:'foco-web-subscription-v1'},{terms_version:'future-unreviewed'}]) {
         const c=catalog(); Object.assign(c.products[0],changes); assert.throws(()=>recurringCatalog(c));
     }
     assert.throws(()=>recurringCatalog({...catalog(),environment:'production'}));

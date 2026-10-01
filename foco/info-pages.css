@@ -35,3 +35,13 @@
     .info-page .commerce-offers > div { grid-template-columns: 1fr; }
     .info-page .commerce-timeline { gap: 16px; }
 }
+
+/* Plan prices remain readable as independent cards on narrow screens. */
+.subscription-prices { display: grid; gap: 16px; margin: 24px 0; }
+.subscription-prices article { padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); }
+.info-page .subscription-prices h3 { margin: 0 0 16px; font-size: 1.2rem; }
+.subscription-prices dl { margin: 0; }
+.subscription-prices dl > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; padding: 8px 0; }
+.subscription-prices dt { color: var(--muted); }
+.subscription-prices dd { margin: 0; font-weight: 700; }
+.info-page .subscription-prices p { margin: 14px 0 0; font-size: 0.85rem; color: var(--muted); }

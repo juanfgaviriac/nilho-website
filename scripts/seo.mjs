@@ -1,4 +1,4 @@
-import { FOCO_CHECKOUT, getOffer, checkoutAvailable } from '../foco/checkout-config.mjs';
+import { FOCO_CHECKOUT } from '../foco/checkout-config.mjs';
 
 const origin = 'https://getfoco.co';
 const image = `${origin}/foco/assets/lifestyle/foco-desk-scene-v1.webp`;
@@ -11,27 +11,8 @@ export function structuredData(path, config = FOCO_CHECKOUT) {
     const graph = [];
     if (path === '') graph.push(organization, { '@type': 'WebSite', '@id': `${origin}/#website`, name: 'Foco',
         url: `${origin}/`, inLanguage: 'es-CO', publisher: { '@id': organization['@id'] } });
-    if (path === 'comprar/') {
-        const offer = getOffer(1, config);
-        graph.push({ '@type': 'Product', '@id': `${origin}/comprar/#tarjeta-foco`, name: 'Tarjeta Foco',
-            description: 'Tarjeta Foco para pausar apps y sitios en iPhone con iOS 17.6 o posterior. Pago único, sin suscripción. Sin batería ni Bluetooth.',
-            image: [image], sku: offer.sku, brand: { '@type': 'Brand', name: 'Foco' },
-            material: config.commerce.product.material,
-            offers: { '@type': 'Offer', url: `${origin}/comprar/`, priceCurrency: config.currency,
-                price: offer.subtotal - offer.discount,
-                availability: `https://schema.org/${checkoutAvailable(config) ? 'InStock' : 'OutOfStock'}`,
-                itemCondition: 'https://schema.org/NewCondition',
-                seller: { '@type': 'Person', name: config.commerce.seller.name },
-                shippingDetails: { '@type': 'OfferShippingDetails',
-                    shippingRate: { '@type': 'MonetaryAmount', value: offer.shipping, currency: config.currency },
-                    shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'CO' } },
-                hasMerchantReturnPolicy: { '@type': 'MerchantReturnPolicy', applicableCountry: 'CO',
-                    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow', merchantReturnDays: 30,
-                    returnMethod: 'https://schema.org/ReturnByMail', returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
-                    merchantReturnLink: `${origin}/compra/#devoluciones` } } });
-    }
     const labels = { 'comprar/': 'Comprar Foco', 'soporte/': 'Soporte', 'privacidad/': 'Privacidad de la app',
-        'terminos/': 'Términos de la app', 'compra/': 'Condiciones de compra', 'compra/privacidad/': 'Privacidad de compras' };
+        'terminos/': 'Términos de la app', 'suscripciones/': 'Condiciones de suscripción', 'compra/': 'Condiciones de compra', 'compra/privacidad/': 'Privacidad de compras' };
     if (labels[path]) graph.push({ '@type': 'BreadcrumbList', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Foco', item: `${origin}/` },
         { '@type': 'ListItem', position: 2, name: labels[path], item: `${origin}/${path}` },

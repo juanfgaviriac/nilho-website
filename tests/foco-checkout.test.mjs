@@ -16,11 +16,11 @@ for (const [quantity, subtotal, discount, shipping, total, cents, sku] of [
     });
 }
 
-test('approved launch defaults to two and requires explicit consent for every offer', () => {
+test('retired catalog cannot start any new purchase even with consent', () => {
     assert.equal(FOCO_CHECKOUT.defaultQuantity, 2);
-    assert.equal(FOCO_CHECKOUT.productionEnabled, true);
+    assert.equal(FOCO_CHECKOUT.productionEnabled, false);
     for (const quantity of [1, 2, 3]) {
-        assert.equal(checkoutCanStart(quantity, true), true);
+        assert.equal(checkoutCanStart(quantity, true), false);
         assert.equal(checkoutCanStart(quantity, false), false);
         assert.equal(checkoutCanStart(quantity, true, { ...FOCO_CHECKOUT, productionEnabled: false }), false);
     }
@@ -79,7 +79,7 @@ test('landing links to the dedicated cart without loading checkout controls', ()
     assert.ok(links.length >= 2);
     for (const link of links) assert.equal(link[1], '/comprar/');
     assert.doesNotMatch(html, /id="wompi-pay"|id="purchase-consent"|checkout\.js/);
-    const page = readFileSync(new URL('../foco/comprar/index.html', import.meta.url), 'utf8');
+    const page = readFileSync(new URL('./fixtures/legacy-cart.html', import.meta.url), 'utf8');
     assert.match(page, /id="wompi-pay"[^>]*disabled/);
     assert.match(page, /href="\/compra\/"/);
     assert.match(page, /id="purchase-consent"/);
@@ -174,7 +174,7 @@ test('checkout requires explicit current consent for the selected offer', () => 
 });
 
 test('consent is not preselected or persisted as fake evidence and resets on return', () => {
-    const html = readFileSync(new URL('../foco/comprar/index.html', import.meta.url), 'utf8');
+    const html = readFileSync(new URL('./fixtures/legacy-cart.html', import.meta.url), 'utf8');
     const script = readFileSync(new URL('../foco/checkout.js', import.meta.url), 'utf8');
     assert.doesNotMatch(html.match(/<input[^>]+id="purchase-consent"[^>]*>/)[0], /\schecked(?:[\s=>])/);
     assert.doesNotMatch(script, /localStorage|sessionStorage|document\.cookie/);
@@ -188,7 +188,7 @@ test('commercial pages separate seller, app and purchase privacy and retain neut
     assert.match(purchase, /12 meses/);
     assert.match(purchase, /cinco días hábiles/);
     assert.match(purchase, /15 días calendario/);
-    assert.match(purchase, /data-offer-list/);
+    assert.doesNotMatch(purchase, /data-offer-list/);
     assert.match(purchase, /https:\/\/sedeelectronica.sic.gov.co\/temas\/proteccion-al-consumidor/);
     assert.match(privacy, /No cruzamos los pedidos con la analítica/);
     for (const name of ['soporte', 'privacidad', 'terminos']) {

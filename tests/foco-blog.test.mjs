@@ -27,7 +27,7 @@ test('five approved Spanish articles are published with their real date and inde
         assert.match(html, /name="robots" content="index, follow, max-image-preview:large"/);
         assert.doesNotMatch(html, /Vista previa editorial|Borrador preparado|noindex/);
         assert.equal(schema(html)[0].datePublished, article.publishedAt);
-        assert.equal(schema(html)[0].dateModified, article.publishedAt);
+        assert.equal(schema(html)[0].dateModified, article.modifiedAt || article.publishedAt);
     }
 });
 
@@ -99,17 +99,16 @@ test('all local editorial images, fonts and style dependencies exist', async () 
     await Promise.all([...assets].map(asset => access(new URL(`..${asset}`, import.meta.url))));
 });
 
-test('checkout config is the sole source of price tables, charts and answers', () => {
-    assert.deepEqual(priceRows().map(({ total }) => total), [110000, 200000, 250000]);
-    assert.equal(priceRows()[2].perCard, 250000 / 3);
-    const config = { ...FOCO_CHECKOUT, offers: { ...FOCO_CHECKOUT.offers, 1: { ...FOCO_CHECKOUT.offers[1], subtotal: 125000, shipping: 17000 } } };
+test('blog prices use current subscription totals and never sell legacy card packs', () => {
+    assert.deepEqual(priceRows().map(({ total }) => total), [24900, 39900, 119900]);
+    assert.deepEqual(priceRows().map(({ shipping }) => shipping), [10000, 0, 0]);
     const article = blogArticles.find(article => article.slug === 'cuanto-cuesta-foco');
-    const html = renderArticle(article, { preview: true, config });
-    for (const amount of [125000, 17000, 142000]) assert.ok(html.includes(formatCOP(amount)), `Missing dynamic price ${amount}`);
-    assert.doesNotMatch(html, /\$110\.000/);
-    assert.match(html, /width:88\.750%/); // 142000 / 160000; zero-based ceiling.
+    const html = renderArticle(article, { preview: true });
+    for (const amount of [14900, 39900, 119900, 24900]) assert.ok(html.includes(formatCOP(amount)));
+    assert.doesNotMatch(html, /\$(?:100|110|200|250)\.000|antes de cupones/);
+    assert.match(html, /width:93\.125%/); // 14900 / 16000; zero-based ceiling.
+    assert.match(html, /periodo completo/);
     assert.match(html, /≈/);
-    assert.match(html, /antes de cupones/);
 });
 
 test('WHO chart shows exact proportions, accessible data and population limits', () => {

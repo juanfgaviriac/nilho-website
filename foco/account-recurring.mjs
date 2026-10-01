@@ -1,3 +1,4 @@
+import { SUBSCRIPTION_POLICY_VERSION } from './subscription-policy.mjs';
 import { PREVIEW_PLANS, previewTotals } from './account-flow.mjs';
 
 export function resumableAgreement(rows, checkedAt = new Date().toISOString()) {
@@ -18,7 +19,7 @@ export function recurringCatalog(value, environment = 'sandbox') {
         const p = rows[0];
         if (rows.length !== 1 || p.amount_in_cents !== plan.amount * 100 || p.interval_months !== plan.months
             || p.currency !== 'COP' || p.trial_days !== 7 || p.shipping_in_cents !== 1000000
-            || !p.terms_version || !p.product_id) throw Error('catalog_changed');
+            || p.terms_version !== SUBSCRIPTION_POLICY_VERSION || !p.product_id) throw Error('catalog_changed');
     }
     return value;
 }

@@ -32,7 +32,7 @@ const fixture = (overrides = {}) => {
 test('knowledge is public, sourced, bounded, current and uses actual checkout prices', async () => {
     const documents = await buildKnowledge();
     assert.ok(documents.length >= 40);
-    assert.ok(JSON.stringify(documents).length < 50000);
+    assert.ok(JSON.stringify(documents).length < 65000);
     assert.equal(new Set(documents.map(d => d.id)).size, documents.length);
     for (const doc of documents) {
         assert.ok(doc.text.length > 20);
@@ -40,7 +40,7 @@ test('knowledge is public, sourced, bounded, current and uses actual checkout pr
         const html = renderFAQ(readFileSync(new URL(`../foco${path}index.html`, import.meta.url), 'utf8'));
         if (fragment) assert.ok(html.includes(`id="${fragment}"`), doc.url);
     }
-    assert.match(documents.find(d => d.id === 'precios').text, /110\.000/);
+    assert.match(documents.find(d => d.id === 'precios').text, /14\.900/);
     assert.match(documents.find(d => d.id === 'soporte-sesiones').text, /tres desbloqueos/);
     assert.doesNotMatch(JSON.stringify(documents), /WOMPI_PRIVATE_KEY|ANALYTICS_READ_TOKEN|availableCards/);
 });

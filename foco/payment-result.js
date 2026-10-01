@@ -1,4 +1,4 @@
-import { FOCO_WHATSAPP_URL, transactionId } from './checkout-config.mjs';
+import { FOCO_WHATSAPP_URL, transactionId } from './payment-links.mjs';
 
 const id = transactionId(window.location.search);
 if (id) {

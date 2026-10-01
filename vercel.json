@@ -208,6 +208,26 @@
       "source": "/foco/blog/:path*",
       "destination": "/blog/:path*",
       "permanent": true
+    },
+    {
+      "source": "/foco/suscripciones/index.html",
+      "destination": "/suscripciones/",
+      "permanent": true
+    },
+    {
+      "source": "/suscripciones/index.html",
+      "destination": "/suscripciones/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/suscripciones",
+      "destination": "/suscripciones/",
+      "permanent": true
+    },
+    {
+      "source": "/foco/suscripciones/",
+      "destination": "/suscripciones/",
+      "permanent": true
     }
   ],
   "headers": [

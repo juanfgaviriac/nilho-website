@@ -2,12 +2,12 @@ import { FOCO_COMMERCE, commerceReady } from './commerce-config.mjs';
 
 // Public configuration only. Never add Wompi keys, integrity secrets or bank details here.
 // Existing Foco support number supplied by the merchant; approved for orders and support.
-export const FOCO_WHATSAPP_URL = 'https://wa.me/573027738407';
+export { FOCO_WHATSAPP_URL, transactionId } from './payment-links.mjs';
 
 export const FOCO_CHECKOUT = Object.freeze({
     defaultQuantity: 2,
-    // Final publication gate; merchant facts and consent evidence are checked separately.
-    productionEnabled: true,
+    // Retired catalog: retained only to reconcile historical orders and receipts.
+    productionEnabled: false,
     endpoint: '/api/foco/checkout',
     redirectUrl: 'https://getfoco.co/pago/', // Configured in Wompi; publish this page with checkout.
     shippingReturnsUrl: FOCO_COMMERCE.termsUrl,
@@ -70,9 +70,4 @@ export function safeCheckoutURL(value) {
             url.origin === 'https://checkout.wompi.co' && !url.username && !url.password &&
             /^\/l\/[A-Za-z0-9_-]+$/.test(url.pathname) && !url.search && !url.hash ? url.href : null;
     } catch { return null; }
-}
-
-export function transactionId(search) {
-    const values = new URLSearchParams(search).getAll('id');
-    return values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(values[0]) ? values[0] : null;
 }
