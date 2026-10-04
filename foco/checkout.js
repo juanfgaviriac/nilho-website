@@ -256,13 +256,13 @@ function updatePayment() {
     const available = checkoutAvailable();
     pay.disabled = busy || !checkoutCanStart(quantity, consent.checked);
     pay.setAttribute('aria-busy', String(busy));
-    pay.textContent = busy ? 'Preparando tu pago…' : 'Pagar con Wompi';
-    consent.disabled = busy;
-    for (const control of [promoToggle, promoInput, promoApply, promoRemove]) control.disabled = busy;
-    for (const button of options.children) button.disabled = busy;
-    setText('checkout-availability', available ? 'Disponible para envío' : 'Próximamente disponible');
+    pay.textContent = !available ? 'Compras pausadas' : busy ? 'Preparando tu pago…' : 'Pagar con Wompi';
+    consent.disabled = busy || !available;
+    for (const control of [promoToggle, promoInput, promoApply, promoRemove]) control.disabled = busy || !available;
+    for (const button of options.children) button.disabled = busy || !available;
+    setText('checkout-availability', available ? 'Disponible para envío' : 'Compras pausadas');
     setText('payment-notice', checkoutError || (busy ? 'Estamos preparando tu enlace seguro.' :
-        !available ? 'Vista previa · Pagos aún no disponibles.' :
+        !available ? 'Estamos actualizando nuestra oferta. Las compras no están disponibles por ahora.' :
         !consent.checked ? 'Acepta las condiciones para continuar.' : 'Completa el pago y la dirección de envío en Wompi.'));
 }
 consent.addEventListener('change', updatePayment);
