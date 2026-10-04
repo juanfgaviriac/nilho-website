@@ -23,10 +23,10 @@ test('subscription prices distinguish channel and full billing period', () => {
 
 test('canceling the trial keeps the card; claiming the refund guarantee requires a return', () => {
     const answer = findInstantAnswer('¿Me cobran la tarjeta si cancelo la prueba?', instant).answer;
-    assert.match(answer, /conservar la tarjeta sin devolverla ni pagar un cargo adicional/);
-    assert.match(answer, /no devuelve automáticamente el envío/);
-    assert.match(answer, /sí debes devolver la tarjeta/);
+    assert.match(answer, /te quedas con la tarjeta sin cargos extra/);
+    assert.match(answer, /envío no se reembolsa automáticamente/);
     const guarantee = source('suscripciones-garantia-30-dias');
+    assert.match(guarantee, /devuelve la tarjeta recibida/);
     assert.match(guarantee, /30 días calendario siguientes a la entrega/);
     assert.match(guarantee, /no a las renovaciones posteriores ni a las compras Apple/);
     assert.match(guarantee, /primer periodo.*envío inicial/);

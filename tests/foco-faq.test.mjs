@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildKnowledge, renderFAQ, commonQuestions } from '../scripts/faq.mjs';
+import { buildKnowledge, renderFAQ, salesFAQIds } from '../scripts/faq.mjs';
 import { FAQ_MODEL, faqRateLimit, makeFAQHandler, answerQuestion, validateAnswer, questionGuard } from '../server/foco/faq.mjs';
 
 function memoryStore() {
@@ -50,7 +50,8 @@ test('homepage and support share accessible, no-JS FAQs without changing other s
         const source = readFileSync(new URL(`../foco/${path}`, import.meta.url), 'utf8');
         const rendered = renderFAQ(source);
         assert.equal(renderFAQ(rendered), rendered);
-        for (const [question] of commonQuestions) assert.ok(rendered.includes(question));
+        assert.equal((rendered.match(/<details>/g) || []).length, salesFAQIds.length);
+        for (const question of ['¿Qué incluye mi plan?', '¿Cuánto cuesta empezar?', '¿Puedo probarlo antes de pagar el plan?', '¿Puedo cancelar cuando quiera?']) assert.ok(rendered.includes(question));
         assert.match(rendered, /label for="faq-question"/);
         assert.match(rendered, /maxlength="500"/);
         assert.match(rendered, /aria-live="polite"/);
