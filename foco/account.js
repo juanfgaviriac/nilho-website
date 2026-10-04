@@ -169,7 +169,7 @@ function render() {
             + '<div class="account-inline-actions"><button class="account-text-button" type="button" data-action="change-email">Cambiar correo</button><button class="account-text-button" type="button" data-action="resend">Reenviar código</button></div>'
             + (review ? '<p class="account-notice">En esta vista previa, escribe cualquier código de 6 dígitos. No enviamos correos.</p>' : '<p class="account-footnote">Si no lo encuentras, revisa spam. Nunca compartas tu código.</p>');
     } else if (v === 'plan') {
-        html = renderPlanSelection(state, { available: review || checkoutEnabled(), ready: review || Boolean(state.config), signedIn: Boolean(state.account) || Boolean(state.reviewSignedIn) });
+        html = renderPlanSelection(state, { available: review || checkoutEnabled(), ready: review || Boolean(state.config), loading: !review && state.config === null, signedIn: Boolean(state.account) || Boolean(state.reviewSignedIn) });
     } else if (v === 'envio') {
         html = heading('¿Dónde recibes tu tarjeta?', 'Solo necesitamos los datos para tu entrega en Colombia.')
             + `<fieldset class="card-choice"><legend>¿Necesitas una tarjeta?</legend><label><input type="radio" name="card" value="new" ${!state.hasCard ? 'checked' : ''}><span>Envíenme mi tarjeta Foco<small>Tarjeta incluida · ${previewTotals(false, state.planId, state.useTrial).shipping ? money(PREVIEW_OFFER.shipping) + ' COP de envío' : 'Envío incluido'}</small></span></label><label><input type="radio" name="card" value="existing" ${state.hasCard ? 'checked' : ''}><span>Ya tengo una tarjeta Foco<small>No necesito envío.</small></span></label></fieldset>`

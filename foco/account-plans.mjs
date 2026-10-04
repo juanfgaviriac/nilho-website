@@ -2,7 +2,7 @@ import { PREVIEW_OFFER, PREVIEW_PLANS, previewPlan, previewPlanSavings, previewT
 const money = value => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
 const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const heading = (title, lede) => `<h1 id="step-title" tabindex="-1">${title}</h1><p class="step-lede">${lede}</p>`;
-export function renderPlanSelection(state = { planId: 'monthly', hasCard: false, useTrial: false }, { available = false, ready = false, signedIn = false } = {}) {
+export function renderPlanSelection(state = { planId: 'monthly', hasCard: false, useTrial: false }, { available = false, ready = false, signedIn = false, loading = false } = {}) {
     const plan = previewPlan(state.planId);
     const totals = previewTotals(state.hasCard, state.planId, state.useTrial);
     const planRenewal = plan => `${state.useTrial ? 'Después de la prueba' : 'Renovación'}: ${money(plan.amount)} COP ${plan.cadence}. Puedes cancelar antes del siguiente cobro.`;
@@ -17,8 +17,8 @@ export function renderPlanSelection(state = { planId: 'monthly', hasCard: false,
             + (!state.hasCard ? `<label class="trial-choice"><span><strong>Añadir ${PREVIEW_OFFER.trialDays} días gratis</strong><small id="trial-note">${trialDescription()}</small></span><input id="trial-choice" type="checkbox" aria-describedby="trial-note" ${state.useTrial ? 'checked' : ''}></label>` : '<p class="plan-savings-note">La prueba solo aplica al solicitar una tarjeta nueva.</p>')
             + `<div class="plan-total" aria-live="polite"><div><span>Total hoy</span><strong id="plan-today">${money(totals.today)} COP</strong></div><p id="plan-shipping">${shippingDescription(totals)}</p><p class="plan-renewal" id="plan-renewal">${planRenewal(plan)}</p></div>`
             + `<details class="account-inclusions"><summary>Qué incluye tu plan</summary><ul class="account-features">${['Tarjeta Foco incluida.', 'Todos tus modos, rutinas y estadísticas.', 'Tu acceso en la app, con la misma cuenta.'].map(text => `<li>${check}<span>${text}</span></li>`).join('')}</ul></details>`
-            + (!available ? '<p class="account-notice">Las compras no están disponibles en este momento. Puedes consultar los planes y entrar a tu cuenta.</p>' : '')
+            + (!available && !loading ? '<p class="account-notice">Las compras no están disponibles en este momento. Puedes consultar los planes y entrar a tu cuenta.</p>' : '')
             + '<p class="account-error" id="form-error" role="alert"></p>'
-            + '<div class="account-actions"><button class="account-button" type="button" data-action="choose-plan"' + (ready ? '' : ' disabled') + '>Continuar con este plan</button></div>'
+            + '<div class="account-actions"><button class="account-button" type="button" data-action="choose-plan"' + (ready ? '' : ' disabled') + '>' + (loading ? 'Cargando…' : 'Continuar con este plan') + '</button></div>'
             + (signedIn ? '<div class="account-inline-actions"><button class="account-text-button" type="button" data-action="signout">Cambiar de cuenta</button></div>' : '');
 }

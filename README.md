@@ -1,6 +1,6 @@
 # Nilho website
 
-Plain HTML/CSS/JS. Foco is hosted on Vercel at getfoco.co; Nilho remains on Netlify. The static design, NFC demo and storytelling remain intact. Two Vercel Functions handle orders and Wompi callbacks, with a private Vercel Blob ledger. No frontend framework or marketing SDK was added.
+Plain HTML/CSS/JS. Foco is hosted on Vercel at getfoco.co; Nilho remains on Netlify. The static design, NFC demo and storytelling remain intact. Vercel Functions connect account checkout to the Foco subscription backend and handle Wompi callbacks and receipts. Supabase stores subscription and dispatch state; private Vercel Blob storage preserves receipts and historical orders. No frontend framework or marketing SDK was added.
 
 ## Local checks
 
@@ -14,15 +14,15 @@ python3 -m http.server 8766 --bind 127.0.0.1
 
 Checkout source: `http://127.0.0.1:8766/foco/comprar/`. To preview canonical paths, run `npm run build:vercel` and serve `dist/`; the cart is at `/comprar/`. Synthetic email preview: `http://127.0.0.1:8766/.artifacts/receipt-preview.html`. Python serves static files only, not the API. The receipt preview is excluded from the production build. Never expose this source-directory development server publicly.
 
-## Current purchase flow — production enabled
+## Current purchase flow — subscriptions released 2026-10-04
 
-The owner approved **one server-created, single-use Wompi link per order**, replacing three reusable links. Amounts still come from `foco/checkout-config.mjs`: 11000000, 20000000 and 25000000 centavos. Wompi collects the address once. Links expire after one hour; their SKU is the order UUID, while the stored order and link description retain FOCO-01/02/03.
+The production offer at `/comprar/` uses one Foco account across the website and app. Web plans cost COP 14,900 monthly, 39,900 quarterly and 119,900 annually. Wompi authorizes the stored payment method; the server charges only a verified agreement and confirms payment against Wompi. The optional seven-day trial starts with the first verified NFC link after the shipping payment succeeds. A prepaid period for a new card also starts on that link. Shipping time does not consume access.
 
-The server records accepted policy versions, timestamp, archived HTML and hashes with the order before creating the link. It verifies Wompi's callback signature and independently retrieves the transaction using the private API. Only an APPROVED transaction matching the saved link, environment, COP amount and order can generate a Resend receipt. Redirect parameters never confirm payment. Private Vercel Blob storage contains a minimal order/consent/receipt ledger; there is no customer-account database or duplicated shipping form.
+The former one-time card checkout is retired: `/api/foco/checkout` returns 410 and `/foco/checkout.js` is excluded from the release. Historical receipts, callbacks, accepted policies and lifetime rights remain supported. Do not re-enable legacy sales switches.
 
-**Published with owner approval on 2026-09-21:** production checkout and email switches are enabled, with production-only Wompi and Resend credentials. The live site preserves the latest film, desk scene and glass overlay. Sandbox approved/declined payments, consent archives, delivered receipt and duplicate callback protection passed. Production routes, pricing and invalid-request rejection passed; no real-money purchase, settlement or refund has been performed by this task. See the dated release evidence in `docs/foco-order-receipts-review.md`.
+Production gates are `FOCO_WEB_SUBSCRIPTION_MODE=production`, `FOCO_WEB_SUBSCRIPTION_LIVE_APPROVED=true` and the separate `FOCO_SUBSCRIPTION_WEBHOOK_ENABLED=true`. The webhook gate stays enabled when new sales are paused. The backend collection and receipt workers run every five minutes. Approved production payments create durable receipt work; only an initial new-card order creates a dispatch record. The existing operator inbox receives that order for manual shipment. Record the carrier and tracking reference, then send them to the buyer. No IVA is added to the agreed prices; receipts are not DIAN invoices.
 
-The owner confirmed the commercial terms and authorized launch after being informed that Wompi still displays merchant review for withdrawals. The carrier remains deferred; send its name with tracking. No IVA is added to the agreed prices. The email is a purchase receipt, not a DIAN invoice or a finding of tax exemption.
+Release checks: hosted Wompi sandbox authorization, shipping, activation, renewal, duplicate protection, cancellation and provider webhooks passed. Production authentication, catalog, provider acceptance, receipt transport and empty-queue workers passed without a real charge or email. Real-money settlement, refunds and delivery to a real inbox remain untested by this release. The backend repository's `docs/subscription-production-release-2026-10-04.md` and `docs/subscription-operations.md` contain the deployment and operating record.
 
 ## Hosting and runtime configuration
 
@@ -30,9 +30,9 @@ Foco production runs on Vercel's **getfoco** project in **juanfgaviriacs-project
 
 ## Policy archives and prices
 
-`checkout-config.mjs` owns executable prices; `commerce-config.mjs` owns seller/product/stock information. `scripts/policies.mjs` generates fully rendered policy archives in `foco/compra/versiones/`. Build fails if existing archived content changes: bump the appropriate version and preserve the previous file. Receipts retain their original offer, seller and policy links even after prices change. Never overwrite an archive after a sale.
+The backend billing catalog owns charged subscription prices; `foco/account-flow.mjs` mirrors the published plan selection. `foco/subscription-policy.mjs` selects the immutable subscription policy version. `checkout-config.mjs` and `commerce-config.mjs` remain only for historical order handling. `scripts/policies.mjs` generates fully rendered policy archives in `foco/compra/versiones/`. Build fails if existing archived content changes: bump the appropriate version and preserve the previous file. Receipts retain their original offer, seller and policy links even after prices change. Never overwrite an archive after a sale.
 
-Stock remains manual (30 initially, pause at five). It is **not** automatically reserved or decremented; pending payments and still-active links require reconciliation. The three legacy reusable production offers were deactivated during launch. New issued single-use links must still be paused explicitly when stopping sales; disabling the website alone cannot stop them.
+Card stock remains manual; verify current inventory with the operator before accepting more orders. It is **not** automatically reserved or decremented; pending payments and still-active links require reconciliation. The three legacy reusable production offers were deactivated during launch. Any still-active historical single-use links must be reconciled when stopping sales; disabling the website alone cannot stop them.
 
 ### Foco on getfoco.co (Vercel)
 
