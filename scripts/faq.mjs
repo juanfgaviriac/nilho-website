@@ -16,10 +16,14 @@ export const commonQuestions = [
     ['¿Puedo probarlo antes de pagar el plan?', 'Sí. Al pedir una tarjeta nueva en la web puedes elegir siete días gratis si aún no has usado la prueba. Pagas solo $10.000 COP de envío. La prueba empieza cuando vinculas la tarjeta en la app. Al terminar se cobra el plan elegido, salvo que canceles antes.'],
     ['¿Tengo que devolver la tarjeta si cancelo la prueba?', 'No. Si cancelas durante tus siete días de prueba, te quedas con la tarjeta sin cargos extra. El envío no se reembolsa automáticamente al cancelar.'],
     ['¿Puedo cancelar cuando quiera?', 'Sí. Para planes web, entra a Mi cuenta y elige Cancelar suscripción antes del siguiente cobro. Conservas el acceso hasta que termine tu periodo o prueba. Si compraste en Apple, elige Gestionar suscripción en Apple desde la app Foco.'],
+    ['¿Puedo seguir usando WhatsApp y Mapas?', 'Sí. Tú eliges qué apps y sitios pausar. Deja disponibles WhatsApp, Mapas o las herramientas que necesitas, y bloquea las que te llevan al scroll. Revisa tu selección antes de empezar cada modo.'],
+    ['¿Tengo que borrar mis redes sociales?', 'No. Foco pausa el acceso a las apps que elijas durante tu sesión. No borra tus cuentas, fotos ni conversaciones. Cuando termina la sesión, puedes volver a usarlas.'],
+    ['¿Me sirve para estudiar y para trabajar?', 'Sí. Crea un modo para estudiar y otro para trabajar, con las apps que necesitas en cada momento. También puedes programar rutinas para los días y horarios que elijas. Todos los planes incluyen estas funciones.'],
+    ['¿Qué plan me conviene?', 'El mensual te permite empezar con un periodo corto. Si quieres incorporar Foco a tu rutina por más tiempo, el trimestral y el anual tienen un menor costo equivalente por mes. Las funciones son las mismas: elige el periodo que usarás. Cada periodo se paga completo y se renueva automáticamente hasta que canceles.'],
 ];
-const faqIds = ['funcionamiento', 'compatibilidad', 'suscripcion', 'compartir', 'sesiones', 'envio', 'privacidad', 'precios-planes', 'prueba', 'devolucion-prueba', 'cancelacion'];
+const faqIds = ['funcionamiento', 'compatibilidad', 'suscripcion', 'compartir', 'sesiones', 'envio', 'privacidad', 'precios-planes', 'prueba', 'devolucion-prueba', 'cancelacion', 'apps-disponibles', 'sin-borrar', 'estudio-trabajo', 'elegir-plan'];
 // Short buyer questions on the homepage; detailed answers remain available on request.
-export const salesFAQIds = ['funcionamiento', 'suscripcion', 'precios-planes', 'prueba', 'compatibilidad', 'envio', 'privacidad', 'cancelacion'];
+export const salesFAQIds = ['funcionamiento', 'apps-disponibles', 'sin-borrar', 'estudio-trabajo', 'suscripcion', 'elegir-plan', 'precios-planes', 'prueba', 'compatibilidad', 'envio', 'privacidad', 'cancelacion'];
 const detailSources = { compartir: '/soporte/#tarjeta', sesiones: '/soporte/#sesiones', 'devolucion-prueba': '/suscripciones/#prueba' };
 const aliases = [
     ['¿Qué es Foco y cómo funciona?', '¿Qué es Foco?', '¿Cómo funciona Foco?', '¿Para qué sirve Foco?'],
@@ -33,6 +37,10 @@ const aliases = [
     ['¿Cuándo empiezan los siete días gratis?', '¿Cuándo empieza la prueba gratis?', '¿La prueba empieza al comprar?', '¿Puedo probar Foco gratis?'],
     ['¿Qué pasa con la tarjeta si cancelo la prueba?', '¿Tengo que devolver la tarjeta si cancelo?', '¿Me cobran la tarjeta si cancelo la prueba?', '¿Puedo quedarme con la tarjeta?'],
     ['¿Cómo cancelo una suscripción?', '¿Cómo cancelo Foco?', '¿Cómo cancelo la renovación?'],
+    ['¿Puedo usar WhatsApp con Foco?', '¿Puedo dejar algunas apps disponibles?', '¿Foco bloquea todo el teléfono?'],
+    ['¿Necesito desinstalar Instagram?', '¿Tengo que eliminar mis redes sociales?', '¿Foco borra mis aplicaciones?'],
+    ['¿Foco sirve para estudiar?', '¿Puedo usar Foco para trabajar?', '¿Puedo programar mis sesiones?'],
+    ['¿Qué plan debería elegir?', '¿Qué diferencia hay entre los planes?', '¿El plan anual tiene más funciones?'],
 ];
 
 export function buildInstantAnswers(documents) {

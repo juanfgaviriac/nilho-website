@@ -11,15 +11,18 @@ const drafts = blogArticles.map(({ publishedAt, modifiedAt, ...article }) => ({ 
 const preview = blogPages({ articles: drafts, preview: true });
 const schema = html => JSON.parse(html.match(/<script type="application\/ld\+json">([^]*?)<\/script>/)[1])['@graph'];
 
-test('five approved Spanish articles are published with their real date and indexable metadata', () => {
-    assert.equal(blogArticles.length, 5);
-    for (const key of ['slug', 'title', 'description']) assert.equal(new Set(blogArticles.map(article => article[key])).size, 5);
+test('eight approved Spanish articles are published with their real dates and indexable metadata', () => {
+    const launchSlugs = ['estudiar-sin-mirar-el-celular', 'concentrarse-con-whatsapp-en-el-trabajo', 'pausas-sin-redes-sociales'];
+    assert.equal(blogArticles.length, 8);
+    for (const slug of launchSlugs) assert.ok(blogArticles.some(article => article.slug === slug));
+    for (const key of ['slug', 'title', 'description']) assert.equal(new Set(blogArticles.map(article => article[key])).size, 8);
     const pages = blogPages();
-    assert.equal(pages.size, 7);
-    assert.equal(blogSitemapPaths().length, 7);
+    assert.equal(pages.size, 10);
+    assert.equal(blogSitemapPaths().length, 10);
+    assert.match(pages.get('blog/'), /id="lectura-destacada"><a href="\/blog\/estudiar-sin-mirar-el-celular\/"/);
     for (const article of blogArticles) {
         assert.equal(article.status, 'published');
-        assert.equal(article.publishedAt, '2026-09-23');
+        assert.equal(article.publishedAt, launchSlugs.includes(article.slug) ? '2026-10-04' : '2026-09-23');
         assert.ok(article.sections.length >= 4);
         assert.equal(new Set(article.sections.map(section => section.id)).size, article.sections.length);
         for (const id of article.sources) assert.ok(blogSources[id], `Missing source ${id}`);
@@ -37,7 +40,7 @@ test('future drafts remain absent from public routes and the sitemap', () => {
 });
 
 test('preview is clearly marked, noindexed and has no invented publication date', () => {
-    assert.equal(preview.size, 7);
+    assert.equal(preview.size, blogArticles.length + 2);
     for (const [path, html] of preview) {
         assert.match(html, /<html lang="es-CO">/);
         assert.match(html, /name="robots" content="noindex, follow"/);
